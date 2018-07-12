@@ -87,24 +87,24 @@ contract('EthFundMe', accounts => {
         return EthFundMeInstance.campaigns.call(0);
       })
       .then(address => {
-        campaignInstance = Campiagn.at(address);
-        campaignInstance.id.call();
+        CampaignInstance = Campaign.at(address);
+        return CampaignInstance.id.call();
       })
       .then(_id => {
         id = _id;
-        campaignInstance.title.call();
+        return CampaignInstance.title.call();
       })
       .then(_title => {
         title = _title;
-        campaignInstance.goal.call();
+        return CampaignInstance.goal.call();
       })
       .then(_goal => {
         goal = _goal;
-        campaignInstance.manager.call();
+        return CampaignInstance.manager.call();
       })
       .then(_manager => {
         manager = _manager;
-        campaignInstance.state.call();
+        return CampaignInstance.state.call();
       })
       .then(_state => {
         state = _state;
@@ -116,12 +116,17 @@ contract('EthFundMe', accounts => {
           "title should be 'first campaign'"
         );
         assert.equal(goal, 10, 'goal should be 10');
+        assert.equal(state, 0, 'state should be 0 (State.Pending)');
         assert.equal(
           manager,
           accounts[3],
           'campaign manager should be accounts[3]'
         );
-        assert.equal(state, 0, 'state should be 0 (State.Pending)');
+        assert.notEqual(
+          manager,
+          EthFundMe.address,
+          'manager should not be the EthFundMe contract'
+        );
       });
   });
 });

@@ -18,7 +18,7 @@ contract EthFundMe {
   }
 
   function createCampaign(string title, uint goal) public returns(address) {
-    Campaign newCampaign = new Campaign(numCampaigns, title, goal);
+    Campaign newCampaign = new Campaign(numCampaigns, title, goal, msg.sender);
     campaigns[numCampaigns] = address(newCampaign);
     numCampaigns++;
     return address(newCampaign);
@@ -52,11 +52,11 @@ contract Campaign {
   mapping (uint => Contributor) public contributors;
   uint public funds;
 
-  constructor(uint _id, string _title, uint _goal) public {
+  constructor(uint _id, string _title, uint _goal, address _manager) public {
     id = _id;
     title = _title;
     goal = _goal;
-    manager = msg.sender;
+    manager = _manager;
     state = States.Pending;
   }
 
