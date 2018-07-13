@@ -129,4 +129,42 @@ contract('EthFundMe', accounts => {
         );
       });
   });
+
+  it ("should make a single contribution of 1 ether", () => {
+    var EthFundMeInstance;
+    var CampaignInstance;
+    var numContributions;
+    var contribution;
+    var funds;
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance;
+        return EthFundMeInstance.campaigns.call(0);
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address);
+        return CampaignInstance.contribute({ from: accounts[4], value: 1 });
+      })
+      .then(() => {
+        return CampaignInstance.getNumContributions.call(accounts[4]);
+      })
+      .then((_numContributions) => {
+        numContributions = _numContributions;
+        return CampaignInstance.getContribution.call(accounts[4], 0);
+      })
+      .then((_contribution) => {
+        contribution = _contribution
+        return CampaignInstance.funds.call();
+      })
+      .then((_funds) => {
+        funds = _funds;
+        let campaignBalance = web3.eth.getBalance(CampaignInstance.address);
+
+        assert.equal(numContributions, 1, 'there should be 1 contribution');
+        assert.equal(funds, 1, '1 ether should have been contributed');
+        assert.equal(contribution[0], 1, 'contribution amount should be 1');
+        assert.equal(campaignBalance, 1, 'Campaign balance should be 1');
+      });
+  })
 });
