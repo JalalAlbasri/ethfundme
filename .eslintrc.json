@@ -1,0 +1,45 @@
+{
+  "extends": "airbnb-base/legacy",
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "rules": {
+    "no-const-assign": "warn",
+    "no-this-before-super": "warn",
+    "no-undef": "warn",
+    "no-unreachable": "warn",
+    "no-unused-vars": "off",
+    "constructor-super": "warn",
+    "valid-typeof": "warn",
+    "func-names": 0,
+    "semi": [2, "never"],
+    "no-console": "off",
+    "no-plusplus": "off",
+    "max-len": 1,
+    "no-param-reassign": ["error", {
+      "props": false
+    }],
+    "no-shadow": ["error", {
+      "allow": ["done", "data", "err", "resolve", "reject"]
+    }]
+  },
+  "globals": {
+    "contract" : true,
+    "artifacts": true,
+    "it": true,
+    "assert": true,
+    "web3": true
+
+  }
+}
