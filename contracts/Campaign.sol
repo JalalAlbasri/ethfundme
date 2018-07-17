@@ -99,8 +99,19 @@ contract Approvable is Administrated {
     }
   }
 
-  function reveal(uint voteOption, uint salt) public onlyVotedAdmin onlyDuringStage(ApprovalStages.Reveal) endReveal {
-    
+  // function reveal(bool voteOption, uint salt) public onlyVotedAdmin onlyDuringStage(ApprovalStages.Reveal) endReveal {
+  //   require(hasRevealed[msg.sender] == false);
+  //   // require(keccak256(abi.encodePacked(voteOption, salt)) == votes[msg.sender]);
+  //   hasRevealed[msg.sender] = true;
+  //   numReveals++;
+  // }
+
+  function testHash(uint test) public pure returns(bytes32) {
+    return keccak256(abi.encodePacked(test));
+  }
+
+  function testHashBool(bool voteOption, uint salt) public pure returns(bytes32) {
+    return keccak256(abi.encodePacked(voteOption, salt));
   }
 
   // function getNumVotes() public view returns (uint) {

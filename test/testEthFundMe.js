@@ -1,6 +1,16 @@
 let EthFundMe = artifacts.require('EthFundMe')
 let Campaign = artifacts.require('Campaign')
+
+let ethjsUtil = require('ethereumjs-util')
+let ethjsAbi = require('ethereumjs-abi')
+
+// let Web3Latest = require('web3')
+// let web3Latest = new Web3Latest('ws://localhost:7545')
+
+
 // let Approvable = artifacts.require('Approvable')
+
+// console.log(`web3.version: ${web3.version}`)
 
 contract('EthFundMe', accounts => {
   it('there should be 3 admins', () => {
@@ -155,6 +165,7 @@ contract('EthFundMe', accounts => {
     let numContributions
     let contribution
     let funds
+    let campaignBalance
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -178,7 +189,10 @@ contract('EthFundMe', accounts => {
       })
       .then(_funds => {
         funds = _funds
-        let campaignBalance = web3.eth.getBalance(CampaignInstance.address)
+        return web3.eth.getBalance(CampaignInstance.address)
+      })
+      .then((_campaignBalance) => {
+        campaignBalance = _campaignBalance
 
         assert.equal(numContributions, 1, 'there should be 1 contribution')
         assert.equal(funds, 1, '1 ether should have been contributed')
@@ -186,6 +200,49 @@ contract('EthFundMe', accounts => {
         assert.equal(campaignBalance, 1, 'Campaign balance should be 1')
       })
   })
+
+  // it('ethjsAbi and keccak256 should produce same hash for same imput', () => {
+  //   let EthFundMeInstance
+  //   let CampaignInstance
+
+  //   let test = 123
+  //   let abiHash = '0x' +
+  // ethjsAbi.soliditySHA3(['uint'], [test]).toString('hex')
+
+  //   return EthFundMe.deployed()
+  //     .then(instance => {
+  //       EthFundMeInstance = instance
+  //       return EthFundMeInstance.campaigns.call(0)
+  //     })
+  //     .then(address => {
+  //       CampaignInstance = Campaign.at(address)
+  //       return CampaignInstance.testHash(test, { from: accounts[0] })
+  //     }).then(solidityHash => {
+  //       assert.equal(abiHash, solidityHash, 'both hashes should be equal')
+  //     })
+  // })
+
+  // it('ethjsAbi and keccak256 should produce same hash for same imput', () => {
+  //   let EthFundMeInstance
+  //   let CampaignInstance
+
+  //   let voteOption = true
+  //   let salt = 1234
+  //   let abiHash = '0x' +
+  // ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption, salt]).toString('hex')
+
+  //   return EthFundMe.deployed()
+  //     .then(instance => {
+  //       EthFundMeInstance = instance
+  //       return EthFundMeInstance.campaigns.call(0)
+  //     })
+  //     .then(address => {
+  //       CampaignInstance = Campaign.at(address)
+  //       return CampaignInstance.testHashBool(voteOption, salt, { from: accounts[0] })
+  //     }).then(solidityHash => {
+  //       assert.equal(abiHash, solidityHash, 'both hashes should be equal')
+  //     })
+  // })
 
   it('should place a vote for Campaign 0', () => {
     let EthFundMeInstance
@@ -195,9 +252,8 @@ contract('EthFundMe', accounts => {
 
     let voteOption = true
     let salt = 123456789
-    let voteSecret = web3.sha3(web3.toHex(voteOption) + web3.toHex(salt))
-
-    // console.log(web3.eth.getBalance(accounts[0]))
+    let voteSecret = '0x' +
+      ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption, salt]).toString('hex')
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -229,7 +285,8 @@ contract('EthFundMe', accounts => {
 
     let voteOption = true
     let salt = 123456789
-    let voteSecret = web3.sha3(web3.toHex(voteOption) + web3.toHex(salt))
+    let voteSecret = '0x' +
+      ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption, salt]).toString('hex')
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -252,11 +309,12 @@ contract('EthFundMe', accounts => {
     let CampaignInstance
     let numVotes
     let vote
+    let originalVote
 
     let voteOption = false
     let salt = 123456789
-    let voteSecret = web3.sha3(web3.toHex(voteOption) + web3.toHex(salt))
-    let originalVoteSecret = web3.sha3(web3.toHex(true) + web3.toHex(salt))
+    let voteSecret = '0x' +
+      ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption, salt]).toString('hex')
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -265,6 +323,9 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
+        return CampaignInstance.votes.call(accounts[0])
+      }).then(_originalVote => {
+        originalVote = _originalVote
         return CampaignInstance.vote(voteSecret, { from: accounts[0] })
       })
       .then(() => {
@@ -279,7 +340,11 @@ contract('EthFundMe', accounts => {
 
         assert.equal(numVotes, 1, 'there should be one vote')
         assert.equal(vote, voteSecret, 'the vote should be votesecret')
-        assert.notEqual(vote, originalVoteSecret, 'the vote should have changed')
+        assert.notEqual(
+          vote,
+          originalVote,
+          'the vote should have changed'
+        )
       })
   })
 
@@ -292,11 +357,13 @@ contract('EthFundMe', accounts => {
 
     let voteOption1 = true
     let salt1 = 123456789
-    let voteSecret1 = web3.sha3(web3.toHex(voteOption1) + web3.toHex(salt1))
+    let voteSecret1 = '0x' +
+      ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption1, salt1]).toString('hex')
 
     let voteOption2 = true
     let salt2 = 123456789
-    let voteSecret2 = web3.sha3(web3.toHex(voteOption2) + web3.toHex(salt2))
+    let voteSecret2 = '0x' +
+      ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt2]).toString('hex')
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -338,13 +405,14 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should try to place a fourth vote and fail', () => {
+  it('should attempt to place a fourth vote and fail', () => {
     let EthFundMeInstance
     let CampaignInstance
 
     let voteOption = true
     let salt = 123456789
-    let voteSecret = web3.sha3(web3.toHex(voteOption) + web3.toHex(salt))
+    let voteSecret = '0x' +
+      ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption, salt]).toString('hex')
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -361,4 +429,80 @@ contract('EthFundMe', accounts => {
         })
       })
   })
+
+  // it('should attempt to reveal a vote for accounts[0] with wrong secret and fail', () => {
+  //   let EthFundMeInstance
+  //   let CampaignInstance
+
+  //   let voteOption = false
+  //   let salt = 111111111
+
+  //   return EthFundMe.deployed()
+  //     .then(instance => {
+  //       EthFundMeInstance = instance
+  //       return EthFundMeInstance.campaigns.call(0)
+  //     })
+  //     .then(address => {
+  //       CampaignInstance = Campaign.at(address)
+  //       return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
+  //     })
+  //     .catch(e => {
+  //       return CampaignInstance.numReveals.call().then(numReveals => {
+  //         assert.equal(numReveals, 0, 'there should be no reveals')
+  //       })
+  //     })
+  // })
+
+  // it('should attempt to reveal a vote for accounts[0] with wrong voteOption and fail', () => {
+  //   let EthFundMeInstance
+  //   let CampaignInstance
+
+  //   let voteOption = true
+  //   let salt = 123456789
+
+  //   return EthFundMe.deployed()
+  //     .then(instance => {
+  //       EthFundMeInstance = instance
+  //       return EthFundMeInstance.campaigns.call(0)
+  //     })
+  //     .then(address => {
+  //       CampaignInstance = Campaign.at(address)
+  //       return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
+  //     })
+  //     .catch(e => {
+  //       CampaignInstance.numReveals.call().then(numReveals => {
+  //         assert.equal(numReveals, 0, 'there should be no reveals')
+  //       })
+  //     })
+  // })
+
+  // it('should correctly reveal vote for accounts[0]', () => {
+  //   let EthFundMeInstance
+  //   let CampaignInstance
+
+  //   let voteOption = false
+  //   let salt = 123456789
+
+  //   return EthFundMe.deployed()
+  //     .then(instance => {
+  //       EthFundMeInstance = instance
+  //       return EthFundMeInstance.campaigns.call(0)
+  //     })
+  //     .then(address => {
+  //       CampaignInstance = Campaign.at(address)
+  //       return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
+  //     })
+  //     .then(() => {
+  //       return CampaignInstance.numReveals.call()
+  //     })
+  //     .then(numVotes => {
+  //       assert.equal(numVotes, 1, 'there should be one reveal')
+  //     })
+  // })
+
+
+  // it('shoould try to reveal vote for non admin address and fail')
+  // // TODO: it('should try to reveal a vote for an admin that hasnt voted and fail')
+  // it('should try to reveal vote for accounts[0] again and fail')
+  // it("should reveal remaining votes and approvalState should be 'Concluded'")
 })
