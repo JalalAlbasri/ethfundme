@@ -1,13 +1,51 @@
 pragma solidity ^0.4.24;
 
-// import "./EthFundMe.sol";
-import "./Approvable.sol";
+import "./EthFundMe.sol";
+// import "./Approvable.sol";
+
+contract Administrated {
+  EthFundMe efm;
+  
+  constructor(address efmAddress) public {
+    efm = EthFundMe(efmAddress);
+  }
+
+  modifier onlyAdmin {
+    require(efm.isAdmin(msg.sender));
+    _;
+  }
+
+}
+
+contract Approvable is Administrated {
+  uint votesFor;		    /// tally of votes supporting proposal
+  uint votesAgainst;      /// tally of votes countering proposal
+  mapping(address => bool) didCommit;  /// indicates whether an address committed a vote for this poll
+  mapping(address => bool) didReveal;   /// indicates whether an address revealed a vote for this poll
+
+  uint public numVotes;
+  mapping(address => uint) public votes;
+
+  constructor(address efmAddress) Administrated(efmAddress) public {
+    
+  }
+
+  function vote(uint secretVote) public onlyAdmin {
+    votes[msg.sender] = secretVote;
+    numVotes++;
+  }
+
+  function getNumVotes() public view returns (uint) {
+    return numVotes;
+  }
+
+}
 
 contract Campaign is Approvable {
   enum States {
     Pending, 
     Open, 
-    Closed, 
+    Closed,
     Rejected
   }
 
@@ -29,7 +67,7 @@ contract Campaign is Approvable {
   mapping (address => Contributor) public contributors;
   uint public funds;
 
-  constructor(uint _id, string _title, uint _goal, address _manager) public {
+  constructor(uint _id, string _title, uint _goal, address _manager, address efmAddress) Approvable(efmAddress) public {
     id = _id;
     title = _title;
     goal = _goal;

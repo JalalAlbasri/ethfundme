@@ -200,14 +200,14 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        CampaignInstance.vote(123, { from: accounts[0] })
+        CampaignInstance.vote(123, { from: accounts[1] })
       })
       .then(() => {
         return CampaignInstance.numVotes.call()
       })
       .then((_numVotes) => {
         numVotes = _numVotes
-        return CampaignInstance.votes.call(accounts[0])
+        return CampaignInstance.votes.call(accounts[1])
       })
       .then(_vote => {
         vote = _vote
