@@ -1,6 +1,6 @@
 let EthFundMe = artifacts.require('EthFundMe')
 let Campaign = artifacts.require('Campaign')
-let Approvable = artifacts.require('Approvable')
+// let Approvable = artifacts.require('Approvable')
 
 contract('EthFundMe', accounts => {
   it('there should be 3 admins', () => {
@@ -200,14 +200,14 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        CampaignInstance.vote(123, { from: accounts[1] })
+        return CampaignInstance.vote(123, { from: accounts[0] })
       })
       .then(() => {
         return CampaignInstance.numVotes.call()
       })
       .then((_numVotes) => {
         numVotes = _numVotes
-        return CampaignInstance.votes.call(accounts[1])
+        return CampaignInstance.votes.call(accounts[0])
       })
       .then(_vote => {
         vote = _vote
@@ -216,4 +216,24 @@ contract('EthFundMe', accounts => {
         assert.equal(vote, 123, 'the vote should be 123')
       })
   })
+
+  it('should attempt to place vote from non admin account and fail', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.vote(123, { from: accounts[4] })
+      }).catch(e => {
+        CampaignInstance.numVotes.call().then(numVotes => {
+          assert.equal(numVotes, 1, 'there should be one vote');
+        })
+      })
+  })
+
 })
