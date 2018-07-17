@@ -18,6 +18,15 @@ contract Administrated {
 }
 
 contract Approvable is Administrated {
+
+  enum ApprovalStages {
+    Commit,
+    Reveal
+  }
+
+  ApprovalStages public approvalStage = ApprovalStages.Commit;
+  // uint public creationTime = now;
+
   uint votesFor;		    /// tally of votes supporting proposal
   uint votesAgainst;      /// tally of votes countering proposal
   mapping(address => bool) didCommit;  /// indicates whether an address committed a vote for this poll
@@ -25,19 +34,54 @@ contract Approvable is Administrated {
 
   uint public numVotes;
   mapping(address => uint) public votes;
+  mapping(address => bool) private hasVoted;
 
   constructor(address efmAddress) Administrated(efmAddress) public {
     
   }
 
-  function vote(uint secretVote) public onlyAdmin {
-    votes[msg.sender] = secretVote;
-    numVotes++;
+  modifier atStage(ApprovalStages _approvalStage) {
+    require(approvalStage == _approvalStage);
+    _;
   }
 
-  function getNumVotes() public view returns (uint) {
-    return numVotes;
+  modifier endCommit() {
+    _;
+    if (approvalStage == ApprovalStages.Commit && numVotes == 3) {
+      approvalStage = ApprovalStages.Reveal;
+    }
   }
+
+  modifier onlyDuringCommit() {
+    require(approvalStage == ApprovalStages.Commit);
+    _;
+  }
+
+  // function nextStage() internal {
+  //     stage = Stages(uint(stage) + 1);
+  // }
+
+  // modifier timedTransitions() {
+  //     if (stage == Stages.Commit &&
+  //                 now >= creationTime + 10 minutes)
+  //         nextStage();
+  //     if (stage == Stages.Reveal &&
+  //             now >= creationTime + 10 minutes)
+  //         nextStage();
+  //     _;
+  // }
+
+  function vote(uint secretVote) public onlyAdmin onlyDuringCommit endCommit {
+    votes[msg.sender] = secretVote;
+    if (hasVoted[msg.sender] == false) {
+      numVotes++;
+      hasVoted[msg.sender] = true;
+    }
+  }
+
+  // function getNumVotes() public view returns (uint) {
+  //   return numVotes;
+  // }
 
 }
 

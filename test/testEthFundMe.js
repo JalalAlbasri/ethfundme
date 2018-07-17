@@ -205,7 +205,7 @@ contract('EthFundMe', accounts => {
       .then(() => {
         return CampaignInstance.numVotes.call()
       })
-      .then((_numVotes) => {
+      .then(_numVotes => {
         numVotes = _numVotes
         return CampaignInstance.votes.call(accounts[0])
       })
@@ -229,11 +229,108 @@ contract('EthFundMe', accounts => {
       .then(address => {
         CampaignInstance = Campaign.at(address)
         return CampaignInstance.vote(123, { from: accounts[4] })
-      }).catch(e => {
+      })
+      .catch(e => {
         CampaignInstance.numVotes.call().then(numVotes => {
-          assert.equal(numVotes, 1, 'there should be one vote');
+          assert.equal(numVotes, 1, 'there should be one vote')
         })
       })
   })
 
+  it('should change an admins the previous vote not place a new vote', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let numVotes
+    let vote
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.vote(234, { from: accounts[0] })
+      })
+      .then(() => {
+        return CampaignInstance.numVotes.call()
+      })
+      .then(_numVotes => {
+        numVotes = _numVotes
+        return CampaignInstance.votes.call(accounts[0])
+      })
+      .then(_vote => {
+        vote = _vote
+
+        assert.equal(numVotes, 1, 'there should be one vote')
+        assert.equal(vote, 234, 'the vote should be 234')
+      })
+  })
+
+  it('should accept 3 votes from admins, change approval stage to reveal', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let numVotes
+    let initialApprovalStage
+    let finalApprovalStage
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.approvalStage.call()
+      })
+      .then(_initialApprovalStage => {
+        initialApprovalStage = _initialApprovalStage
+        return CampaignInstance.vote(123, { from: accounts[1] })
+      })
+      .then(() => {
+        return CampaignInstance.vote(123, { from: accounts[2] })
+      })
+      .then(() => {
+        return CampaignInstance.numVotes.call()
+      })
+      .then(_numVotes => {
+        numVotes = _numVotes
+        return CampaignInstance.approvalStage.call()
+      })
+      .then(_finalApprovalStage => {
+        finalApprovalStage = _finalApprovalStage
+
+        assert.equal(numVotes, 3, 'there should be 3 votes')
+        assert.equal(
+          finalApprovalStage,
+          1,
+          "initialApprovalStage should be 'Commit'"
+        )
+        assert.equal(
+          finalApprovalStage,
+          1,
+          "finalApprovalStage should be 'Reveal'"
+        )
+      })
+  })
+
+  it('should try to place a fourth vite and fail', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.vote(123, { from: accounts[0] })
+      })
+      .catch(e => {
+        CampaignInstance.numVotes.call().then(numVotes => {
+          assert.equal(numVotes, 3, 'there should only be 3 votes')
+        })
+      })
+  })
 })
