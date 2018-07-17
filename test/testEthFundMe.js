@@ -193,6 +193,12 @@ contract('EthFundMe', accounts => {
     let numVotes
     let vote
 
+    let voteOption = true
+    let salt = 123456789
+    let voteSecret = web3.sha3(web3.toHex(voteOption) + web3.toHex(salt))
+
+    // console.log(web3.eth.getBalance(accounts[0]))
+
     return EthFundMe.deployed()
       .then(instance => {
         EthFundMeInstance = instance
@@ -200,7 +206,7 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.vote(123, { from: accounts[0] })
+        return CampaignInstance.vote(voteSecret, { from: accounts[0] })
       })
       .then(() => {
         return CampaignInstance.numVotes.call()
@@ -213,13 +219,17 @@ contract('EthFundMe', accounts => {
         vote = _vote
 
         assert.equal(numVotes, 1, 'there should be one vote')
-        assert.equal(vote, 123, 'the vote should be 123')
+        assert.equal(vote, voteSecret, 'the vote should be voteSecret')
       })
   })
 
   it('should attempt to place vote from non admin account and fail', () => {
     let EthFundMeInstance
     let CampaignInstance
+
+    let voteOption = true
+    let salt = 123456789
+    let voteSecret = web3.sha3(web3.toHex(voteOption) + web3.toHex(salt))
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -228,7 +238,7 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.vote(123, { from: accounts[4] })
+        return CampaignInstance.vote(voteSecret, { from: accounts[4] })
       })
       .catch(e => {
         CampaignInstance.numVotes.call().then(numVotes => {
@@ -243,6 +253,11 @@ contract('EthFundMe', accounts => {
     let numVotes
     let vote
 
+    let voteOption = false
+    let salt = 123456789
+    let voteSecret = web3.sha3(web3.toHex(voteOption) + web3.toHex(salt))
+    let originalVoteSecret = web3.sha3(web3.toHex(true) + web3.toHex(salt))
+
     return EthFundMe.deployed()
       .then(instance => {
         EthFundMeInstance = instance
@@ -250,7 +265,7 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.vote(234, { from: accounts[0] })
+        return CampaignInstance.vote(voteSecret, { from: accounts[0] })
       })
       .then(() => {
         return CampaignInstance.numVotes.call()
@@ -263,16 +278,25 @@ contract('EthFundMe', accounts => {
         vote = _vote
 
         assert.equal(numVotes, 1, 'there should be one vote')
-        assert.equal(vote, 234, 'the vote should be 234')
+        assert.equal(vote, voteSecret, 'the vote should be votesecret')
+        assert.notEqual(vote, originalVoteSecret, 'the vote should have changed')
       })
   })
 
-  it('should accept 3 votes from admins, change approval stage to reveal', () => {
+  it('should accept 2 more votes from admins, change approval stage to reveal', () => {
     let EthFundMeInstance
     let CampaignInstance
     let numVotes
     let initialApprovalStage
     let finalApprovalStage
+
+    let voteOption1 = true
+    let salt1 = 123456789
+    let voteSecret1 = web3.sha3(web3.toHex(voteOption1) + web3.toHex(salt1))
+
+    let voteOption2 = true
+    let salt2 = 123456789
+    let voteSecret2 = web3.sha3(web3.toHex(voteOption2) + web3.toHex(salt2))
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -285,10 +309,10 @@ contract('EthFundMe', accounts => {
       })
       .then(_initialApprovalStage => {
         initialApprovalStage = _initialApprovalStage
-        return CampaignInstance.vote(123, { from: accounts[1] })
+        return CampaignInstance.vote(voteSecret1, { from: accounts[1] })
       })
       .then(() => {
-        return CampaignInstance.vote(123, { from: accounts[2] })
+        return CampaignInstance.vote(voteSecret2, { from: accounts[2] })
       })
       .then(() => {
         return CampaignInstance.numVotes.call()
@@ -302,8 +326,8 @@ contract('EthFundMe', accounts => {
 
         assert.equal(numVotes, 3, 'there should be 3 votes')
         assert.equal(
-          finalApprovalStage,
-          1,
+          initialApprovalStage,
+          0,
           "initialApprovalStage should be 'Commit'"
         )
         assert.equal(
@@ -314,9 +338,13 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should try to place a fourth vite and fail', () => {
+  it('should try to place a fourth vote and fail', () => {
     let EthFundMeInstance
     let CampaignInstance
+
+    let voteOption = true
+    let salt = 123456789
+    let voteSecret = web3.sha3(web3.toHex(voteOption) + web3.toHex(salt))
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -325,7 +353,7 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.vote(123, { from: accounts[0] })
+        return CampaignInstance.vote(voteSecret, { from: accounts[0] })
       })
       .catch(e => {
         CampaignInstance.numVotes.call().then(numVotes => {

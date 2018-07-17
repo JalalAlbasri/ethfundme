@@ -21,7 +21,8 @@ contract Approvable is Administrated {
 
   enum ApprovalStages {
     Commit,
-    Reveal
+    Reveal,
+    Concluded
   }
 
   ApprovalStages public approvalStage = ApprovalStages.Commit;
@@ -29,12 +30,13 @@ contract Approvable is Administrated {
 
   uint votesFor;		    /// tally of votes supporting proposal
   uint votesAgainst;      /// tally of votes countering proposal
-  mapping(address => bool) didCommit;  /// indicates whether an address committed a vote for this poll
-  mapping(address => bool) didReveal;   /// indicates whether an address revealed a vote for this poll
 
   uint public numVotes;
-  mapping(address => uint) public votes;
-  mapping(address => bool) private hasVoted;
+  uint public numReveals;
+  mapping(address => bytes32) public votes;
+  mapping(address => bool) public hasVoted;
+  mapping(address => bool) public hasRevealed;
+
 
   constructor(address efmAddress) Administrated(efmAddress) public {
     
@@ -47,13 +49,31 @@ contract Approvable is Administrated {
 
   modifier endCommit() {
     _;
-    if (approvalStage == ApprovalStages.Commit && numVotes == 3) {
+    if (numVotes == 3) {
       approvalStage = ApprovalStages.Reveal;
     }
   }
 
-  modifier onlyDuringCommit() {
-    require(approvalStage == ApprovalStages.Commit);
+  modifier endReveal() {
+    _;
+    if (numReveals == 3) {
+      approvalStage = ApprovalStages.Concluded;
+      // tallyVotes(); 
+    }
+  }
+
+  modifier onlyVotedAdmin() {
+    require(hasVoted[msg.sender]);
+    _;
+  }
+
+  // modifier onlyDuringCommit() {
+  //   require(approvalStage == ApprovalStages.Commit);
+  //   _;
+  // }
+
+  modifier onlyDuringStage(ApprovalStages _stage) {
+    require(approvalStage == _stage);
     _;
   }
 
@@ -71,12 +91,16 @@ contract Approvable is Administrated {
   //     _;
   // }
 
-  function vote(uint secretVote) public onlyAdmin onlyDuringCommit endCommit {
+  function vote(bytes32 secretVote) public onlyAdmin onlyDuringStage(ApprovalStages.Commit) endCommit {
     votes[msg.sender] = secretVote;
     if (hasVoted[msg.sender] == false) {
       numVotes++;
       hasVoted[msg.sender] = true;
     }
+  }
+
+  function reveal(uint voteOption, uint salt) public onlyVotedAdmin onlyDuringStage(ApprovalStages.Reveal) endReveal {
+    
   }
 
   // function getNumVotes() public view returns (uint) {
