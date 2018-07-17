@@ -245,10 +245,10 @@ contract('EthFundMe', accounts => {
   //     })
   // })
 
-  it('should be in Commit stage', () => {
+  it('should be in Commit state', () => {
     let EthFundMeInstance
     let CampaignInstance
-    let approvalStage
+    let pollState
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -257,11 +257,11 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.approvalStage.call()
+        return CampaignInstance.pollState.call()
       })
-      .then(_approvalStage => {
-        approvalStage = _approvalStage
-        assert.equal(approvalStage, 0, 'approval stage should be 0 (Commit)')
+      .then(_pollState => {
+        pollState = _pollState
+        assert.equal(pollState, 0, 'poll state should be 0 (Commit)')
       })
   })
 
@@ -369,7 +369,7 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should attempt to reveal a vote for accounts[0] during Commit stage and fail', () => {
+  it('should attempt to reveal a vote for accounts[0] during Commit state and fail', () => {
     let EthFundMeInstance
     let CampaignInstance
 
@@ -392,7 +392,7 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should accept 2 more votes from admins, change approval stage to reveal', () => {
+  it('should accept 2 more votes from admins, change poll state to reveal', () => {
     let EthFundMeInstance
     let CampaignInstance
     let numVotes
@@ -428,10 +428,10 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should be in Reveal stage', () => {
+  it('should be in Reveal state', () => {
     let EthFundMeInstance
     let CampaignInstance
-    let approvalStage
+    let pollState
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -440,11 +440,11 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.approvalStage.call()
+        return CampaignInstance.pollState.call()
       })
-      .then(_approvalStage => {
-        approvalStage = _approvalStage
-        assert.equal(approvalStage, 1, 'approval stage should be 1 (Reveal)')
+      .then(_pollState => {
+        pollState = _pollState
+        assert.equal(pollState, 1, 'poll state should be 1 (Reveal)')
       })
   })
 
@@ -664,10 +664,10 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should be in Concluded stage', () => {
+  it('should be in Concluded state', () => {
     let EthFundMeInstance
     let CampaignInstance
-    let approvalStage
+    let pollState
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -676,11 +676,11 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.approvalStage.call()
+        return CampaignInstance.pollState.call()
       })
-      .then(_approvalStage => {
-        approvalStage = _approvalStage
-        assert.equal(approvalStage, 2, 'approval stage should be 2 (Concluded)')
+      .then(_pollState => {
+        pollState = _pollState
+        assert.equal(pollState, 2, 'poll state should be 2 (Concluded)')
       })
   })
 

@@ -19,17 +19,23 @@ contract Administrated {
 
 contract Approvable is Administrated {
 
-  enum ApprovalStages {
+  enum PollStates {
     Commit,
     Reveal,
     Concluded
   }
 
-  ApprovalStages public approvalStage = ApprovalStages.Commit;
-  // uint public creationTime = now;
+  enum ApprovalStates {
+    Pending,
+    Approved,
+    Rejected
+  }
 
-  uint votesFor;		    /// tally of votes supporting proposal
-  uint votesAgainst;      /// tally of votes countering proposal
+  PollStates public pollState = PollStates.Commit;
+  ApprovalStates public approvalState = ApprovalStates.Pending;
+
+  uint public numApprove;
+  uint public numReject;
 
   uint public numVotes;
   uint public numReveals;
@@ -42,23 +48,28 @@ contract Approvable is Administrated {
     
   }
 
-  modifier atStage(ApprovalStages _approvalStage) {
-    require(approvalStage == _approvalStage);
+  modifier atStage(PollStates _pollState) {
+    require(pollState == _pollState);
     _;
   }
 
   modifier endCommit() {
     _;
     if (numVotes == 3) {
-      approvalStage = ApprovalStages.Reveal;
+      pollState = PollStates.Reveal;
     }
   }
 
   modifier endReveal() {
     _;
     if (numReveals == 3) {
-      approvalStage = ApprovalStages.Concluded;
-      // tallyVotes(); 
+      pollState = PollStates.Concluded;
+      
+      if (numApprove >= 2) {
+        approvalState = ApprovalStates.Approved;
+      } else {
+        approvalState = ApprovalStates.Rejected;
+      }
     }
   }
 
@@ -68,12 +79,12 @@ contract Approvable is Administrated {
   }
 
   // modifier onlyDuringCommit() {
-  //   require(approvalStage == ApprovalStages.Commit);
+  //   require(pollState == PollStates.Commit);
   //   _;
   // }
 
-  modifier onlyDuringStage(ApprovalStages _stage) {
-    require(approvalStage == _stage);
+  modifier onlyDuringStage(PollStates _stage) {
+    require(pollState == _stage);
     _;
   }
 
@@ -91,7 +102,9 @@ contract Approvable is Administrated {
   //     _;
   // }
 
-  function vote(bytes32 secretVote) public onlyAdmin onlyDuringStage(ApprovalStages.Commit) endCommit {
+  //TODO: endCommit and endReveal could just be in the function itself tbh
+
+  function vote(bytes32 secretVote) public onlyAdmin onlyDuringStage(PollStates.Commit) endCommit {
     votes[msg.sender] = secretVote;
     if (hasVoted[msg.sender] == false) {
       numVotes++;
@@ -99,11 +112,18 @@ contract Approvable is Administrated {
     }
   }
 
-  function reveal(bool voteOption, uint salt) public onlyVotedAdmin onlyDuringStage(ApprovalStages.Reveal) endReveal {
+  function reveal(bool voteOption, uint salt) public onlyVotedAdmin onlyDuringStage(PollStates.Reveal) endReveal {
     require(hasRevealed[msg.sender] == false);
     require(keccak256(abi.encodePacked(voteOption, salt)) == votes[msg.sender]);
     hasRevealed[msg.sender] = true;
     numReveals++;
+    
+    if (voteOption) {
+      numApprove++;
+    } else {
+      numReject++;
+    }
+
   }
 
   function testHash(uint test) public pure returns(bytes32) {
