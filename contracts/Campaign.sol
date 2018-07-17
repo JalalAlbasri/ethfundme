@@ -34,8 +34,8 @@ contract Approvable is Administrated {
   PollStates public pollState = PollStates.Commit;
   ApprovalStates public approvalState = ApprovalStates.Pending;
 
-  uint public numApprove;
-  uint public numReject;
+  uint public numApprovals;
+  uint public numRejections;
 
   uint public numVotes;
   uint public numReveals;
@@ -65,7 +65,7 @@ contract Approvable is Administrated {
     if (numReveals == 3) {
       pollState = PollStates.Concluded;
       
-      if (numApprove >= 2) {
+      if (numApprovals >= 2) {
         approvalState = ApprovalStates.Approved;
       } else {
         approvalState = ApprovalStates.Rejected;
@@ -119,9 +119,9 @@ contract Approvable is Administrated {
     numReveals++;
     
     if (voteOption) {
-      numApprove++;
+      numApprovals++;
     } else {
-      numReject++;
+      numRejections++;
     }
 
   }

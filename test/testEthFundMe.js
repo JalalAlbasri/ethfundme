@@ -265,6 +265,26 @@ contract('EthFundMe', accounts => {
       })
   })
 
+  it('approval state should be Pending', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let approvalState
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.approvalState.call()
+      })
+      .then(_approvalState => {
+        approvalState = _approvalState
+        assert.equal(approvalState, 0, 'approvalState state should be 0 (Pending)')
+      })
+  })
+
   it('should place a vote for Campaign 0', () => {
     let EthFundMeInstance
     let CampaignInstance
@@ -542,11 +562,13 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should correctly reveal vote for accounts[0]', () => {
+  it('should reveal vote for accounts[0]', () => {
     let EthFundMeInstance
     let CampaignInstance
     let numReveals
     let hasRevealed
+    let numApprovals
+    let numRejections
 
     let voteOption = false
     let salt = 123456789
@@ -569,13 +591,23 @@ contract('EthFundMe', accounts => {
       })
       .then(_hasRevealed => {
         hasRevealed = _hasRevealed
+        return CampaignInstance.numApprovals.call()
+      })
+      .then(_numApprovals => {
+        numApprovals = _numApprovals
+        return CampaignInstance.numRejections.call()
+      })
+      .then(_numRejections => {
+        numRejections = _numRejections
 
+        assert.equal(numApprovals, 0, 'there should be no approvals')
+        assert.equal(numRejections, 1, 'there should be one rejection')
         assert.equal(hasRevealed, true, 'accounts[0] should have revealed')
         assert.equal(numReveals, 1, 'there should be 1 reveal')
       })
   })
 
-  it('shoould try to reveal vote for admin that has already revealed their vote and fail', () => {
+  it('should try to reveal vote for admin that has already revealed their vote and fail', () => {
     let EthFundMeInstance
     let CampaignInstance
 
@@ -598,11 +630,13 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should correctly reveal vote for accounts[1]', () => {
+  it('should reveal vote for accounts[1]', () => {
     let EthFundMeInstance
     let CampaignInstance
     let numReveals
     let hasRevealed
+    var numApprovals
+    var numRejections
 
     let voteOption = true
     let salt = 123456789
@@ -625,17 +659,29 @@ contract('EthFundMe', accounts => {
       })
       .then(_hasRevealed => {
         hasRevealed = _hasRevealed
+        return CampaignInstance.numApprovals.call()
+      })
+      .then(_numApprovals => {
+        numApprovals = _numApprovals
+        return CampaignInstance.numRejections.call()
+      })
+      .then(_numRejections => {
+        numRejections = _numRejections
 
+        assert.equal(numApprovals, 1, 'there should be 1 approval')
+        assert.equal(numRejections, 1, 'there should be one rejection')
         assert.equal(hasRevealed, true, 'accounts[1] should have revealed')
         assert.equal(numReveals, 2, 'there should be 2 reveals')
       })
   })
 
-  it('should correctly reveal vote for accounts[2]', () => {
+  it('should reveal vote for accounts[2]', () => {
     let EthFundMeInstance
     let CampaignInstance
     let numReveals
     let hasRevealed
+    var numApprovals
+    var numRejections
 
     let voteOption = true
     let salt = 123456789
@@ -658,7 +704,17 @@ contract('EthFundMe', accounts => {
       })
       .then(_hasRevealed => {
         hasRevealed = _hasRevealed
+        return CampaignInstance.numApprovals.call()
+      })
+      .then(_numApprovals => {
+        numApprovals = _numApprovals
+        return CampaignInstance.numRejections.call()
+      })
+      .then(_numRejections => {
+        numRejections = _numRejections
 
+        assert.equal(numApprovals, 2, 'there should be two approvals')
+        assert.equal(numRejections, 1, 'there should be one rejection')
         assert.equal(hasRevealed, true, 'accounts[2] should have revealed')
         assert.equal(numReveals, 3, 'there should be 3 reveals')
       })
@@ -681,6 +737,26 @@ contract('EthFundMe', accounts => {
       .then(_pollState => {
         pollState = _pollState
         assert.equal(pollState, 2, 'poll state should be 2 (Concluded)')
+      })
+  })
+
+  it('approval state should be approved', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let approvalState
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.approvalState.call()
+      })
+      .then(_approvalState => {
+        approvalState = _approvalState
+        assert.equal(approvalState, 1, 'approvalState state should be 1 (Approved)')
       })
   })
 
