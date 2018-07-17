@@ -1,16 +1,17 @@
 let EthFundMe = artifacts.require('EthFundMe')
 let Campaign = artifacts.require('Campaign')
 
-let ethjsUtil = require('ethereumjs-util')
 let ethjsAbi = require('ethereumjs-abi')
 
+// TODO: Cleanup and remove from npm if these remain unused
+// let ethjsUtil = require('ethereumjs-util')
 // let Web3Latest = require('web3')
 // let web3Latest = new Web3Latest('ws://localhost:7545')
 
-
 // let Approvable = artifacts.require('Approvable')
-
 // console.log(`web3.version: ${web3.version}`)
+
+// TODO: break up these test into smaller discrete tests
 
 contract('EthFundMe', accounts => {
   it('there should be 3 admins', () => {
@@ -244,6 +245,26 @@ contract('EthFundMe', accounts => {
   //     })
   // })
 
+  it('should be in Commit stage', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let approvalStage
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.approvalStage.call()
+      })
+      .then(_approvalStage => {
+        approvalStage = _approvalStage
+        assert.equal(approvalStage, 0, 'approval stage should be 0 (Commit)')
+      })
+  })
+
   it('should place a vote for Campaign 0', () => {
     let EthFundMeInstance
     let CampaignInstance
@@ -348,12 +369,33 @@ contract('EthFundMe', accounts => {
       })
   })
 
+  it('should attempt to reveal a vote for accounts[0] during Commit stage and fail', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+
+    let voteOption = false
+    let salt = 123456789
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
+      })
+      .catch(e => {
+        CampaignInstance.numReveals.call().then(numReveals => {
+          assert.equal(numReveals, 0, 'there should be no reveals')
+        })
+      })
+  })
+
   it('should accept 2 more votes from admins, change approval stage to reveal', () => {
     let EthFundMeInstance
     let CampaignInstance
     let numVotes
-    let initialApprovalStage
-    let finalApprovalStage
 
     let voteOption1 = true
     let salt1 = 123456789
@@ -372,10 +414,6 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.approvalStage.call()
-      })
-      .then(_initialApprovalStage => {
-        initialApprovalStage = _initialApprovalStage
         return CampaignInstance.vote(voteSecret1, { from: accounts[1] })
       })
       .then(() => {
@@ -386,22 +424,27 @@ contract('EthFundMe', accounts => {
       })
       .then(_numVotes => {
         numVotes = _numVotes
+        assert.equal(numVotes, 3, 'there should be 3 votes')
+      })
+  })
+
+  it('should be in Reveal stage', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let approvalStage
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
         return CampaignInstance.approvalStage.call()
       })
-      .then(_finalApprovalStage => {
-        finalApprovalStage = _finalApprovalStage
-
-        assert.equal(numVotes, 3, 'there should be 3 votes')
-        assert.equal(
-          initialApprovalStage,
-          0,
-          "initialApprovalStage should be 'Commit'"
-        )
-        assert.equal(
-          finalApprovalStage,
-          1,
-          "finalApprovalStage should be 'Reveal'"
-        )
+      .then(_approvalStage => {
+        approvalStage = _approvalStage
+        assert.equal(approvalStage, 1, 'approval stage should be 1 (Reveal)')
       })
   })
 
@@ -430,79 +473,216 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  // it('should attempt to reveal a vote for accounts[0] with wrong secret and fail', () => {
-  //   let EthFundMeInstance
-  //   let CampaignInstance
+  it('should attempt to reveal a vote for accounts[0] with wrong secret and fail', () => {
+    let EthFundMeInstance
+    let CampaignInstance
 
-  //   let voteOption = false
-  //   let salt = 111111111
+    let voteOption = false
+    let salt = 111111111
 
-  //   return EthFundMe.deployed()
-  //     .then(instance => {
-  //       EthFundMeInstance = instance
-  //       return EthFundMeInstance.campaigns.call(0)
-  //     })
-  //     .then(address => {
-  //       CampaignInstance = Campaign.at(address)
-  //       return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
-  //     })
-  //     .catch(e => {
-  //       return CampaignInstance.numReveals.call().then(numReveals => {
-  //         assert.equal(numReveals, 0, 'there should be no reveals')
-  //       })
-  //     })
-  // })
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
+      })
+      .catch(e => {
+        return CampaignInstance.numReveals.call().then(numReveals => {
+          assert.equal(numReveals, 0, 'there should be no reveals')
+        })
+      })
+  })
 
-  // it('should attempt to reveal a vote for accounts[0] with wrong voteOption and fail', () => {
-  //   let EthFundMeInstance
-  //   let CampaignInstance
+  it('should attempt to reveal a vote for accounts[0] with wrong voteOption and fail', () => {
+    let EthFundMeInstance
+    let CampaignInstance
 
-  //   let voteOption = true
-  //   let salt = 123456789
+    let voteOption = true
+    let salt = 123456789
 
-  //   return EthFundMe.deployed()
-  //     .then(instance => {
-  //       EthFundMeInstance = instance
-  //       return EthFundMeInstance.campaigns.call(0)
-  //     })
-  //     .then(address => {
-  //       CampaignInstance = Campaign.at(address)
-  //       return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
-  //     })
-  //     .catch(e => {
-  //       CampaignInstance.numReveals.call().then(numReveals => {
-  //         assert.equal(numReveals, 0, 'there should be no reveals')
-  //       })
-  //     })
-  // })
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
+      })
+      .catch(e => {
+        CampaignInstance.numReveals.call().then(numReveals => {
+          assert.equal(numReveals, 0, 'there should be no reveals')
+        })
+      })
+  })
 
-  // it('should correctly reveal vote for accounts[0]', () => {
-  //   let EthFundMeInstance
-  //   let CampaignInstance
+  it('shoould try to reveal vote for non admin address and fail', () => {
+    let EthFundMeInstance
+    let CampaignInstance
 
-  //   let voteOption = false
-  //   let salt = 123456789
+    let voteOption = false
+    let salt = 123456789
 
-  //   return EthFundMe.deployed()
-  //     .then(instance => {
-  //       EthFundMeInstance = instance
-  //       return EthFundMeInstance.campaigns.call(0)
-  //     })
-  //     .then(address => {
-  //       CampaignInstance = Campaign.at(address)
-  //       return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
-  //     })
-  //     .then(() => {
-  //       return CampaignInstance.numReveals.call()
-  //     })
-  //     .then(numVotes => {
-  //       assert.equal(numVotes, 1, 'there should be one reveal')
-  //     })
-  // })
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.reveal(voteOption, salt, { from: accounts[3] })
+      })
+      .catch(e => {
+        CampaignInstance.numReveals.call().then(numReveals => {
+          assert.equal(numReveals, 0, 'there should be no reveals')
+        })
+      })
+  })
 
+  it('should correctly reveal vote for accounts[0]', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let numReveals
+    let hasRevealed
 
-  // it('shoould try to reveal vote for non admin address and fail')
-  // // TODO: it('should try to reveal a vote for an admin that hasnt voted and fail')
-  // it('should try to reveal vote for accounts[0] again and fail')
-  // it("should reveal remaining votes and approvalState should be 'Concluded'")
+    let voteOption = false
+    let salt = 123456789
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
+      })
+      .then(() => {
+        return CampaignInstance.numReveals.call()
+      })
+      .then(_numReveals => {
+        numReveals = _numReveals
+        return CampaignInstance.hasRevealed.call(accounts[0])
+      })
+      .then(_hasRevealed => {
+        hasRevealed = _hasRevealed
+
+        assert.equal(hasRevealed, true, 'accounts[0] should have revealed')
+        assert.equal(numReveals, 1, 'there should be 1 reveal')
+      })
+  })
+
+  it('shoould try to reveal vote for admin that has already revealed their vote and fail', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+
+    let voteOption = false
+    let salt = 123456789
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.reveal(voteOption, salt, { from: accounts[0] })
+      })
+      .catch(e => {
+        CampaignInstance.numReveals.call().then(numReveals => {
+          assert.equal(numReveals, 1, 'there should be one reveal')
+        })
+      })
+  })
+
+  it('should correctly reveal vote for accounts[1]', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let numReveals
+    let hasRevealed
+
+    let voteOption = true
+    let salt = 123456789
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.reveal(voteOption, salt, { from: accounts[1] })
+      })
+      .then(() => {
+        return CampaignInstance.numReveals.call()
+      })
+      .then(_numReveals => {
+        numReveals = _numReveals
+        return CampaignInstance.hasRevealed.call(accounts[1])
+      })
+      .then(_hasRevealed => {
+        hasRevealed = _hasRevealed
+
+        assert.equal(hasRevealed, true, 'accounts[1] should have revealed')
+        assert.equal(numReveals, 2, 'there should be 2 reveals')
+      })
+  })
+
+  it('should correctly reveal vote for accounts[2]', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let numReveals
+    let hasRevealed
+
+    let voteOption = true
+    let salt = 123456789
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.reveal(voteOption, salt, { from: accounts[2] })
+      })
+      .then(() => {
+        return CampaignInstance.numReveals.call()
+      })
+      .then(_numReveals => {
+        numReveals = _numReveals
+        return CampaignInstance.hasRevealed.call(accounts[2])
+      })
+      .then(_hasRevealed => {
+        hasRevealed = _hasRevealed
+
+        assert.equal(hasRevealed, true, 'accounts[2] should have revealed')
+        assert.equal(numReveals, 3, 'there should be 3 reveals')
+      })
+  })
+
+  it('should be in Concluded stage', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+    let approvalStage
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.approvalStage.call()
+      })
+      .then(_approvalStage => {
+        approvalStage = _approvalStage
+        assert.equal(approvalStage, 2, 'approval stage should be 2 (Concluded)')
+      })
+  })
+
+  // TODO: it('should try to reveal a vote for an admin that hasnt voted and fail')
 })
