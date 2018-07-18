@@ -95,8 +95,6 @@ contract Approvable is Administrated {
   //     _;
   // }
 
-  //TODO: endCommit and endReveal could just be in the function itself
-
   function vote(bytes32 secretVote) public onlyAdmin onlyDuringPollState(PollStates.Commit) endCommit {
     voteSecrets[msg.sender] = secretVote;
     if (hasVoted[msg.sender] == false) {
@@ -121,11 +119,12 @@ contract Approvable is Administrated {
 }
 
 contract Campaign is Approvable {
-  enum States {
-    Pending, 
-    Open, 
-    Closed,
-    Rejected
+
+  enum CampaignStates {
+    PendingApproval,
+    Open,
+    Success,
+    Fail
   }
 
   struct Contribution {
@@ -138,21 +137,26 @@ contract Campaign is Approvable {
     Contribution[] contributions;
   }
 
-  States public state;
+  CampaignStates public campaignState = CampaignStates.PendingApproval;
+
   uint public id;
   string public title;
   uint public goal;
   address public manager;
-  mapping (address => Contributor) public contributors;
   uint public funds;
+
+  mapping (address => Contributor) public contributors;
+
+  modifier onlyDuringCampaignState(CampaignStates _campaignState) {
+    require(campaignState == _campaignState);
+    _;
+  }
 
   constructor(uint _id, string _title, uint _goal, address _manager, address efmAddress) Approvable(efmAddress) public {
     id = _id;
     title = _title;
     goal = _goal;
     manager = _manager;
-    state = States.Pending;
-    //TODO: create a poll for administrators to approve/reject the campaign.
   }
 
   function contribute() public payable {

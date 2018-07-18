@@ -115,7 +115,7 @@ contract('EthFundMe', accounts => {
     let title
     let goal
     let manager
-    let state
+    let campaignState
     let efmAddress
 
     return EthFundMe.deployed()
@@ -141,10 +141,10 @@ contract('EthFundMe', accounts => {
       })
       .then(_manager => {
         manager = _manager
-        return CampaignInstance.state.call()
+        return CampaignInstance.campaignState.call()
       })
-      .then(_state => {
-        state = _state
+      .then(_campaignState => {
+        campaignState = _campaignState
         return CampaignInstance.efm.call()
       })
       .then(_efmAddress => {
@@ -157,7 +157,7 @@ contract('EthFundMe', accounts => {
           "title should be 'first campaign'"
         )
         assert.equal(goal, 10, 'goal should be 10')
-        assert.equal(state, 0, 'state should be 0 (State.Pending)')
+        assert.equal(campaignState, 0, 'state should be 0 (PendingApproval)')
         assert.equal(
           manager,
           accounts[3],
