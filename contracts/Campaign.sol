@@ -49,6 +49,9 @@ contract Approvable is Administrated {
     
   }
 
+  function onApproval() internal;
+  function onRejection() internal;
+
   modifier onlyDuringPollState(PollStates _pollState) {
     require(pollState == _pollState);
     _;
@@ -79,8 +82,10 @@ contract Approvable is Administrated {
       
       if (numApprovals >= 2) {
         approvalState = ApprovalStates.Approved;
+        onApproval();
       } else {
         approvalState = ApprovalStates.Rejected;
+        onRejection();
       }
     }
   }
@@ -123,8 +128,8 @@ contract Campaign is Approvable {
   enum CampaignStates {
     PendingApproval,
     Open,
-    Success,
-    Fail
+    Successful,
+    Unsuccessful
   }
 
   struct Contribution {
@@ -149,6 +154,14 @@ contract Campaign is Approvable {
   uint public numContributors;
   mapping (address => Contributor) public contributors;
   mapping (address => bool) public hasContributed;
+
+  function onApproval() internal {
+    campaignState = CampaignStates.Open;
+  }
+
+  function onRejection() internal {
+    campaignState = CampaignStates.Unsuccessful;
+  }
 
   modifier onlyDuringCampaignState(CampaignStates _campaignState) {
     require(campaignState == _campaignState);
@@ -187,16 +200,17 @@ contract Campaign is Approvable {
   }
 
   // Check that campaign has been approved and is open
-  function contribute() public payable notManager newContributor contributionOverflowProtection  {
-    contributors[msg.sender].contributions[contributors[msg.sender].numContributions] = Contribution(msg.value, now);
-    contributors[msg.sender].numContributions++;
-    contributors[msg.sender].totalContributed += msg.value;
-    funds += msg.value;
+  function contribute() public payable 
+    onlyDuringCampaignState(CampaignStates.Open) 
+    notManager 
+    newContributor 
+    contributionOverflowProtection {
+      contributors[msg.sender].contributions[contributors[msg.sender].numContributions] = Contribution(msg.value, now);
+      contributors[msg.sender].numContributions++;
+      contributors[msg.sender].totalContributed += msg.value;
+      funds += msg.value;
   }
   
-  //FIXME: what happens if address passed in hasn't made a contribution?
-  //maybe need to require that a contributor exists at that address, could use hasContributed
-  //do this for all getters that get a value from a mapping
   function getTotalContributed(address contributor) public view returns(uint totalContributed) {
     totalContributed = contributors[contributor].totalContributed;
   }
