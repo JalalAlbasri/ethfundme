@@ -133,7 +133,7 @@ contract Campaign is Approvable {
   }
 
   struct Contributor {
-    uint amountContributed;
+    uint totalContributed;
     Contribution[] contributions;
   }
 
@@ -146,6 +146,7 @@ contract Campaign is Approvable {
   uint public funds;
 
   mapping (address => Contributor) public contributors;
+  // mapping (address => bool) public hasContributed;
 
   modifier onlyDuringCampaignState(CampaignStates _campaignState) {
     require(campaignState == _campaignState);
@@ -164,12 +165,16 @@ contract Campaign is Approvable {
     contributors[msg.sender].contributions.push(Contribution(msg.value, now));
     
     //FIXME: Check these for integer overflow
-    contributors[msg.sender].amountContributed += msg.value;
+    contributors[msg.sender].totalContributed += msg.value;
     funds += msg.value;
   }
   
   //FIXME: what happens if address passed in hasn't made a contribution?
-  //maybe need to require that a contributor exists at that address
+  //maybe need to require that a contributor exists at that address, could use hasContributed
+  function getTotalContributed(address contributor) public view returns(uint totalContributed) {
+    totalContributed = contributors[contributor].totalContributed;
+  }
+  
   function getNumContributions(address contributor) public view returns(uint numContributions) {
     numContributions = contributors[contributor].contributions.length;
   }

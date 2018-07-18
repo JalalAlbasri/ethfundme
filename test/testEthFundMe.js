@@ -177,6 +177,7 @@ contract('EthFundMe', accounts => {
 
     let numContributions
     let contribution
+    let totalContributed
     let funds
     let campaignBalance
 
@@ -198,6 +199,10 @@ contract('EthFundMe', accounts => {
       })
       .then(_contribution => {
         contribution = _contribution
+        return CampaignInstance.getTotalContributed.call(accounts[4])
+      })
+      .then(_totalContributed => {
+        totalContributed = _totalContributed
         return CampaignInstance.funds.call()
       })
       .then(_funds => {
@@ -208,11 +213,13 @@ contract('EthFundMe', accounts => {
         campaignBalance = _campaignBalance
 
         assert.equal(numContributions, 1, 'there should be 1 contribution')
-        assert.equal(funds, 1, '1 ether should have been contributed')
         assert.equal(contribution[0], 1, 'contribution amount should be 1')
+        assert.equal(totalContributed, 1, 'total contribution should be 1')
+        assert.equal(funds, 1, '1 ether should have been contributed')
         assert.equal(campaignBalance, 1, 'Campaign balance should be 1')
       })
   })
+  // TODO: Make a second contribution from the same account
 
   it('approval state should be Pending', () => {
     let EthFundMeInstance
