@@ -762,9 +762,6 @@ contract('EthFundMe', accounts => {
         }).then(_hasContributed => {
           hasContributed = _hasContributed
 
-          console.log(`numContributors: ${numContributors}`)
-          console.log(`hasContributed: ${hasContributed}`)
-
           assert.equal(numContributors, 1, 'there should be one contributor')
           assert.equal(hasContributed, false, 'accounts[5] should not have contributed')
         })
@@ -772,29 +769,42 @@ contract('EthFundMe', accounts => {
   })
 
 
-  // TODO: modify, this should get an error once we ut in a require that contributer exists
+  // TODO: modify, this should get an error once we put in a require that contributer exists
   // (hasContributed)
-  // it('should try to get totalContributed for an account that has not contributed', () => {
-  //   let EthFundMeInstance
-  //   let CampaignInstance
+  it('should try to get totalContributed for an account that has not contributed', () => {
+    let EthFundMeInstance
+    let CampaignInstance
 
-  //   let totalContributed
+    let totalContributed
+    let numContributions
+    let hasContributed
 
-  //   return EthFundMe.deployed()
-  //     .then(instance => {
-  //       EthFundMeInstance = instance
-  //       return EthFundMeInstance.campaigns.call(0)
-  //     })
-  //     .then(address => {
-  //       CampaignInstance = Campaign.at(address)
-  //       return CampaignInstance.getTotalContributed.call(accounts[5])
-  //     })
-  //     .then(_totalContributed => {
-  //       totalContributed = _totalContributed
-  //       console.log(`totalContributed: ${totalContributed}`)
-  //       assert(totalContributed, 0, 'totalContributed should be 0')
-  //     })
-  // })
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.getTotalContributed.call(accounts[5])
+      })
+      .then(_totalContributed => {
+        totalContributed = _totalContributed
+
+        return CampaignInstance.getNumContributions.call(accounts[5])
+      })
+      .then(_numContributions => {
+        numContributions = _numContributions
+        return CampaignInstance.hasContributed.call(accounts[5])
+      })
+      .then(_hasContributed => {
+        hasContributed = _hasContributed
+
+        assert.equal(totalContributed, 0, 'totalContributed should be 0')
+        assert.equal(numContributions, 0, 'totalContributed should be 0')
+        assert.equal(hasContributed, false, 'totalContributed should be 0')
+      })
+  })
 
   // check that after trying to contribute 0 amount, no new contributor is created,
   // and that has contributed is not set
