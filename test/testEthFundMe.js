@@ -739,6 +739,66 @@ contract('EthFundMe', accounts => {
       })
   })
 
+  it('should try to make a contribution of 0 and fail', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+
+    let numContributors
+    let hasContributed
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.contribute({ from: accounts[5], value: 0 })
+      })
+      .catch(e => {
+        CampaignInstance.numContributors.call().then(_numContributors => {
+          numContributors = _numContributors
+          return CampaignInstance.hasContributed.call(accounts[5])
+        }).then(_hasContributed => {
+          hasContributed = _hasContributed
+
+          console.log(`numContributors: ${numContributors}`)
+          console.log(`hasContributed: ${hasContributed}`)
+
+          assert.equal(numContributors, 1, 'there should be one contributor')
+          assert.equal(hasContributed, false, 'accounts[5] should not have contributed')
+        })
+      })
+  })
+
+
+  // TODO: modify, this should get an error once we ut in a require that contributer exists
+  // (hasContributed)
+  // it('should try to get totalContributed for an account that has not contributed', () => {
+  //   let EthFundMeInstance
+  //   let CampaignInstance
+
+  //   let totalContributed
+
+  //   return EthFundMe.deployed()
+  //     .then(instance => {
+  //       EthFundMeInstance = instance
+  //       return EthFundMeInstance.campaigns.call(0)
+  //     })
+  //     .then(address => {
+  //       CampaignInstance = Campaign.at(address)
+  //       return CampaignInstance.getTotalContributed.call(accounts[5])
+  //     })
+  //     .then(_totalContributed => {
+  //       totalContributed = _totalContributed
+  //       console.log(`totalContributed: ${totalContributed}`)
+  //       assert(totalContributed, 0, 'totalContributed should be 0')
+  //     })
+  // })
+
+  // check that after trying to contribute 0 amount, no new contributor is created,
+  // and that has contributed is not set
+
   // TODO: it('should try to reveal a vote for an admin that hasnt voted and fail')
   // We need to add new admins before that can happen!
 
