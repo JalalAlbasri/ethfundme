@@ -199,7 +199,6 @@ contract Campaign is Approvable {
     _;
   }
 
-  // Check that campaign has been approved and is open
   function contribute() public payable 
     onlyDuringCampaignState(CampaignStates.Open) 
     notManager 
