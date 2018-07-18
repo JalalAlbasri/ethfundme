@@ -4,7 +4,7 @@ import "./EthFundMe.sol";
 // import "./Approvable.sol";
 
 contract Administrated {
-  EthFundMe efm;
+  EthFundMe public efm;
   
   constructor(address efmAddress) public {
     efm = EthFundMe(efmAddress);
@@ -37,9 +37,10 @@ contract Approvable is Administrated {
   uint public numApprovals;
   uint public numRejections;
 
-  uint public numVotes;
-  uint public numReveals;
-  mapping(address => bytes32) public votes;
+  uint public numVotes; //TODO: change to numVoteSecrets
+  uint public numReveals; //TODO: change to numVoteReveals
+
+  mapping(address => bytes32) public voteSecrets;
   mapping(address => bool) public hasVoted;
   mapping(address => bool) public hasRevealed;
 
@@ -48,8 +49,13 @@ contract Approvable is Administrated {
     
   }
 
-  modifier atStage(PollStates _pollState) {
+  modifier onlyDuringPollState(PollStates _pollState) {
     require(pollState == _pollState);
+    _;
+  }
+
+  modifier onlyVotedAdmin() {
+    require(hasVoted[msg.sender]);
     _;
   }
 
@@ -60,8 +66,14 @@ contract Approvable is Administrated {
     }
   }
 
+  modifier tallyVotes(bool voteOption) {
+    _;
+    
+  }
+
   modifier endReveal() {
     _;
+    
     if (numReveals == 3) {
       pollState = PollStates.Concluded;
       
@@ -73,25 +85,6 @@ contract Approvable is Administrated {
     }
   }
 
-  modifier onlyVotedAdmin() {
-    require(hasVoted[msg.sender]);
-    _;
-  }
-
-  // modifier onlyDuringCommit() {
-  //   require(pollState == PollStates.Commit);
-  //   _;
-  // }
-
-  modifier onlyDuringStage(PollStates _stage) {
-    require(pollState == _stage);
-    _;
-  }
-
-  // function nextStage() internal {
-  //     stage = Stages(uint(stage) + 1);
-  // }
-
   // modifier timedTransitions() {
   //     if (stage == Stages.Commit &&
   //                 now >= creationTime + 10 minutes)
@@ -102,42 +95,29 @@ contract Approvable is Administrated {
   //     _;
   // }
 
-  //TODO: endCommit and endReveal could just be in the function itself tbh
+  //TODO: endCommit and endReveal could just be in the function itself
 
-  function vote(bytes32 secretVote) public onlyAdmin onlyDuringStage(PollStates.Commit) endCommit {
-    votes[msg.sender] = secretVote;
+  function vote(bytes32 secretVote) public onlyAdmin onlyDuringPollState(PollStates.Commit) endCommit {
+    voteSecrets[msg.sender] = secretVote;
     if (hasVoted[msg.sender] == false) {
       numVotes++;
       hasVoted[msg.sender] = true;
     }
   }
 
-  function reveal(bool voteOption, uint salt) public onlyVotedAdmin onlyDuringStage(PollStates.Reveal) endReveal {
+  function reveal(bool voteOption, uint salt) public onlyVotedAdmin onlyDuringPollState(PollStates.Reveal) endReveal {
     require(hasRevealed[msg.sender] == false);
-    require(keccak256(abi.encodePacked(voteOption, salt)) == votes[msg.sender]);
+    require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
+    
     hasRevealed[msg.sender] = true;
     numReveals++;
-    
+
     if (voteOption) {
       numApprovals++;
     } else {
       numRejections++;
     }
-
   }
-
-  function testHash(uint test) public pure returns(bytes32) {
-    return keccak256(abi.encodePacked(test));
-  }
-
-  function testHashBool(bool voteOption, uint salt) public pure returns(bytes32) {
-    return keccak256(abi.encodePacked(voteOption, salt));
-  }
-
-  // function getNumVotes() public view returns (uint) {
-  //   return numVotes;
-  // }
-
 }
 
 contract Campaign is Approvable {

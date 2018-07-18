@@ -68,6 +68,7 @@ contract('EthFundMe', accounts => {
 
   it('should correctly identify admins', () => {
     let EthFundMeInstance
+
     let isAccount0Admin
     let isAccount3Admin
 
@@ -109,11 +110,13 @@ contract('EthFundMe', accounts => {
   it('should set Campaign properties correctly', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let id
     let title
     let goal
     let manager
     let state
+    let efmAddress
 
     return EthFundMe.deployed()
       .then(instance => {
@@ -142,6 +145,10 @@ contract('EthFundMe', accounts => {
       })
       .then(_state => {
         state = _state
+        return CampaignInstance.efm.call()
+      })
+      .then(_efmAddress => {
+        efmAddress = _efmAddress
 
         assert.equal(id, 0, 'id should be 0')
         assert.equal(
@@ -150,12 +157,16 @@ contract('EthFundMe', accounts => {
           "title should be 'first campaign'"
         )
         assert.equal(goal, 10, 'goal should be 10')
-        // TODO: Make sure this is how returning enums works
         assert.equal(state, 0, 'state should be 0 (State.Pending)')
         assert.equal(
           manager,
           accounts[3],
           'campaign manager should be accounts[3]'
+        )
+        assert.equal(
+          efmAddress,
+          EthFundMeInstance.address,
+          'efmAddress should be the address of EthFundMe deployed Contract'
         )
       })
   })
@@ -163,6 +174,7 @@ contract('EthFundMe', accounts => {
   it('should make a single contribution of 1 ether', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let numContributions
     let contribution
     let funds
@@ -202,72 +214,10 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  // it('ethjsAbi and keccak256 should produce same hash for same imput', () => {
-  //   let EthFundMeInstance
-  //   let CampaignInstance
-
-  //   let test = 123
-  //   let abiHash = '0x' +
-  // ethjsAbi.soliditySHA3(['uint'], [test]).toString('hex')
-
-  //   return EthFundMe.deployed()
-  //     .then(instance => {
-  //       EthFundMeInstance = instance
-  //       return EthFundMeInstance.campaigns.call(0)
-  //     })
-  //     .then(address => {
-  //       CampaignInstance = Campaign.at(address)
-  //       return CampaignInstance.testHash(test, { from: accounts[0] })
-  //     }).then(solidityHash => {
-  //       assert.equal(abiHash, solidityHash, 'both hashes should be equal')
-  //     })
-  // })
-
-  // it('ethjsAbi and keccak256 should produce same hash for same imput', () => {
-  //   let EthFundMeInstance
-  //   let CampaignInstance
-
-  //   let voteOption = true
-  //   let salt = 1234
-  //   let abiHash = '0x' +
-  // ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption, salt]).toString('hex')
-
-  //   return EthFundMe.deployed()
-  //     .then(instance => {
-  //       EthFundMeInstance = instance
-  //       return EthFundMeInstance.campaigns.call(0)
-  //     })
-  //     .then(address => {
-  //       CampaignInstance = Campaign.at(address)
-  //       return CampaignInstance.testHashBool(voteOption, salt, { from: accounts[0] })
-  //     }).then(solidityHash => {
-  //       assert.equal(abiHash, solidityHash, 'both hashes should be equal')
-  //     })
-  // })
-
-  it('should be in Commit state', () => {
-    let EthFundMeInstance
-    let CampaignInstance
-    let pollState
-
-    return EthFundMe.deployed()
-      .then(instance => {
-        EthFundMeInstance = instance
-        return EthFundMeInstance.campaigns.call(0)
-      })
-      .then(address => {
-        CampaignInstance = Campaign.at(address)
-        return CampaignInstance.pollState.call()
-      })
-      .then(_pollState => {
-        pollState = _pollState
-        assert.equal(pollState, 0, 'poll state should be 0 (Commit)')
-      })
-  })
-
   it('approval state should be Pending', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let approvalState
 
     return EthFundMe.deployed()
@@ -285,11 +235,32 @@ contract('EthFundMe', accounts => {
       })
   })
 
+  it('poll state should  be Commit', () => {
+    let EthFundMeInstance
+    let CampaignInstance
+
+    let pollState
+
+    return EthFundMe.deployed()
+      .then(instance => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then(address => {
+        CampaignInstance = Campaign.at(address)
+        return CampaignInstance.pollState.call()
+      })
+      .then(_pollState => {
+        pollState = _pollState
+        assert.equal(pollState, 0, 'poll state should be 0 (Commit)')
+      })
+  })
+
   it('should place a vote for Campaign 0', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let numVotes
-    let vote
 
     let voteOption = true
     let salt = 123456789
@@ -310,13 +281,11 @@ contract('EthFundMe', accounts => {
       })
       .then(_numVotes => {
         numVotes = _numVotes
-        return CampaignInstance.votes.call(accounts[0])
+        return CampaignInstance.voteSecrets.call(accounts[0])
       })
-      .then(_vote => {
-        vote = _vote
-
+      .then(_voteSecret => {
         assert.equal(numVotes, 1, 'there should be one vote')
-        assert.equal(vote, voteSecret, 'the vote should be voteSecret')
+        assert.equal(_voteSecret, voteSecret, 'the voteSecrets should be match')
       })
   })
 
@@ -348,9 +317,9 @@ contract('EthFundMe', accounts => {
   it('should change an admins the previous vote not place a new vote', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let numVotes
-    let vote
-    let originalVote
+    let originalVoteSecret
 
     let voteOption = false
     let salt = 123456789
@@ -364,9 +333,9 @@ contract('EthFundMe', accounts => {
       })
       .then(address => {
         CampaignInstance = Campaign.at(address)
-        return CampaignInstance.votes.call(accounts[0])
-      }).then(_originalVote => {
-        originalVote = _originalVote
+        return CampaignInstance.voteSecrets.call(accounts[0])
+      }).then(_originalVoteSecret => {
+        originalVoteSecret = _originalVoteSecret
         return CampaignInstance.vote(voteSecret, { from: accounts[0] })
       })
       .then(() => {
@@ -374,16 +343,14 @@ contract('EthFundMe', accounts => {
       })
       .then(_numVotes => {
         numVotes = _numVotes
-        return CampaignInstance.votes.call(accounts[0])
+        return CampaignInstance.voteSecrets.call(accounts[0])
       })
-      .then(_vote => {
-        vote = _vote
-
+      .then(_voteSecret => {
         assert.equal(numVotes, 1, 'there should be one vote')
-        assert.equal(vote, voteSecret, 'the vote should be votesecret')
+        assert.equal(_voteSecret, voteSecret, 'the vote should be votesecret')
         assert.notEqual(
-          vote,
-          originalVote,
+          _voteSecret,
+          originalVoteSecret,
           'the vote should have changed'
         )
       })
@@ -412,7 +379,7 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should accept 2 more votes from admins, change poll state to reveal', () => {
+  it('should accept 2 more votes from admins then change poll state to Reveal', () => {
     let EthFundMeInstance
     let CampaignInstance
     let numVotes
@@ -445,10 +412,11 @@ contract('EthFundMe', accounts => {
       .then(_numVotes => {
         numVotes = _numVotes
         assert.equal(numVotes, 3, 'there should be 3 votes')
+        // TODO: Verify the voteSecrets too
       })
   })
 
-  it('should be in Reveal state', () => {
+  it('poll state should be Reveal', () => {
     let EthFundMeInstance
     let CampaignInstance
     let pollState
@@ -493,7 +461,7 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('should attempt to reveal a vote for accounts[0] with wrong secret and fail', () => {
+  it('should attempt to reveal a vote for accounts[0] with wrong salt and fail', () => {
     let EthFundMeInstance
     let CampaignInstance
 
@@ -539,7 +507,7 @@ contract('EthFundMe', accounts => {
       })
   })
 
-  it('shoould try to reveal vote for non admin address and fail', () => {
+  it('should try to reveal vote for non admin address and fail', () => {
     let EthFundMeInstance
     let CampaignInstance
 
@@ -565,6 +533,7 @@ contract('EthFundMe', accounts => {
   it('should reveal vote for accounts[0]', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let numReveals
     let hasRevealed
     let numApprovals
@@ -600,14 +569,14 @@ contract('EthFundMe', accounts => {
       .then(_numRejections => {
         numRejections = _numRejections
 
+        assert.equal(numReveals, 1, 'there should be 1 reveal')
+        assert.equal(hasRevealed, true, 'accounts[0] should have revealed')
         assert.equal(numApprovals, 0, 'there should be no approvals')
         assert.equal(numRejections, 1, 'there should be one rejection')
-        assert.equal(hasRevealed, true, 'accounts[0] should have revealed')
-        assert.equal(numReveals, 1, 'there should be 1 reveal')
       })
   })
 
-  it('should try to reveal vote for admin that has already revealed their vote and fail', () => {
+  it('should try to reveal vote for admin that has already revealed and fail', () => {
     let EthFundMeInstance
     let CampaignInstance
 
@@ -633,6 +602,7 @@ contract('EthFundMe', accounts => {
   it('should reveal vote for accounts[1]', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let numReveals
     let hasRevealed
     var numApprovals
@@ -668,16 +638,17 @@ contract('EthFundMe', accounts => {
       .then(_numRejections => {
         numRejections = _numRejections
 
+        assert.equal(numReveals, 2, 'there should be 2 reveals')
+        assert.equal(hasRevealed, true, 'accounts[1] should have revealed')
         assert.equal(numApprovals, 1, 'there should be 1 approval')
         assert.equal(numRejections, 1, 'there should be one rejection')
-        assert.equal(hasRevealed, true, 'accounts[1] should have revealed')
-        assert.equal(numReveals, 2, 'there should be 2 reveals')
       })
   })
 
   it('should reveal vote for accounts[2]', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let numReveals
     let hasRevealed
     var numApprovals
@@ -713,14 +684,14 @@ contract('EthFundMe', accounts => {
       .then(_numRejections => {
         numRejections = _numRejections
 
+        assert.equal(numReveals, 3, 'there should be 3 reveals')
+        assert.equal(hasRevealed, true, 'accounts[2] should have revealed')
         assert.equal(numApprovals, 2, 'there should be two approvals')
         assert.equal(numRejections, 1, 'there should be one rejection')
-        assert.equal(hasRevealed, true, 'accounts[2] should have revealed')
-        assert.equal(numReveals, 3, 'there should be 3 reveals')
       })
   })
 
-  it('should be in Concluded state', () => {
+  it('poll state should Concluded', () => {
     let EthFundMeInstance
     let CampaignInstance
     let pollState
@@ -743,6 +714,7 @@ contract('EthFundMe', accounts => {
   it('approval state should be approved', () => {
     let EthFundMeInstance
     let CampaignInstance
+
     let approvalState
 
     return EthFundMe.deployed()
@@ -761,4 +733,7 @@ contract('EthFundMe', accounts => {
   })
 
   // TODO: it('should try to reveal a vote for an admin that hasnt voted and fail')
+  // We need to add new admins before that can happen!
+
+  // TODO: test campaign getting rejected
 })
