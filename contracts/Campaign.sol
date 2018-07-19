@@ -19,20 +19,14 @@ contract Administrated {
 
 contract Approvable is Administrated {
 
-  enum PollStates {
+  enum ApprovalStates {
     Commit,
     Reveal,
-    Concluded
-  }
-
-  enum ApprovalStates {
-    Pending,
     Approved,
     Rejected
   }
 
-  PollStates public pollState = PollStates.Commit;
-  ApprovalStates public approvalState = ApprovalStates.Pending;
+  ApprovalStates public approvalState = ApprovalStates.Commit;
 
   uint public numApprovals;
   uint public numRejections;
@@ -52,8 +46,8 @@ contract Approvable is Administrated {
   function onApproval() internal;
   function onRejection() internal;
 
-  modifier onlyDuringPollState(PollStates _pollState) {
-    require(pollState == _pollState);
+  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
+    require(approvalState == _approvalState);
     _;
   }
 
@@ -65,7 +59,7 @@ contract Approvable is Administrated {
   modifier endCommit() {
     _;
     if (numVotes == 3) {
-      pollState = PollStates.Reveal;
+      approvalState = ApprovalStates.Reveal;
     }
   }
 
@@ -76,10 +70,8 @@ contract Approvable is Administrated {
 
   modifier endReveal() {
     _;
-    
+    //TODO: Make it so it can end after 2 approvals or 2 rejections
     if (numReveals == 3) {
-      pollState = PollStates.Concluded;
-      
       if (numApprovals >= 2) {
         approvalState = ApprovalStates.Approved;
         onApproval();
@@ -100,7 +92,7 @@ contract Approvable is Administrated {
   //     _;
   // }
 
-  function vote(bytes32 secretVote) public onlyAdmin onlyDuringPollState(PollStates.Commit) endCommit {
+  function vote(bytes32 secretVote) public onlyAdmin onlyDuringApprovalState(ApprovalStates.Commit) endCommit {
     voteSecrets[msg.sender] = secretVote;
     if (hasVoted[msg.sender] == false) {
       numVotes++;
@@ -108,7 +100,7 @@ contract Approvable is Administrated {
     }
   }
 
-  function reveal(bool voteOption, uint salt) public onlyVotedAdmin onlyDuringPollState(PollStates.Reveal) endReveal {
+  function reveal(bool voteOption, uint salt) public onlyVotedAdmin onlyDuringApprovalState(ApprovalStates.Reveal) endReveal {
     require(hasRevealed[msg.sender] == false);
     require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
     
@@ -126,7 +118,7 @@ contract Approvable is Administrated {
 contract Campaign is Approvable {
 
   enum CampaignStates {
-    PendingApproval,
+    Pending,
     Open,
     Successful,
     Unsuccessful
@@ -143,7 +135,7 @@ contract Campaign is Approvable {
     mapping (uint => Contribution) contributions;
   }
 
-  CampaignStates public campaignState = CampaignStates.PendingApproval;
+  CampaignStates public campaignState = CampaignStates.Pending;
 
   uint public id;
   string public title;
@@ -222,5 +214,16 @@ contract Campaign is Approvable {
     amount = contributors[contributor].contributions[i].amount;
     timestamp = contributors[contributor].contributions[i].timestamp;
   }
+
+  modifier onlyManagerOrAdmin() {
+    require(msg.sender == manager || efm.isAdmin(msg.sender));
+    _;
+  }
+
+  //TODO: not tested
+  function endCampaign() public onlyManagerOrAdmin {
+    campaignState = CampaignStates.Unsuccessful;
+  }
+
 
 }

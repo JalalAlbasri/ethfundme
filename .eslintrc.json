@@ -4,7 +4,8 @@
     "browser": true,
     "commonjs": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "mocha": true
   },
   "parserOptions": {
     "ecmaVersion": 6,
@@ -37,7 +38,6 @@
   "globals": {
     "contract" : true,
     "artifacts": true,
-    "it": true,
     "assert": true,
     "web3": true
 
