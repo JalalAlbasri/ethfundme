@@ -232,4 +232,7 @@ contract('Campaign Approval', accounts => {
       done()
     })
   })
+
+// TODO: it('should try to reveal a vote for an admin that hasnt voted and fail')
+// We need to add new admins before that can happen!
 })

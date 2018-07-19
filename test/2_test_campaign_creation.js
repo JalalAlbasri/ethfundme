@@ -61,7 +61,7 @@ contract('Campaign Creation', accounts => {
     })
   })
 
-  it('should set campaign state correctly', done => {
+  it('should set campaign state correctly to Pending', done => {
     CampaignInstance.campaignState.call().then(campaignState => {
       assert.equal(campaignState, 0, 'campaignState should be 0 (Pending)')
       done()
