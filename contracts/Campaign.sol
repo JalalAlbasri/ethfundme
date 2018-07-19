@@ -68,17 +68,16 @@ contract Approvable is Administrated {
     
   }
 
+  // Doesn't require all votes to be revealed only enough.
   modifier endReveal() {
     _;
-    //TODO: Make it so it can end after 2 approvals or 2 rejections
-    if (numReveals == 3) {
-      if (numApprovals >= 2) {
-        approvalState = ApprovalStates.Approved;
-        onApproval();
-      } else {
-        approvalState = ApprovalStates.Rejected;
-        onRejection();
-      }
+    if (numApprovals >= 2) {
+      approvalState = ApprovalStates.Approved;
+      onApproval();
+    } 
+    if (numRejections >= 2) {
+      approvalState = ApprovalStates.Rejected;
+      onRejection();
     }
   }
 
