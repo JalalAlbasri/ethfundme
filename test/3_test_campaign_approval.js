@@ -50,17 +50,17 @@ contract('Campaign Approval', accounts => {
     })
   })
 
-  it('should set numVotes correctly', done => {
-    CampaignInstance.numVotes.call().then(numVotes => {
-      assert.equal(numVotes, 1, 'there should be one vote')
+  it('should set numVoteSecrets correctly', done => {
+    CampaignInstance.numVoteSecrets.call().then(numVoteSecrets => {
+      assert.equal(numVoteSecrets, 1, 'there should be one vote')
       done()
     })
   })
 
   it('should attempt to place vote from non admin account and fail', done => {
     CampaignInstance.vote(originalVoteSecret0, { from: accounts[4] }).catch(e => {
-      CampaignInstance.numVotes.call().then(numVotes => {
-        assert.equal(numVotes, 1, 'there should be one vote')
+      CampaignInstance.numVoteSecrets.call().then(numVoteSecrets => {
+        assert.equal(numVoteSecrets, 1, 'there should be one vote')
         done()
       })
     })
@@ -76,9 +76,9 @@ contract('Campaign Approval', accounts => {
   })
 
   // verify there is still only one vote after changing the vote
-  it('should set numVotes correctly', done => {
-    CampaignInstance.numVotes.call().then(numVotes => {
-      assert.equal(numVotes, 1, 'there should be one vote')
+  it('should set numVoteSecrets correctly', done => {
+    CampaignInstance.numVoteSecrets.call().then(numVoteSecrets => {
+      assert.equal(numVoteSecrets, 1, 'there should be one vote')
       done()
     })
   })
@@ -86,8 +86,8 @@ contract('Campaign Approval', accounts => {
   // FIXME: Could reveal be a call?
   it('should attempt to reveal a vote and fail (cannot reveal during Commit state)', done => {
     CampaignInstance.reveal(newVoteOption0, salt, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numReveals.call().then(numReveals => {
-        assert.equal(numReveals, 0, 'there should be no reveals')
+      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
+        assert.equal(numVoteReveals, 0, 'there should be no reveals')
         done()
       })
     })
@@ -111,9 +111,9 @@ contract('Campaign Approval', accounts => {
     })
   })
 
-  it('should set numVotes correctly', done => {
-    CampaignInstance.numVotes.call().then(numVotes => {
-      assert.equal(numVotes, 3, 'there should be 3 votes')
+  it('should set numVoteSecrets correctly', done => {
+    CampaignInstance.numVoteSecrets.call().then(numVoteSecrets => {
+      assert.equal(numVoteSecrets, 3, 'there should be 3 votes')
       done()
     })
   })
@@ -127,8 +127,8 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to place a vote and fail (cannot vote during Reveal state)', done => {
     CampaignInstance.vote(originalVoteSecret0, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numVotes.call().then(numVotes => {
-        assert.equal(numVotes, 3, 'there should be one vote')
+      CampaignInstance.numVoteSecrets.call().then(numVoteSecrets => {
+        assert.equal(numVoteSecrets, 3, 'there should be one vote')
         done()
       })
     })
@@ -136,8 +136,8 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to reveal a vote for accounts[0] with wrong salt and fail', done => {
     CampaignInstance.reveal(newVoteOption0, 0, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numReveals.call().then(numReveals => {
-        assert.equal(numReveals, 0, 'there should be no reveals')
+      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
+        assert.equal(numVoteReveals, 0, 'there should be no reveals')
         done()
       })
     })
@@ -145,8 +145,8 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to reveal a vote for accounts[0] with wrong voteOption and fail', done => {
     CampaignInstance.reveal(true, salt, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numReveals.call().then(numReveals => {
-        assert.equal(numReveals, 0, 'there should be no reveals')
+      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
+        assert.equal(numVoteReveals, 0, 'there should be no reveals')
         done()
       })
     })
@@ -154,8 +154,8 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to reveal a vote for from non admin account and fail', done => {
     CampaignInstance.reveal(newVoteOption0, salt, { from: accounts[4] }).catch(e => {
-      CampaignInstance.numReveals.call().then(numReveals => {
-        assert.equal(numReveals, 0, 'there should be no reveals')
+      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
+        assert.equal(numVoteReveals, 0, 'there should be no reveals')
         done()
       })
     })
@@ -164,10 +164,10 @@ contract('Campaign Approval', accounts => {
   it('should reveal vote for accounts[0]', done => {
     CampaignInstance.reveal(newVoteOption0, salt, { from: accounts[0] })
       .then(e => {
-        return CampaignInstance.numReveals.call()
+        return CampaignInstance.numVoteReveals.call()
       })
-      .then(numReveals => {
-        assert.equal(numReveals, 1, 'there should 1 reveal')
+      .then(numVoteReveals => {
+        assert.equal(numVoteReveals, 1, 'there should 1 reveal')
         done()
       })
   })
@@ -188,8 +188,8 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to reveal a vote for from accounts[0] again and fail', done => {
     CampaignInstance.reveal(newVoteOption0, salt, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numReveals.call().then(numReveals => {
-        assert.equal(numReveals, 1, 'there should be one reveals')
+      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
+        assert.equal(numVoteReveals, 1, 'there should be one reveals')
         done()
       })
     })
@@ -198,10 +198,10 @@ contract('Campaign Approval', accounts => {
   it('should reveal vote for accounts[1]', done => {
     CampaignInstance.reveal(voteOption1, salt, { from: accounts[1] })
       .then(e => {
-        return CampaignInstance.numReveals.call()
+        return CampaignInstance.numVoteReveals.call()
       })
-      .then(numReveals => {
-        assert.equal(numReveals, 2, 'there should 2 reveals')
+      .then(numVoteReveals => {
+        assert.equal(numVoteReveals, 2, 'there should 2 reveals')
         done()
       })
   })
@@ -218,10 +218,10 @@ contract('Campaign Approval', accounts => {
   it('should reveal vote for accounts[2]', done => {
     CampaignInstance.reveal(voteOption2, salt, { from: accounts[2] })
       .then(e => {
-        return CampaignInstance.numReveals.call()
+        return CampaignInstance.numVoteReveals.call()
       })
-      .then(numReveals => {
-        assert.equal(numReveals, 3, 'there should 3 reveals')
+      .then(numVoteReveals => {
+        assert.equal(numVoteReveals, 3, 'there should 3 reveals')
         done()
       })
   })

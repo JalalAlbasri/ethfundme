@@ -2,6 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./EthFundMe.sol";
 // import "./Approvable.sol";
+// TODO: Split Contract Files
 
 contract Administrated {
   EthFundMe public efm;
@@ -31,8 +32,8 @@ contract Approvable is Administrated {
   uint public numApprovals;
   uint public numRejections;
 
-  uint public numVotes; //TODO: change to numVoteSecrets
-  uint public numReveals; //TODO: change to numVoteReveals
+  uint public numVoteSecrets;
+  uint public numVoteReveals;
 
   mapping(address => bytes32) public voteSecrets;
   mapping(address => bool) public hasVoted;
@@ -58,7 +59,7 @@ contract Approvable is Administrated {
 
   modifier endCommit() {
     _;
-    if (numVotes == 3) {
+    if (numVoteSecrets == 3) {
       approvalState = ApprovalStates.Reveal;
     }
   }
@@ -94,7 +95,7 @@ contract Approvable is Administrated {
   function vote(bytes32 secretVote) public onlyAdmin onlyDuringApprovalState(ApprovalStates.Commit) endCommit {
     voteSecrets[msg.sender] = secretVote;
     if (hasVoted[msg.sender] == false) {
-      numVotes++;
+      numVoteSecrets++;
       hasVoted[msg.sender] = true;
     }
   }
@@ -104,7 +105,7 @@ contract Approvable is Administrated {
     require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
     
     hasRevealed[msg.sender] = true;
-    numReveals++;
+    numVoteReveals++;
 
     if (voteOption) {
       numApprovals++;
@@ -113,6 +114,9 @@ contract Approvable is Administrated {
     }
   }
 }
+
+// TODO: Timed Campaign
+// TODO: Payout on Campaign End
 
 contract Campaign is Approvable {
 
@@ -134,8 +138,9 @@ contract Campaign is Approvable {
     mapping (uint => Contribution) contributions;
   }
 
-  CampaignStates public campaignState = CampaignStates.Pending;
+  // STATE VARIABLES
 
+  CampaignStates public campaignState = CampaignStates.Pending;
   uint public id;
   string public title;
   uint public goal;
@@ -146,13 +151,16 @@ contract Campaign is Approvable {
   mapping (address => Contributor) public contributors;
   mapping (address => bool) public hasContributed;
 
-  function onApproval() internal {
-    campaignState = CampaignStates.Open;
+  // CONSTRUCTOR
+
+  constructor(uint _id, string _title, uint _goal, address _manager, address efmAddress) Approvable(efmAddress) public {
+    id = _id;
+    title = _title;
+    goal = _goal;
+    manager = _manager;
   }
 
-  function onRejection() internal {
-    campaignState = CampaignStates.Unsuccessful;
-  }
+  // MODIFIERS
 
   modifier onlyDuringCampaignState(CampaignStates _campaignState) {
     require(campaignState == _campaignState);
@@ -164,16 +172,9 @@ contract Campaign is Approvable {
     _;
   }
 
-  constructor(uint _id, string _title, uint _goal, address _manager, address efmAddress) Approvable(efmAddress) public {
-    id = _id;
-    title = _title;
-    goal = _goal;
-    manager = _manager;
-  }
-
-  modifier contributionOverflowProtection() {
-    require(msg.value > 0);
-    require(funds + msg.value > funds);
+  modifier validateContribution() {
+    require(msg.value > 0); //No Zero Contributions
+    require(funds + msg.value > funds); //Integer Overflow Protection
     require(contributors[msg.sender].totalContributed + msg.value > contributors[msg.sender].totalContributed);
     _;
   }
@@ -190,17 +191,41 @@ contract Campaign is Approvable {
     _;
   }
 
+  modifier onlyManagerOrAdmin() {
+    require(msg.sender == manager || efm.isAdmin(msg.sender));
+    _;
+  }
+
+
+  // INTERNAL FUNCTIONS
+
+  function onApproval() internal {
+    campaignState = CampaignStates.Open;
+  }
+
+  function onRejection() internal {
+    campaignState = CampaignStates.Unsuccessful;
+  }
+
+  // PUBLIC FUNCTIONS
+
   function contribute() public payable 
     onlyDuringCampaignState(CampaignStates.Open) 
     notManager 
     newContributor 
-    contributionOverflowProtection {
+    validateContribution {
       contributors[msg.sender].contributions[contributors[msg.sender].numContributions] = Contribution(msg.value, now);
       contributors[msg.sender].numContributions++;
       contributors[msg.sender].totalContributed += msg.value;
       funds += msg.value;
   }
   
+  function endCampaign() public onlyManagerOrAdmin {
+      campaignState = CampaignStates.Unsuccessful;
+    }
+
+  // GETTERS
+
   function getTotalContributed(address contributor) public view returns(uint totalContributed) {
     totalContributed = contributors[contributor].totalContributed;
   }
@@ -214,15 +239,8 @@ contract Campaign is Approvable {
     timestamp = contributors[contributor].contributions[i].timestamp;
   }
 
-  modifier onlyManagerOrAdmin() {
-    require(msg.sender == manager || efm.isAdmin(msg.sender));
-    _;
-  }
 
-  //TODO: not tested
-  function endCampaign() public onlyManagerOrAdmin {
-    campaignState = CampaignStates.Unsuccessful;
-  }
+  
 
 
 }

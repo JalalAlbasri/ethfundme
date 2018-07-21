@@ -3,6 +3,18 @@ pragma solidity ^0.4.24;
 // import "./Approvable.sol";
 import "./Campaign.sol";
 
+// TASK: Timing campaigns
+// TASK: Ending Campaign and Payouts
+// TASK: Adding Admin
+// TASK: Approval Quorum Support Adding Admin
+// TASK: Timing Approvals
+// TASK: Full PLCR Approval
+// TASK: Comment Contracts and Tests
+// TASK: Review All Comment Names
+// TASK: Frontend
+// TASK: Packaging and Other Documentation
+// TASK: ERC20 Token Acceptance
+
 contract EthFundMe {
 
   /**
@@ -11,6 +23,7 @@ contract EthFundMe {
   address[] public admins;
   mapping (address=> bool) public isAdmin;
 
+  // TODO: Adding an
   /**
     Allows initialization of the contract with up to 3 admins
    */
