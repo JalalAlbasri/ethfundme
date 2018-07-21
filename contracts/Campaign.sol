@@ -145,7 +145,7 @@ contract Campaign is Approvable {
   string public title;
   uint public goal;
   address public manager;
-  uint public funds;
+  uint public funds = address(this).balance;
 
   uint public numContributors;
   mapping (address => Contributor) public contributors;
