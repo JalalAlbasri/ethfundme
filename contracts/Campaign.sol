@@ -173,8 +173,10 @@ contract Campaign is Approvable {
   }
 
   modifier validateContribution() {
-    require(msg.value > 0); //No Zero Contributions
-    require(funds + msg.value > funds); //Integer Overflow Protection
+    //No Zero Contributions
+    require(msg.value > 0); 
+     //Integer Overflow Protection
+    require(funds + msg.value > funds);
     require(contributors[msg.sender].totalContributed + msg.value > contributors[msg.sender].totalContributed);
     _;
   }
@@ -221,8 +223,8 @@ contract Campaign is Approvable {
   }
   
   function endCampaign() public onlyManagerOrAdmin {
-      campaignState = CampaignStates.Unsuccessful;
-    }
+    campaignState = CampaignStates.Unsuccessful;
+  }
 
   // GETTERS
 
@@ -238,9 +240,5 @@ contract Campaign is Approvable {
     amount = contributors[contributor].contributions[i].amount;
     timestamp = contributors[contributor].contributions[i].timestamp;
   }
-
-
-  
-
 
 }
