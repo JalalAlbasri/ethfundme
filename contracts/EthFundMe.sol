@@ -13,6 +13,9 @@ import "./Campaign.sol";
 // TASK: Review All Comment Names
 // TASK: Frontend
 // TASK: Packaging and Other Documentation
+// TASK: Review uints and restrict size if possible
+
+// TASK: Other Stretch Goals
 // TASK: ERC20 Token Acceptance
 
 contract EthFundMe {
@@ -50,8 +53,8 @@ contract EthFundMe {
     return campaigns.length;
   }
 
-  function createCampaign(string title, uint goal) public returns(address) {
-    Campaign newCampaign = new Campaign(campaigns.length, title, goal, msg.sender, address(this));
+  function createCampaign(string title, uint goal, uint duration) public returns(address) {
+    Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, msg.sender, address(this));
     campaigns.push(address(newCampaign));
     return address(newCampaign);
   }

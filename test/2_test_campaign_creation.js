@@ -9,7 +9,7 @@ contract('Campaign Creation', accounts => {
   before('set up contract instances', done => {
     EthFundMe.deployed().then(instance => {
       EthFundMeInstance = instance
-      return EthFundMeInstance.createCampaign('test campaign', 10, { from: accounts[3] })
+      return EthFundMeInstance.createCampaign('test campaign', 10, 1, { from: accounts[3] })
     }).then(() => {
       return EthFundMeInstance.campaigns.call(0)
     }).then(campaignAddress => {
@@ -39,13 +39,19 @@ contract('Campaign Creation', accounts => {
     })
   })
 
+  it('should initialize campaign duration correctly', done => {
+    CampaignInstance.duration.call().then(duration => {
+      assert.equal(duration, 1 * 24 * 60 * 60, 'goal should be 1 day in seconds')
+      done()
+    })
+  })
+
   it('should initialize campaign manager correctly', done => {
     CampaignInstance.manager.call().then(manager => {
       assert.equal(manager, accounts[3], 'manager should be accounts[3]')
       done()
     })
   })
-
 
   it('should initialize campaign efmAddress correctly', done => {
     CampaignInstance.efm.call().then(efmAddress => {
@@ -71,6 +77,13 @@ contract('Campaign Creation', accounts => {
   it('should set approval state correctly to Pending', done => {
     CampaignInstance.approvalState.call().then(approvalState => {
       assert.equal(approvalState, 0, 'approvalState should be 0 (Pending)')
+      done()
+    })
+  })
+
+  it('should not be active', done => {
+    CampaignInstance.isActive.call().then(isActive => {
+      assert.equal(isActive, false, 'isActive should be false')
       done()
     })
   })

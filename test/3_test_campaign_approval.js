@@ -25,7 +25,7 @@ contract('Campaign Approval', accounts => {
   before('set up contract instances', done => {
     EthFundMe.deployed().then(instance => {
       EthFundMeInstance = instance
-      return EthFundMeInstance.createCampaign('test campaign', 10, { from: accounts[3] })
+      return EthFundMeInstance.createCampaign('test campaign', 10, 1, { from: accounts[3] })
     }).then(() => {
       return EthFundMeInstance.campaigns.call(0)
     }).then(campaignAddress => {
@@ -233,6 +233,10 @@ contract('Campaign Approval', accounts => {
     })
   })
 
-// TODO: it('should try to reveal a vote for an admin that hasnt voted and fail')
-// We need to add new admins before that can happen!
+  // it('should set campaign state correctly to Active', done => {
+  //   CampaignInstance.campaignState.call().then(campaignState => {
+  //     assert.equal(campaignState, 1, 'approvalState should be 1 (Active)')
+  //     done()
+  //   })
+  // })
 })

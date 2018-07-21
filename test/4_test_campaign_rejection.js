@@ -20,7 +20,7 @@ contract('Campaign Rejection', accounts => {
   before('setup and reject campaign', done => {
     EthFundMe.deployed().then(instance => {
       EthFundMeInstance = instance
-      return EthFundMeInstance.createCampaign('test campaign', 10, { from: accounts[3] })
+      return EthFundMeInstance.createCampaign('test campaign', 10, 1, { from: accounts[3] })
     })
       .then(() => {
         return EthFundMeInstance.campaigns.call(0)
@@ -49,6 +49,13 @@ contract('Campaign Rejection', accounts => {
   it('should set approval state correctly to Rejected', done => {
     CampaignInstance.approvalState.call().then(approvalState => {
       assert.equal(approvalState, 3, 'approvalState should be 3 (Rejected)')
+      done()
+    })
+  })
+
+  it('should set campaign state correctly to Unsuccessful', done => {
+    CampaignInstance.campaignState.call().then(campaignState => {
+      assert.equal(campaignState, 3, 'approvalState should be 3 (Unsuccessful)')
       done()
     })
   })

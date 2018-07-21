@@ -122,7 +122,7 @@ contract Campaign is Approvable {
 
   enum CampaignStates {
     Pending,
-    Open,
+    Active,
     Successful,
     Unsuccessful
   }
@@ -141,11 +141,14 @@ contract Campaign is Approvable {
   // STATE VARIABLES
 
   CampaignStates public campaignState = CampaignStates.Pending;
+  uint public funds = address(this).balance;
+  uint approvalDate;
+
   uint public id;
   string public title;
   uint public goal;
+  uint public duration;
   address public manager;
-  uint public funds = address(this).balance;
 
   uint public numContributors;
   mapping (address => Contributor) public contributors;
@@ -153,10 +156,11 @@ contract Campaign is Approvable {
 
   // CONSTRUCTOR
 
-  constructor(uint _id, string _title, uint _goal, address _manager, address efmAddress) Approvable(efmAddress) public {
+  constructor(uint _id, string _title, uint _goal,  uint _duration, address _manager, address efmAddress) Approvable(efmAddress) public {
     id = _id;
     title = _title;
     goal = _goal;
+    duration = _duration * 1 days;
     manager = _manager;
   }
 
@@ -202,7 +206,8 @@ contract Campaign is Approvable {
   // INTERNAL FUNCTIONS
 
   function onApproval() internal {
-    campaignState = CampaignStates.Open;
+    campaignState = CampaignStates.Active;
+    approvalDate = now;
   }
 
   function onRejection() internal {
@@ -212,7 +217,7 @@ contract Campaign is Approvable {
   // PUBLIC FUNCTIONS
 
   function contribute() public payable 
-    onlyDuringCampaignState(CampaignStates.Open) 
+    onlyDuringCampaignState(CampaignStates.Active) 
     notManager 
     newContributor 
     validateContribution {
@@ -239,6 +244,12 @@ contract Campaign is Approvable {
   function getContribution(address contributor, uint i) public view returns(uint amount, uint timestamp) {
     amount = contributors[contributor].contributions[i].amount;
     timestamp = contributors[contributor].contributions[i].timestamp;
+  }
+
+  // HELPER FUNCTIONS
+
+  function isActive() public view returns(bool) {
+    return (block.timestamp < approvalDate + duration);
   }
 
 }
