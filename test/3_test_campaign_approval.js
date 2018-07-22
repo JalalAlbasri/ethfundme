@@ -216,14 +216,12 @@ contract('Campaign Approval', accounts => {
   })
 
   it('should reveal vote for accounts[2]', done => {
-    CampaignInstance.reveal(voteOption2, salt, { from: accounts[2] })
-      .then(e => {
-        return CampaignInstance.numVoteReveals.call()
-      })
-      .then(numVoteReveals => {
-        assert.equal(numVoteReveals, 3, 'there should 3 reveals')
-        done()
-      })
+    CampaignInstance.reveal(voteOption2, salt, { from: accounts[2] }).then(() => {
+      return CampaignInstance.numVoteReveals.call()
+    }).then(numVoteReveals => {
+      assert.equal(numVoteReveals, 3, 'there should 3 reveals')
+      done()
+    })
   })
 
   it('should set approval state correctly to Approved', done => {
@@ -233,10 +231,10 @@ contract('Campaign Approval', accounts => {
     })
   })
 
-  // it('should set campaign state correctly to Active', done => {
-  //   CampaignInstance.campaignState.call().then(campaignState => {
-  //     assert.equal(campaignState, 1, 'approvalState should be 1 (Active)')
-  //     done()
-  //   })
-  // })
+  it('should set campaign state correctly to Active', done => {
+    CampaignInstance.campaignState.call().then(campaignState => {
+      assert.equal(campaignState, 1, 'approvalState should be 1 (Active)')
+      done()
+    })
+  })
 })

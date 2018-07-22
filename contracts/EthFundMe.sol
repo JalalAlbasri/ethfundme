@@ -8,13 +8,17 @@ import "./Campaign.sol";
 // TASK: Adding Admin
 // TASK: Approval Quorum Support Adding Admin
 // TASK: Timing Approvals
-// TASK: Full PLCR Approval
+// TASK: Manager can cancel Campaign before approved
+// TASK: Events + Listening for them
 // TASK: Comment Contracts and Tests
-// TASK: Review All Comment Names
+// TASK: Review All variable/function etc Names
+// TASK: Review All variable/function etc accessibility
+// TASK: Write Solidity Tests
 // TASK: Frontend
 // TASK: Packaging and Other Documentation
 // TASK: Review uints and restrict size if possible
 
+// TASK: Full PLCR Approval
 // TASK: Other Stretch Goals
 // TASK: ERC20 Token Acceptance
 

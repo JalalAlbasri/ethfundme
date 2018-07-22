@@ -4,6 +4,19 @@ import "./EthFundMe.sol";
 // import "./Approvable.sol";
 // TODO: Split Contract Files
 
+// It is a good practice to structure functions which interact
+// with other contracts (i.e. call functions or send Ether)
+// into three phases:
+// 1. check conditions
+// 2. perform actions (potentially change conditions)
+// 3. interact with other contracts
+// If these phases get mixed up, the other contract might call
+// back into the current contract and change the state or cause
+// effects (ether payout) to be done multiple times.
+// If functions that are called internally include interactions with external
+// contracts, they have to be considered interaction with
+// external contracts too.
+
 contract Administrated {
   EthFundMe public efm;
   
@@ -120,6 +133,8 @@ contract Approvable is Administrated {
 
 contract Campaign is Approvable {
 
+  // DATA STRUCTURES 
+
   enum CampaignStates {
     Pending,
     Active,
@@ -142,7 +157,7 @@ contract Campaign is Approvable {
 
   CampaignStates public campaignState = CampaignStates.Pending;
   uint public funds = address(this).balance;
-  uint approvalDate;
+  uint public endDate;
 
   uint public id;
   string public title;
@@ -202,34 +217,59 @@ contract Campaign is Approvable {
     _;
   }
 
+  modifier onlyBeforeEndDate() {
+    require(block.timestamp < endDate);
+    _;
+  }
+
+  modifier onlyAfterEndDate() {
+      require(block.timestamp > endDate);
+      _;
+    }
 
   // INTERNAL FUNCTIONS
 
   function onApproval() internal {
     campaignState = CampaignStates.Active;
-    approvalDate = now;
+    endDate = now + duration;
   }
 
   function onRejection() internal {
     campaignState = CampaignStates.Unsuccessful;
   }
 
-  // PUBLIC FUNCTIONS
+  // INTERFACE
 
   function contribute() public payable 
-    onlyDuringCampaignState(CampaignStates.Active) 
     notManager 
-    newContributor 
+    onlyDuringCampaignState(CampaignStates.Active)
+    onlyBeforeEndDate
+    newContributor //FIXME: Logic in this modifier doesn't belong in a modifier.
     validateContribution {
       contributors[msg.sender].contributions[contributors[msg.sender].numContributions] = Contribution(msg.value, now);
       contributors[msg.sender].numContributions++;
       contributors[msg.sender].totalContributed += msg.value;
       funds += msg.value;
-  }
+    }
   
-  function endCampaign() public onlyManagerOrAdmin {
-    campaignState = CampaignStates.Unsuccessful;
-  }
+  function endCampaign() public 
+    onlyManagerOrAdmin
+    onlyDuringCampaignState(CampaignStates.Active)
+    onlyAfterEndDate {
+      if (funds >= goal) {
+        campaignState = CampaignStates.Successful;
+      } else {
+        campaignState = CampaignStates.Unsuccessful;
+      }
+      // payout();
+    }
+
+  function cancelCampaign() public
+    onlyManagerOrAdmin
+    onlyBeforeEndDate {
+      campaignState = CampaignStates.Unsuccessful;
+      // payout();
+    }
 
   // GETTERS
 
@@ -249,7 +289,11 @@ contract Campaign is Approvable {
   // HELPER FUNCTIONS
 
   function isActive() public view returns(bool) {
-    return (block.timestamp < approvalDate + duration);
+    return (block.timestamp < endDate);
+  }
+
+  function getBlockTimestamp() public view returns(uint) {
+    return block.timestamp;
   }
 
 }
