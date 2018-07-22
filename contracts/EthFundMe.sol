@@ -3,7 +3,7 @@ pragma solidity ^0.4.24;
 // import "./Approvable.sol";
 import "./Campaign.sol";
 
-// TASK: Timing campaigns
+// DONE: Timing campaigns
 // TASK: Ending Campaign and Payouts
 // TASK: Adding Admin
 // TASK: Approval Quorum Support Adding Admin
