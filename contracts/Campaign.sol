@@ -133,7 +133,10 @@ contract Approvable is Administrated {
 
 contract Campaign is Approvable {
 
-  // DATA STRUCTURES 
+  /**
+    DATA STRUCTURES 
+   */
+
 
   enum CampaignStates {
     Pending,
@@ -153,7 +156,9 @@ contract Campaign is Approvable {
     mapping (uint => Contribution) contributions;
   }
 
-  // STATE VARIABLES
+  /**
+    STATE VARIABLES
+   */
 
   CampaignStates public campaignState = CampaignStates.Pending;
   uint public funds = address(this).balance;
@@ -169,7 +174,9 @@ contract Campaign is Approvable {
   mapping (address => Contributor) public contributors;
   mapping (address => bool) public hasContributed;
 
-  // CONSTRUCTOR
+  /**
+    CONSTRUCTOR
+   */
 
   constructor(uint _id, string _title, uint _goal,  uint _duration, address _manager, address efmAddress) Approvable(efmAddress) public {
     id = _id;
@@ -179,17 +186,50 @@ contract Campaign is Approvable {
     manager = _manager;
   }
 
-  // MODIFIERS
+  // STATE TRANSITION/RESTRICTION
 
   modifier onlyDuringCampaignState(CampaignStates _campaignState) {
     require(campaignState == _campaignState);
     _;
   }
 
+  modifier onlyBeforeCampaignEnd() {
+    require(campaignState <= CampaignStates.Active);
+    _;
+  }
+
+  modifier onlyAfterCampaignEnd() {
+    require(campaignState > CampaignStates.Active);
+    _;
+  }
+
+  modifier transitionState() {
+    if (campaignState == CampaignStates.Active && block.timestamp > endDate
+    ) {
+      
+      if (funds >= goal) {
+        campaignState = CampaignStates.Successful;
+      } else {
+        campaignState = CampaignStates.Unsuccessful;
+      }
+
+    }
+    _;
+  }
+
+  // ACCESS RESTRICTION
+
   modifier notManager() {
     require(msg.sender != manager);
     _;
   }
+
+  modifier onlyManagerOrAdmin() {
+    require(msg.sender == manager || efm.isAdmin(msg.sender));
+    _;
+  }
+
+  // INPUT VALIDATION
 
   modifier validateContribution() {
     //No Zero Contributions
@@ -199,7 +239,8 @@ contract Campaign is Approvable {
     require(contributors[msg.sender].totalContributed + msg.value > contributors[msg.sender].totalContributed);
     _;
   }
-
+  
+  //FIXME: Logic in this modifier doesn't belong in a modifier.
   modifier newContributor() {
     if (!hasContributed[msg.sender]) {
       contributors[msg.sender] = Contributor({
@@ -212,20 +253,9 @@ contract Campaign is Approvable {
     _;
   }
 
-  modifier onlyManagerOrAdmin() {
-    require(msg.sender == manager || efm.isAdmin(msg.sender));
-    _;
-  }
-
-  modifier onlyBeforeEndDate() {
-    require(block.timestamp < endDate);
-    _;
-  }
-
-  modifier onlyAfterEndDate() {
-      require(block.timestamp > endDate);
-      _;
-    }
+  /**
+    FUNCTIONS
+   */
 
   // INTERNAL FUNCTIONS
 
@@ -242,9 +272,9 @@ contract Campaign is Approvable {
 
   function contribute() public payable 
     notManager 
+    transitionState
     onlyDuringCampaignState(CampaignStates.Active)
-    onlyBeforeEndDate
-    newContributor //FIXME: Logic in this modifier doesn't belong in a modifier.
+    newContributor 
     validateContribution {
       contributors[msg.sender].contributions[contributors[msg.sender].numContributions] = Contribution(msg.value, now);
       contributors[msg.sender].numContributions++;
@@ -252,22 +282,26 @@ contract Campaign is Approvable {
       funds += msg.value;
     }
   
-  function endCampaign() public 
+  function cancelCampaign() public
     onlyManagerOrAdmin
-    onlyDuringCampaignState(CampaignStates.Active)
-    onlyAfterEndDate {
-      if (funds >= goal) {
-        campaignState = CampaignStates.Successful;
-      } else {
-        campaignState = CampaignStates.Unsuccessful;
-      }
+    transitionState
+    onlyBeforeCampaignEnd
+    // FIXME: Only during campaign states pending/active
+    // onlyBeforeEndDate {
+    {
+      campaignState = CampaignStates.Unsuccessful;
       // payout();
     }
 
-  function cancelCampaign() public
+  function endCampaign() public 
     onlyManagerOrAdmin
-    onlyBeforeEndDate {
-      campaignState = CampaignStates.Unsuccessful;
+    transitionState
+    onlyAfterCampaignEnd
+    // onlyDuringCampaignStates(CampaignStates[].push(CampaignStates.Successful))
+    // onlyDuringCampaignStates([CampaignStates.Successful])
+    // FIXME: Only during campaign states successful/unsuccessful
+    // onlyDuringCampaignState(CampaignStates.Active) {
+    {
       // payout();
     }
 
@@ -286,7 +320,7 @@ contract Campaign is Approvable {
     timestamp = contributors[contributor].contributions[i].timestamp;
   }
 
-  // HELPER FUNCTIONS
+  // HELPERS
 
   function isActive() public view returns(bool) {
     return (block.timestamp < endDate);

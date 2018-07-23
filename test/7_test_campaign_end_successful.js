@@ -121,6 +121,5 @@ contract('Campaign End Successfully', accounts => {
       done()
     })
   })
-
   // TODO: Check Payouts
 })
