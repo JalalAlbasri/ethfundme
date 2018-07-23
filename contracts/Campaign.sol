@@ -175,6 +175,7 @@ contract Campaign is Approvable {
   }
 
   struct Contributor {
+    address addr;
     uint totalContributed;
     uint numContributions;
     mapping (uint => Contribution) contributions;
@@ -187,6 +188,7 @@ contract Campaign is Approvable {
   CampaignStates public campaignState = CampaignStates.Pending;
   uint public funds = address(this).balance;
   uint public endDate;
+  mapping (address => bool) hasWithdrawn;
 
   uint public id;
   string public title;
@@ -202,7 +204,14 @@ contract Campaign is Approvable {
     CONSTRUCTOR
    */
 
-  constructor(uint _id, string _title, uint _goal,  uint _duration, address _manager, address efmAddress) Approvable(efmAddress) public {
+  constructor(
+    uint _id, 
+    string _title, 
+    uint _goal,  
+    uint _duration, 
+    address _manager, 
+    address efmAddress
+  ) Approvable(efmAddress) public {
     id = _id;
     title = _title;
     goal = _goal;
@@ -253,6 +262,11 @@ contract Campaign is Approvable {
     _;
   }
 
+  modifier hasNotWithdrawn() {
+    require(hasWithdrawn[msg.sender] == false);
+    _;
+  }
+
   // INPUT VALIDATION
 
   modifier validateContribution() {
@@ -268,6 +282,7 @@ contract Campaign is Approvable {
   modifier newContributor() {
     if (!hasContributed[msg.sender]) {
       contributors[msg.sender] = Contributor({
+        addr: msg.sender,
         totalContributed: 0,
         numContributions: 0
       });
@@ -312,7 +327,6 @@ contract Campaign is Approvable {
     onlyBeforeCampaignEnd
     {
       campaignState = CampaignStates.Unsuccessful;
-      // payout();
     }
 
   function endCampaign() public 
@@ -320,8 +334,24 @@ contract Campaign is Approvable {
     transitionState
     onlyAfterCampaignEnd
     {
-      // payout();
     }
+
+  function withdraw() public 
+    hasNotWithdrawn
+    transitionState 
+    onlyAfterCampaignEnd {
+      if (campaignState == CampaignStates.Successful) {
+        require(msg.sender == manager);
+        hasWithdrawn[msg.sender] = true;
+        msg.sender.transfer(funds);
+      }
+
+      if(campaignState == CampaignStates.Unsuccessful) {
+        require(hasContributed[msg.sender] == true);
+        hasWithdrawn[msg.sender] = true;
+        msg.sender.transfer(contributors[msg.sender].totalContributed);
+      }
+  }
 
   // GETTERS
 

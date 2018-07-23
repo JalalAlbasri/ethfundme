@@ -84,14 +84,14 @@ contract('Campaign End Successfully', accounts => {
       })
   })
 
-  // it('should end campaign before end date and fail', done => {
-  //   CampaignInstance.endCampaign({ from: accounts[3] }).catch(e => {
-  //     CampaignInstance.campaignState.call().then(campaignState => {
-  //       assert.equal(campaignState, 1, 'campaignState should be 1 (Active)')
-  //       done()
-  //     })
-  //   })
-  // })
+  it('should end campaign before end date and fail', done => {
+    CampaignInstance.endCampaign({ from: accounts[3] }).catch(e => {
+      CampaignInstance.campaignState.call().then(campaignState => {
+        assert.equal(campaignState, 1, 'campaignState should be 1 (Active)')
+        done()
+      })
+    })
+  })
 
   // time travel
   it('should increase evm time past end date', done => {
