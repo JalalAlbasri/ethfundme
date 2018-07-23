@@ -121,5 +121,24 @@ contract('Campaign End Successfully', accounts => {
       done()
     })
   })
-  // TODO: Check Payouts
+
+  it('should not allow the contributors to withdraw funds', done => {
+    CampaignInstance.withdraw({ fron: accounts[4] }).catch(e => {
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 13, 'funds should be 13')
+      done()
+    })
+  })
+
+  it('should allow Cmapaign manager to withdraw funds', done => {
+    CampaignInstance.withdraw({ from: accounts[3] }).then(() => {
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 0, 'funds should be 0')
+      done()
+    })
+  })
+
+  // TODO: Test trying to withdraw from an active/pending campaign
 })

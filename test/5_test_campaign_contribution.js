@@ -62,10 +62,10 @@ contract('Campaign Contribution', accounts => {
 
   it('should try to make a contribution of 0 and fail', done => {
     CampaignInstance.contribute({ from: accounts[4], value: 0 }).catch(e => {
-      CampaignInstance.hasContributed.call(accounts[4]).then(hasContributed => {
-        assert.equal(hasContributed, false, 'accounts[4] should not have contributed')
-        done()
-      })
+      return CampaignInstance.hasContributed.call(accounts[4])
+    }).then(hasContributed => {
+      assert.equal(hasContributed, false, 'accounts[4] should not have contributed')
+      done()
     })
   })
 

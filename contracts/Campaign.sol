@@ -236,6 +236,7 @@ contract Campaign is Approvable {
     _;
   }
 
+  // FIXME: Could be renamed to endCampaign
   modifier transitionState() {
     if (campaignState == CampaignStates.Active && block.timestamp > endDate
     ) {
@@ -299,8 +300,8 @@ contract Campaign is Approvable {
   // INTERNAL FUNCTIONS
 
   function onApproval() internal {
-    campaignState = CampaignStates.Active;
     endDate = now + duration;
+    campaignState = CampaignStates.Active;
   }
 
   function onRejection() internal {
@@ -329,6 +330,8 @@ contract Campaign is Approvable {
       campaignState = CampaignStates.Unsuccessful;
     }
 
+  // FIXME: Consider removing this function. It's essentially unnecessary since withdraw will end the campaign
+  // but it exists as a formal way of ending the campaign.
   function endCampaign() public 
     onlyManagerOrAdmin
     transitionState
@@ -343,17 +346,21 @@ contract Campaign is Approvable {
       if (campaignState == CampaignStates.Successful) {
         require(msg.sender == manager);
         hasWithdrawn[msg.sender] = true;
+        funds = 0;
         msg.sender.transfer(funds);
       }
 
       if(campaignState == CampaignStates.Unsuccessful) {
         require(hasContributed[msg.sender] == true);
         hasWithdrawn[msg.sender] = true;
+        funds -= contributors[msg.sender].totalContributed;
         msg.sender.transfer(contributors[msg.sender].totalContributed);
       }
   }
 
   // GETTERS
+  // FIXME: Should the getters transition state?
+
 
   function getTotalContributed(address contributor) public view returns(uint totalContributed) {
     totalContributed = contributors[contributor].totalContributed;

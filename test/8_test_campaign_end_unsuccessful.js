@@ -99,5 +99,39 @@ contract('Campaign End Unsuccessfully', accounts => {
     })
   })
 
-  // TODO: Check Payouts
+  it('should not allow the Campaign manager to withdraw funds', done => {
+    CampaignInstance.withdraw({ fron: accounts[3] }).catch(e => {
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 6, 'funds should be 6')
+      done()
+    })
+  })
+
+  it('should not allow the non contributors to withdraw funds', done => {
+    CampaignInstance.withdraw({ fron: accounts[6] }).catch(e => {
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 6, 'funds should be 6')
+      done()
+    })
+  })
+
+  it('should allow contributors to withdraw contributed funds', done => {
+    CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 3, 'funds should be 3')
+      done()
+    })
+  })
+
+  it('should not allow a contributor to withdraw funds again', done => {
+    CampaignInstance.withdraw({ fron: accounts[4] }).catch(e => {
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 3, 'funds should be 3')
+      done()
+    })
+  })
 })

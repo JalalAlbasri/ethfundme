@@ -59,10 +59,10 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to place vote from non admin account and fail', done => {
     CampaignInstance.vote(originalVoteSecret0, { from: accounts[4] }).catch(e => {
-      CampaignInstance.numVoteSecrets.call().then(numVoteSecrets => {
-        assert.equal(numVoteSecrets, 1, 'there should be one vote')
-        done()
-      })
+      return CampaignInstance.numVoteSecrets.call()
+    }).then(numVoteSecrets => {
+      assert.equal(numVoteSecrets, 1, 'there should be one vote')
+      done()
     })
   })
 
@@ -86,10 +86,10 @@ contract('Campaign Approval', accounts => {
   // FIXME: Could reveal be a call?
   it('should attempt to reveal a vote and fail (cannot reveal during Commit state)', done => {
     CampaignInstance.reveal(newVoteOption0, salt, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
-        assert.equal(numVoteReveals, 0, 'there should be no reveals')
-        done()
-      })
+      return CampaignInstance.numVoteReveals.call()
+    }).then(numVoteReveals => {
+      assert.equal(numVoteReveals, 0, 'there should be no reveals')
+      done()
     })
   })
 
@@ -127,37 +127,37 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to place a vote and fail (cannot vote during Reveal state)', done => {
     CampaignInstance.vote(originalVoteSecret0, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numVoteSecrets.call().then(numVoteSecrets => {
-        assert.equal(numVoteSecrets, 3, 'there should be one vote')
-        done()
-      })
+      return CampaignInstance.numVoteSecrets.call()
+    }).then(numVoteSecrets => {
+      assert.equal(numVoteSecrets, 3, 'there should be one vote')
+      done()
     })
   })
 
   it('should attempt to reveal a vote for accounts[0] with wrong salt and fail', done => {
     CampaignInstance.reveal(newVoteOption0, 0, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
-        assert.equal(numVoteReveals, 0, 'there should be no reveals')
-        done()
-      })
+      return CampaignInstance.numVoteReveals.call()
+    }).then(numVoteReveals => {
+      assert.equal(numVoteReveals, 0, 'there should be no reveals')
+      done()
     })
   })
 
   it('should attempt to reveal a vote for accounts[0] with wrong voteOption and fail', done => {
     CampaignInstance.reveal(true, salt, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
-        assert.equal(numVoteReveals, 0, 'there should be no reveals')
-        done()
-      })
+      return CampaignInstance.numVoteReveals.call()
+    }).then(numVoteReveals => {
+      assert.equal(numVoteReveals, 0, 'there should be no reveals')
+      done()
     })
   })
 
   it('should attempt to reveal a vote for from non admin account and fail', done => {
     CampaignInstance.reveal(newVoteOption0, salt, { from: accounts[4] }).catch(e => {
-      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
-        assert.equal(numVoteReveals, 0, 'there should be no reveals')
-        done()
-      })
+      return CampaignInstance.numVoteReveals.call()
+    }).then(numVoteReveals => {
+      assert.equal(numVoteReveals, 0, 'there should be no reveals')
+      done()
     })
   })
 
@@ -188,10 +188,10 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to reveal a vote for from accounts[0] again and fail', done => {
     CampaignInstance.reveal(newVoteOption0, salt, { from: accounts[0] }).catch(e => {
-      CampaignInstance.numVoteReveals.call().then(numVoteReveals => {
-        assert.equal(numVoteReveals, 1, 'there should be one reveals')
-        done()
-      })
+      return CampaignInstance.numVoteReveals.call()
+    }).then(numVoteReveals => {
+      assert.equal(numVoteReveals, 1, 'there should be one reveals')
+      done()
     })
   })
 
@@ -208,10 +208,10 @@ contract('Campaign Approval', accounts => {
 
   it('should attempt to make a contribution and fail (cannot contribute approval state pending)', done => {
     CampaignInstance.contribute({ from: accounts[4], value: 1 }).catch(e => {
-      CampaignInstance.funds.call().then(funds => {
-        assert.equal(funds, 0, 'no funds should have been contributed')
-        done()
-      })
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 0, 'no funds should have been contributed')
+      done()
     })
   })
 

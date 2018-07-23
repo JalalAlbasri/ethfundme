@@ -51,10 +51,10 @@ contract('Campaign Cancellation', accounts => {
 
   it('should attempt to cancel the campaign from an invalid account and fail', done => {
     CampaignInstance.cancelCampaign({ from: accounts[4] }).catch(e => {
-      CampaignInstance.campaignState.call().then(campaignState => {
-        assert.equal(campaignState, 1, 'campaignState should be 1 (Active)')
-        done()
-      })
+      return CampaignInstance.campaignState.call()
+    }).then(campaignState => {
+      assert.equal(campaignState, 1, 'campaignState should be 1 (Active)')
+      done()
     })
   })
 
@@ -63,6 +63,24 @@ contract('Campaign Cancellation', accounts => {
       return CampaignInstance.campaignState.call()
     }).then(campaignState => {
       assert.equal(campaignState, 3, 'campaignState should be 3 (Unsuccessful)')
+      done()
+    })
+  })
+
+  it('should not allow the Campaign manager to withdraw funds', done => {
+    CampaignInstance.withdraw({ fron: accounts[3] }).catch(e => {
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 1, 'funds should be 1')
+      done()
+    })
+  })
+
+  it('should allow contributors to withdraw contributed funds', done => {
+    CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
+      return CampaignInstance.funds.call()
+    }).then(funds => {
+      assert.equal(funds, 0, 'funds should be 0')
       done()
     })
   })

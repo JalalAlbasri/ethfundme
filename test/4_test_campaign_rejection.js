@@ -59,5 +59,7 @@ contract('Campaign Rejection', accounts => {
       done()
     })
   })
+
+  // TODO: try to make a contribution and have it fail
 })
 
