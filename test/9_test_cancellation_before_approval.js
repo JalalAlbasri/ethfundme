@@ -3,7 +3,7 @@ let Campaign = artifacts.require('Campaign')
 
 let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
-contract('Campaign Cancellation', accounts => {
+contract('Campaign Cancellation Before Approval', accounts => {
   let EthFundMeInstance
   let CampaignInstance
 
@@ -30,35 +30,11 @@ contract('Campaign Cancellation', accounts => {
         return CampaignInstance.vote(voteSecret0, { from: accounts[0] })
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecret1, { from: accounts[1] })
-      })
-      .then(() => {
-        return CampaignInstance.vote(voteSecret2, { from: accounts[2] })
-      })
-      .then(() => {
-        return CampaignInstance.reveal(voteOption0, salt, { from: accounts[0] })
-      })
-      .then(() => {
-        return CampaignInstance.reveal(voteOption0, salt, { from: accounts[1] })
-      })
-      .then(() => {
-        return CampaignInstance.contribute({ from: accounts[4], value: 1 })
-      })
-      .then(() => {
         done()
       })
   })
 
-  it('should attempt to cancel the campaign from an invalid account and fail', done => {
-    CampaignInstance.cancelCampaign({ from: accounts[4] }).catch(e => {
-      return CampaignInstance.campaignState.call()
-    }).then(campaignState => {
-      assert.equal(campaignState, 1, 'campaignState should be 1 (Active)')
-      done()
-    })
-  })
-
-  it('should cancel the campaign and campaign state should be set to Cancelled', done => {
+  it('should cancel the campaign and state should be set to Cancelled', done => {
     CampaignInstance.cancelCampaign({ from: accounts[3] }).then(() => {
       return CampaignInstance.campaignState.call()
     }).then(campaignState => {
@@ -75,20 +51,11 @@ contract('Campaign Cancellation', accounts => {
       })
   })
 
-  it('should not allow the Campaign manager to withdraw funds', done => {
-    CampaignInstance.withdraw({ fron: accounts[3] }).catch(e => {
-      return CampaignInstance.funds.call()
-    }).then(funds => {
-      assert.equal(funds, 1, 'funds should be 1')
-      done()
-    })
-  })
-
-  it('should allow contributors to withdraw contributed funds', done => {
-    CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
-      return CampaignInstance.funds.call()
-    }).then(funds => {
-      assert.equal(funds, 0, 'funds should be 0')
+  it('should not allow Admin to vote on cancelled campaign', done => {
+    CampaignInstance.vote(voteSecret1, { from: accounts[1] }).catch((e) => {
+      return CampaignInstance.numVoteSecrets.call()
+    }).then(numVoteSecrets => {
+      assert.equal(numVoteSecrets, 1, 'numVotes should be 1')
       done()
     })
   })

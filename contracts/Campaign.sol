@@ -2,7 +2,6 @@ pragma solidity ^0.4.24;
 
 import "./EthFundMe.sol";
 // import "./Approvable.sol";
-// TODO: Split Contract Files
 
 // It is a good practice to structure functions which interact
 // with other contracts (i.e. call functions or send Ether)
@@ -31,8 +30,6 @@ contract Administrated {
 
 }
 
-
-// TASK: Timed Approval
 contract Approvable is Administrated {
 
   /**
@@ -43,7 +40,8 @@ contract Approvable is Administrated {
     Commit,
     Reveal,
     Approved,
-    Rejected
+    Rejected,
+    Cancelled
   }
 
   ApprovalStates public approvalState = ApprovalStates.Commit;
@@ -153,8 +151,6 @@ contract Approvable is Administrated {
   }
 }
 
-// TODO: Payout on Campaign End
-
 contract Campaign is Approvable {
 
   /**
@@ -166,7 +162,8 @@ contract Campaign is Approvable {
     Pending,
     Active,
     Successful,
-    Unsuccessful
+    Unsuccessful,
+    Cancelled
   }
 
   struct Contribution {
@@ -327,7 +324,8 @@ contract Campaign is Approvable {
     transitionState
     onlyBeforeCampaignEnd
     {
-      campaignState = CampaignStates.Unsuccessful;
+      approvalState = ApprovalStates.Cancelled;
+      campaignState = CampaignStates.Cancelled;
     }
 
   // FIXME: Consider removing this function. It's essentially unnecessary since withdraw will end the campaign
@@ -350,7 +348,7 @@ contract Campaign is Approvable {
         msg.sender.transfer(funds);
       }
 
-      if(campaignState == CampaignStates.Unsuccessful) {
+      if(campaignState == CampaignStates.Unsuccessful || campaignState == CampaignStates.Cancelled) {
         require(hasContributed[msg.sender] == true);
         hasWithdrawn[msg.sender] = true;
         funds -= contributors[msg.sender].totalContributed;
@@ -360,6 +358,8 @@ contract Campaign is Approvable {
 
   // GETTERS
   // FIXME: Should the getters transition state?
+  // Decide this when building the frontend. If it can help update state correctly in the frontend it
+  // might be a good idea, otherwise it's unneccessary.
 
 
   function getTotalContributed(address contributor) public view returns(uint totalContributed) {

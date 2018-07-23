@@ -5,18 +5,19 @@ import "./Campaign.sol";
 
 // Contract Development
 // DONE: Timing campaigns
-// TASK: Ending Campaign and Payouts
+// DONE: Ending Campaign and Payouts
 // TASK: Adding Admin
 // TASK: Approval Quorum Support Adding Admin
 // TASK: Timing Approvals
 // TASK: Manager can cancel Campaign before approved
-// TASK: Rewrite state transition according to solidy state machine pattern
+// DONE: Rewrite state transition according to solidy state machine pattern
 
 // Contract Developement Completion
 // TASK: Events + Listening for them
 // TASK: Comment Contracts and Tests
 // TASK: Review All variable/function etc Names
 // TASK: Review All variable/function etc accessibility
+// TASK: Split Contract Files
 // TASK: Write Solidity Tests
 // TASK: Review uints and restrict size if possible
 // TASK: Use a library/Package to advance time in tests
