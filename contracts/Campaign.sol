@@ -31,7 +31,13 @@ contract Administrated {
 
 }
 
+
+// TASK: Timed Approval
 contract Approvable is Administrated {
+
+  /**
+    DATA STRUCTURES
+   */
 
   enum ApprovalStates {
     Commit,
@@ -41,6 +47,10 @@ contract Approvable is Administrated {
   }
 
   ApprovalStates public approvalState = ApprovalStates.Commit;
+
+  /**
+    STATE VARIABLES
+   */
 
   uint public numApprovals;
   uint public numRejections;
@@ -52,21 +62,41 @@ contract Approvable is Administrated {
   mapping(address => bool) public hasVoted;
   mapping(address => bool) public hasRevealed;
 
+  /**
+    CONSTRUCTOR
+   */
 
   constructor(address efmAddress) Administrated(efmAddress) public {
     
   }
 
+  /**
+    ABSTRACT FUNCTIONS
+   */
+
   function onApproval() internal;
   function onRejection() internal;
 
-  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
-    require(approvalState == _approvalState);
+  /**
+    MODIFIERS
+   */
+
+  // ACCESS RESTRICTION
+
+  modifier onlyVotedAdmin() {
+    require(hasVoted[msg.sender] == true);
     _;
   }
 
-  modifier onlyVotedAdmin() {
-    require(hasVoted[msg.sender]);
+  modifier onlyNotRevealedAdmin() {
+    require(hasRevealed[msg.sender] == false);
+    _;
+  }
+
+  // STATE MANAGEMENT
+
+  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
+    require(approvalState == _approvalState);
     _;
   }
 
@@ -75,11 +105,6 @@ contract Approvable is Administrated {
     if (numVoteSecrets == 3) {
       approvalState = ApprovalStates.Reveal;
     }
-  }
-
-  modifier tallyVotes(bool voteOption) {
-    _;
-    
   }
 
   // Doesn't require all votes to be revealed only enough.
@@ -95,40 +120,39 @@ contract Approvable is Administrated {
     }
   }
 
-  // modifier timedTransitions() {
-  //     if (stage == Stages.Commit &&
-  //                 now >= creationTime + 10 minutes)
-  //         nextStage();
-  //     if (stage == Stages.Reveal &&
-  //             now >= creationTime + 10 minutes)
-  //         nextStage();
-  //     _;
-  // }
+  /**
+    INTERFACE
+   */
 
-  function vote(bytes32 secretVote) public onlyAdmin onlyDuringApprovalState(ApprovalStates.Commit) endCommit {
-    voteSecrets[msg.sender] = secretVote;
-    if (hasVoted[msg.sender] == false) {
-      numVoteSecrets++;
-      hasVoted[msg.sender] = true;
+  function vote(bytes32 secretVote) public 
+    onlyAdmin 
+    onlyDuringApprovalState(ApprovalStates.Commit) 
+    endCommit {
+      voteSecrets[msg.sender] = secretVote;
+      if (hasVoted[msg.sender] == false) {
+        numVoteSecrets++;
+        hasVoted[msg.sender] = true;
     }
   }
 
-  function reveal(bool voteOption, uint salt) public onlyVotedAdmin onlyDuringApprovalState(ApprovalStates.Reveal) endReveal {
-    require(hasRevealed[msg.sender] == false);
-    require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
-    
-    hasRevealed[msg.sender] = true;
-    numVoteReveals++;
+  function reveal(bool voteOption, uint salt) public 
+    onlyVotedAdmin 
+    onlyNotRevealedAdmin
+    onlyDuringApprovalState(ApprovalStates.Reveal) 
+    endReveal {
+      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
 
-    if (voteOption) {
-      numApprovals++;
-    } else {
-      numRejections++;
-    }
+      if (voteOption) {
+        numApprovals++;
+      } else {
+        numRejections++;
+      }
+
+      numVoteReveals++;
+      hasRevealed[msg.sender] = true;
   }
 }
 
-// TODO: Timed Campaign
 // TODO: Payout on Campaign End
 
 contract Campaign is Approvable {
@@ -286,8 +310,6 @@ contract Campaign is Approvable {
     onlyManagerOrAdmin
     transitionState
     onlyBeforeCampaignEnd
-    // FIXME: Only during campaign states pending/active
-    // onlyBeforeEndDate {
     {
       campaignState = CampaignStates.Unsuccessful;
       // payout();
@@ -297,10 +319,6 @@ contract Campaign is Approvable {
     onlyManagerOrAdmin
     transitionState
     onlyAfterCampaignEnd
-    // onlyDuringCampaignStates(CampaignStates[].push(CampaignStates.Successful))
-    // onlyDuringCampaignStates([CampaignStates.Successful])
-    // FIXME: Only during campaign states successful/unsuccessful
-    // onlyDuringCampaignState(CampaignStates.Active) {
     {
       // payout();
     }
