@@ -30,6 +30,7 @@ import "./Campaign.sol";
 // TASK: Packaging and Other Documentation
 // TASK: Make sure it works on Ubuntu
 // TASK: Review Grading Rubric
+// TASK: Release on testnet
 
 // EXTRAS
 // TASK: Adding Admin
