@@ -3,17 +3,13 @@ pragma solidity ^0.4.24;
 // import "./Approvable.sol";
 import "./Campaign.sol";
 
-// Contract Development
+// Contract Development 1
 // DONE: Timing campaigns
 // DONE: Ending Campaign and Payouts
-// TASK: Adding Admin
-// TASK: Approval Quorum Support Adding Admin
-// TASK: Timing Approvals
-// TASK: Manager can cancel Campaign before approved
+// DONE: Manager can cancel Campaign before approved
 // DONE: Rewrite state transition according to solidy state machine pattern
 
-// Contract Developement Completion
-// TASK: Events + Listening for them
+// Contract Developement 2
 // TASK: Comment Contracts and Tests
 // TASK: Review All variable/function etc Names
 // TASK: Review All variable/function etc accessibility
@@ -26,16 +22,25 @@ import "./Campaign.sol";
 // TASK: Error messages for require statements
 
 // Frontend
+// TASK: Set up React Project and React Crash Course
 // TASK: Frontend
+// TASK: Events + Listening for them
 
 // Submitable
 // TASK: Packaging and Other Documentation
 // TASK: Make sure it works on Ubuntu
+// TASK: Review Grading Rubric
 
-// Stretch Goals
+// EXTRAS
+// TASK: Adding Admin
+// TASK: Approval Quorum Support Adding Admin
+// TASK: Timing Approvals
+
+// STRETCH GOALS
 // TASK: Full PLCR Approval
 // TASK: Other Stretch Goals
 // TASK: ERC20 Token Acceptance
+// TASK: Multisig Contract Management for Admins
 
 contract EthFundMe {
 
