@@ -38,6 +38,8 @@ import "./Campaign.sol";
 // TASK: Timing Approvals
 
 // STRETCH GOALS
+// TASK: Upgradable Contract
+// TASK: Check out the SafeMath library
 // TASK: Full PLCR Approval
 // TASK: Other Stretch Goals
 // TASK: ERC20 Token Acceptance
