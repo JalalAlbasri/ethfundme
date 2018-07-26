@@ -12,13 +12,13 @@ module.exports = {
     sourceMapFilename: 'bundle.map'
   },
   devtool: '#source-map',
-  optimization: {
-    minimize: true
-  },
+  // optimization: {
+  //   minimize: true
+  // },
   module: {
     rules: [
       {
-        test: [/\.js$/],
+        test: [/\.(js|jsx)$/],
         exclude: [/node_modules/, /test/, /migrations/],
         use: 'babel-loader'
       },

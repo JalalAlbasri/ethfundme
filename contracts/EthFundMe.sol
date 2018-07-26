@@ -20,6 +20,7 @@ import "./Campaign.sol";
 // TASK: Review Security Best Practices
 // TASK: Review Design Patterns
 // TASK: Error messages for require statements
+// TASK: Campaign Factory Contract
 
 // Frontend
 // TASK: Set up React Project and React Crash Course
