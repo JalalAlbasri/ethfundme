@@ -1,22 +1,26 @@
-var path = require('path')
+const webpack = require('webpack')
+const path = require('path')
+
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
+  mode: 'development',
   entry: './src/index.js',
   output: {
     path: path.resolve('dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    // sourceMapFilename: 'bundle.map'
   },
+  // devtool: '#source-map',
+  // optimization: {
+  //   minimize: true
+  // },
   module: {
     rules: [
       {
-        test: [/\.js$/, /\.jsx$/],
+        test: [/\.js$/],
         exclude: [/node_modules/, /test/, /migrations/],
-        use: [
-          { loader: ['babel-loader'] }
-        ],
-        query: {
-          presets: ['env', 'react']
-        }
+        use: 'babel-loader'
       },
       {
         test: /\.css$/,
@@ -28,5 +32,12 @@ module.exports = {
 
       }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      filename: 'index.html',
+      inject: 'body'
+    })
+  ]
 }
