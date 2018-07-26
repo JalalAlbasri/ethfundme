@@ -9,11 +9,12 @@ const drizzleOptions = {
     }
   },
   contracts: [
-    EthFundMe,
+    EthFundMe
     // Administrated,
     // Approvable,
     // Campaign
   ],
+  syncAlways: true,
   polls: {
     accounts: 1500
   }

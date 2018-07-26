@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { AccountData, ContractData } from 'drizzle-react-components'
+import CreateCampaignButtonContainer from './containers/CreateCampaignButtonContainer'
 
 import './App.css'
 
@@ -11,11 +12,11 @@ class App extends Component {
         <p> AccounData Component</p>
         <AccountData accountIndex="0" unit="ether" precision="3" />
         <p> ContractData Component </p>
-        <p> 
-          numCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" />
-        </p>
+        numCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" />
+        <br />
+        numAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" />
         <p>
-          numAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" />
+        <CreateCampaignButtonContainer />
         </p>
       </div>
     )

@@ -19,6 +19,10 @@
     }
   },
   "rules": {
+    "react/prop-types": "ignore",
+    "arrow-parens": "error",
+    "class-methods-use-this": "off",
+    "object-curly-spacing": "warn",
     "no-const-assign": "warn",
     "no-this-before-super": "warn",
     "no-undef": "warn",
