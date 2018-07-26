@@ -9,12 +9,12 @@ module.exports = {
   output: {
     path: path.resolve('dist'),
     filename: 'bundle.js',
-    // sourceMapFilename: 'bundle.map'
+    sourceMapFilename: 'bundle.map'
   },
-  // devtool: '#source-map',
-  // optimization: {
-  //   minimize: true
-  // },
+  devtool: '#source-map',
+  optimization: {
+    minimize: true
+  },
   module: {
     rules: [
       {
