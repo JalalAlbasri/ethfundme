@@ -1,3 +1,5 @@
+var path = require('path')
+
 module.exports = {
   entry: './src/index.js',
   output: {
@@ -7,7 +9,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: [/\.js$/, /\.jsx$/],
         exclude: [/node_modules/, /test/, /migrations/],
         use: [
           { loader: ['babel-loader'] }
