@@ -1,0 +1,27 @@
+{
+    "routing": {
+        "locationBeforeTransitions": null
+    },
+    "accounts": {},
+    "accountBalances": {},
+    "contracts": {
+        "EthFundMe": {
+            "initialized": false,
+            "synced": false,
+            "campaigns": {},
+            "admins": {},
+            "isAdmin": {},
+            "num": {},
+            "getNumAdmins": {},
+            "getNumCampaigns": {}
+        }
+    },
+    "drizzleStatus": {
+        "initialized": false
+    },
+    "transactions": {},
+    "transactionStack": [],
+    "web3": {
+        "status": ""
+    }
+}
