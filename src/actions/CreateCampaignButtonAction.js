@@ -17,13 +17,11 @@ function campaignCreated(campaign) {
 
 export function createCampaign() {
   console.log('createCampaign()')
-
   // return browserHistory.push('/')
   // let web3 = store.getState().web3.web3Instance
 
   // Double-check web3's status.
   if (typeof web3 !== 'undefined') {
-    console.log(store.getState())
     return function (dispatch) {
       const ethfundme = contract(EthFundMeContract)
       ethfundme.setProvider(web3.currentProvider)
@@ -39,6 +37,7 @@ export function createCampaign() {
           ethfundmeInstance = instance
           return ethfundmeInstance.createCampaign('web campaign', 10, 1, { from: coinbase })
         }).then((result) => {
+          console.log(store.getState())
           console.log(result)
           return dispatch(campaignCreated(result))
         }).catch((err) => {

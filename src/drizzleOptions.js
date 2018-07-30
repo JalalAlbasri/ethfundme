@@ -14,7 +14,6 @@ const drizzleOptions = {
     // Approvable,
     // Campaign
   ],
-  syncAlways: true,
   polls: {
     accounts: 1500
   }
