@@ -6,14 +6,14 @@ import { LoadingContainer } from 'drizzle-react-components'
 
 import './index.css'
 import AppContainer from './App'
+// import AppDataContainer from './AppDataContainer'
 
 import store from './store'
 import drizzleOptions from './drizzleOptions'
 
 ReactDOM.render(
   (
-    <DrizzleProvider options={drizzleOptions}>
-    {/* <DrizzleProvider options={drizzleOptions} store={store}> */}
+    <DrizzleProvider options={drizzleOptions} store={store}>
       <LoadingContainer>
         <AppContainer />
       </LoadingContainer>

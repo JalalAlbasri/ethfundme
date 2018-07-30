@@ -76,7 +76,6 @@ contract EthFundMe {
     CAMPAIGNS
   */
   address[] public campaigns;
-  uint public num = 0;
 
   function getNumCampaigns() public view returns (uint) {
     return campaigns.length;
@@ -85,7 +84,6 @@ contract EthFundMe {
   function createCampaign(string title, uint goal, uint duration) public returns(address) {
     Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, msg.sender, address(this));
     campaigns.push(address(newCampaign));
-    num++;
     return address(newCampaign);
   }
 
