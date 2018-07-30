@@ -7,7 +7,7 @@ import { LoadingContainer } from 'drizzle-react-components'
 import './index.css'
 import AppContainer from './App'
 
-// import store from './store'
+import store from './store'
 import drizzleOptions from './drizzleOptions'
 
 ReactDOM.render(
