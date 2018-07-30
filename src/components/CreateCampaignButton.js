@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 const contract = require('truffle-contract')
 import EthFundMeContract from '../../build/contracts/EthFundMe.json'
-import CampaignContract from '../../build/contracts/Campaign.json'
+import CampaignContract, { abi } from '../../build/contracts/Campaign.json'
 
 
 class CreateCampaignButton extends Component {
@@ -34,19 +34,24 @@ class CreateCampaignButton extends Component {
         return ethfundmeInstance.createCampaign('web campaign', 10, 1, { from: coinbase })
       }).then((result) => {
 
-        
         console.log(`campaignAddress: ${result.logs[0].args.campaignAddress}`)
         
         const campaignAddress = result.logs[0].args.campaignAddress
-        
+        // const web3Contract = web3.eth.contract(abi, campaignAddress)
+        const web3Contract = web3.eth.contract(CampaignContract)
+        // const web3Contract = contract(CampaignContract).at(campaignAddress).contract
+
+        console.log(`typeof web3Contract: ${typeof web3Contract}`)
+        console.log(web3Contract)
+
         let contractConfig = {
-            contractName: campaignAddress,
-            web3Contract: new web3.eth.contract(CampaignContract, campaignAddress)
-          }
+          contractName: web3Contract.abi.contractName,
+          web3Contract: web3Contract.abi.abi
+        }
+
+        let events = []
           
-          let events = []
-          
-          drizzle.addContract({contractConfig, events})
+        drizzle.addContract({contractConfig, events})
 
         // let action = {type: 'ADD_CONTRACT', drizzle, contractConfig, events, web3}
         // this.props.onCreateCampaignClick(action)

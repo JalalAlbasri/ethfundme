@@ -7,6 +7,8 @@ import CreateCampaignButtonContainer from './components/CreateCampaignButton'
 
 import './App.css'
 
+console.log(`web3 version: ${web3.version.api}`)
+
 class App extends Component {
   constructor(props, context) {
     super(props)
