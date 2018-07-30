@@ -49,6 +49,14 @@ import "./Campaign.sol";
 contract EthFundMe {
 
   /**
+    EVENTS
+   */
+  event CampaignCreated (
+    address indexed campaignAddress
+  );
+  
+
+  /**
     ADMINS
    */
   address[] public admins;
@@ -84,6 +92,7 @@ contract EthFundMe {
   function createCampaign(string title, uint goal, uint duration) public returns(address) {
     Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, msg.sender, address(this));
     campaigns.push(address(newCampaign));
+    emit CampaignCreated(address(newCampaign));
     return address(newCampaign);
   }
 

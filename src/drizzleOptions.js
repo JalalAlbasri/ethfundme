@@ -10,10 +10,19 @@ const drizzleOptions = {
   },
   contracts: [
     EthFundMe
-    // Administrated,
-    // Approvable,
-    // Campaign
   ],
+  events: {
+    EthFundMe: [
+      'CampaignCreated'
+    //   {
+    //   eventName: 'CampaignCreated',
+    //   eventOptions: {
+
+    //   } 
+    // }
+  ]
+
+  },
   polls: {
     accounts: 1500
   },

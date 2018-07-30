@@ -3,13 +3,14 @@ import { AccountData, ContractData } from 'drizzle-react-components'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import CreateCampaignButtonContainer from './containers/CreateCampaignButtonContainer'
+import CreateCampaignButtonContainer from './components/CreateCampaignButton'
 
 import './App.css'
 
 class App extends Component {
   constructor(props, context) {
     super(props)
+    console.log(`typeof context.drizzle: ${typeof context.drizzle}`)
     this.contracts = context.drizzle.contracts
     this.dataKey = this.contracts.EthFundMe.methods.getNumCampaigns.cacheCall()
   }
