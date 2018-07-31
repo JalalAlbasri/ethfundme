@@ -20,8 +20,6 @@ export function createCampaign() {
   // Double-check web3's status.
   if (typeof web3 !== 'undefined') {
     return function (dispatch) {
-
-
       const ethfundme = contract(EthFundMeContract)
       ethfundme.setProvider(web3.currentProvider)
       let ethfundmeInstance
@@ -40,17 +38,16 @@ export function createCampaign() {
             contractName: campaignAddress,
             web3Contract: new web3.eth.contract(CampaignContract, campaignAddress)
           }
-        
+
           let events = []
-          
-          dispatch({type: 'ADD_CONTRACT', drizzle, contractConfig, events, web3})
+
+          dispatch({
+            type: 'ADD_CONTRACT', drizzle, contractConfig, events, web3
+          })
         }).catch((err) => {
           console.log(err)
         })
       })
-
-
-      
     }
   }
 }

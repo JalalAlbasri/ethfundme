@@ -7,8 +7,8 @@ import ADD_CAMPAIGN from './actions'
 const initialState = []
 
 function campaigns(state = initialState, action) {
-  switch (action.type){
-    case(ADD_CAMPAIGN):
+  switch (action.type) {
+    case (ADD_CAMPAIGN):
       return [
         ...state,
         {

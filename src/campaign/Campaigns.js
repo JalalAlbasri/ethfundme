@@ -3,6 +3,8 @@ import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
 import { addCampaign } from './actions'
+import Campaign from './Campaign'
+
 
 class Campaigns extends Component {
   constructor(props, context) {
@@ -22,25 +24,25 @@ class Campaigns extends Component {
     console.log(`numCampaigns: ${numCampaigns}`)
 
     // for (let i = 0; i < numCampaigns; i++) {
-      let dataKey = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(0)
-      // let dataKey = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(i)
-      let address = EthFundMe.campaigns[dataKey].value
-      this.props.dispatchAddCampaign(address)
-      // this.props.dispatchAddCampaign(this.EthFundMe.campaigns[this.campaigns(i)].value)
+    let dataKey = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(0)
+    // let dataKey = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(i)
+    let address = EthFundMe.campaigns[dataKey].value
+    this.props.dispatchAddCampaign(address)
+    // this.props.dispatchAddCampaign(this.EthFundMe.campaigns[this.campaigns(i)].value)
     // }
   }
 
   render() {
-    return (<ul>
-    {this.props.campaigns.map(campaign => 
-      <Campaign 
-        key={campaign.address}
-        {...campaign}
-        />
-    )}
-  </ul>)
+    return (
+      <ul>
+        {this.props.campaigns.map((campaign) =>
+          <Campaign
+            key={campaign.address}
+            {...campaign}
+            />)}
+      </ul>
+    )
   }
-
 }
 
 Campaigns.contextTypes = {
@@ -48,15 +50,13 @@ Campaigns.contextTypes = {
 }
 
 Campaigns.propTypes = {
-  campaigns: PropTypes.arrayOf(
-    PropTypes.shape({
-      address: PropTypes.string.isRequired
-    }).isRequired
-  ).isRequired
+  campaigns: PropTypes.arrayOf(PropTypes.shape({
+    address: PropTypes.string.isRequired
+  }).isRequired).isRequired
 }
 
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   console.log(state.campaigns)
   return {
     campaigns: state.campaigns,
@@ -64,9 +64,9 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispath => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchAddCampaign: address => {
+    dispatchAddCampaign: (address) => {
       dispatch(addCampaign(address))
     }
   }

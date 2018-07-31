@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
-const Campaign = ({address}) => (
+const Campaign = ({ address }) => (
   <li>
     {address}
   </li>

@@ -55,7 +55,7 @@ class App extends Component {
           numCampaigns: {numCampaigns}
         </p>
         {/* {
-          campaigns.map((campaign, index) => 
+          campaigns.map((campaign, index) =>
             <CampaignContainer key={index} index={index} />
           )
         } */}

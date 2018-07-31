@@ -1,10 +1,10 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
 const contract = require('truffle-contract')
 import EthFundMeContract from '../build/contracts/EthFundMe.json'
-import CampaignContract, {abi} from '../build/contracts/Campaign.json'
+import CampaignContract, { abi } from '../build/contracts/Campaign.json'
 
 import { addCampaign } from './campaign/actions'
 
@@ -14,7 +14,7 @@ class CreateCampaignButton extends Component {
     this.drizzle = context.drizzle
     console.log(`typeof context.drizzle: ${typeof context.drizzle}`)
     console.log(`typeof this.drizzle: ${typeof this.drizzle}`)
-    this.handleCreateCampaignClick = this.handleCreateCampaignClick.bind(this);
+    this.handleCreateCampaignClick = this.handleCreateCampaignClick.bind(this)
   }
 
   handleCreateCampaignClick(event) {
@@ -34,7 +34,6 @@ class CreateCampaignButton extends Component {
         ethfundmeInstance = instance
         return ethfundmeInstance.createCampaign('web campaign', 10, 1, { from: coinbase })
       }).then((result) => {
-        
         const campaignAddress = result.logs[0].args.campaignAddress
         console.log(`campaignAddress: ${campaignAddress}`)
 
@@ -55,12 +54,11 @@ class CreateCampaignButton extends Component {
         // }
 
         // let events = []
-          
+
         // this.context.drizzle.addContract({contractConfig, events})
 
         // let action = {type: 'ADD_CONTRACT', drizzle, contractConfig, events, web3}
         // this.props.onCreateCampaignClick(action)
-        
       }).catch((err) => {
         console.log(err)
       })
@@ -78,7 +76,7 @@ CreateCampaignButton.contextTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    EthFundMe : state.contracts.EthFundMe
+    EthFundMe: state.contracts.EthFundMe
   }
 }
 
@@ -87,7 +85,7 @@ const mapDispatchToProps = (dispatch) => {
     onCreateCampaignClick: (action) => {
       dispatch(action)
     },
-    dispatchAddCampaign: address => {
+    dispatchAddCampaign: (address) => {
       dispatch(addCampaign(address))
     }
   }

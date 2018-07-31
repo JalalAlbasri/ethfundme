@@ -18,22 +18,21 @@ class Campaign extends Component {
     const EthFundMe = this.props.EthFundMe
 
     // if (drizzleStatus.initialized) {
-      if (!(this.dataKey in EthFundMe.campaigns)) {
-        return <span> Loading </span>
-      }
+    if (!(this.dataKey in EthFundMe.campaigns)) {
+      return <span> Loading </span>
+    }
 
     const campaignAddress = EthFundMe.campaigns[this.dataKey].value
 
     return (
       <div className="Campaign">
 
-        <p> 
-          <span> index: {this.props.index} address: {campaignAddress} </span> 
+        <p>
+          <span> index: {this.props.index} address: {campaignAddress} </span>
           </p>
         {/* <p> title: {title} </p> */}
       </div>
     )
-
   }
 }
 
