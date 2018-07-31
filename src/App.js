@@ -3,9 +3,11 @@ import { AccountData, ContractData } from 'drizzle-react-components'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import CreateCampaignButtonContainer from './components/CreateCampaignButton'
+import CreateCampaignButtonContainer from './CreateCampaignButton'
+import CampaginContainer from './Campaign'
 
 import './App.css'
+import CampaignContainer from './Campaign';
 
 console.log(`web3 version: ${web3.version.api}`)
 
@@ -24,11 +26,18 @@ class App extends Component {
 
 
     // if (drizzleStatus.initialized) {
-    if (!(this.dataKey in this.props.EthFundMe.getNumCampaigns)) {
+    if (!(this.dataKey in EthFundMe.getNumCampaigns)) {
       return <span> Loading </span>
     }
 
     var numCampaigns = EthFundMe.getNumCampaigns[this.dataKey].value
+
+    var campaigns = new Array()
+    for (var i = 0; i < numCampaigns; i++) {
+      campaigns.push(i)
+    }
+
+    console.log(campaigns.length)
 
     return (
       <div className="App">
@@ -45,6 +54,12 @@ class App extends Component {
         <p>
           numCampaigns: {numCampaigns}
         </p>
+        {
+          campaigns.map((campaign, index) => 
+            <CampaignContainer key={index} index={index} />
+          )
+        }
+
       </div>
     )
   }

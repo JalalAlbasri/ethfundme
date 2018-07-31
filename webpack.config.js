@@ -39,5 +39,8 @@ module.exports = {
       filename: 'index.html',
       inject: 'body'
     })
-  ]
+  ],
+  node: {
+    fs: "empty"
+ }
 }

@@ -3,9 +3,8 @@ import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
 const contract = require('truffle-contract')
-import EthFundMeContract from '../../build/contracts/EthFundMe.json'
-import CampaignContract, { abi } from '../../build/contracts/Campaign.json'
-
+import EthFundMeContract from '../build/contracts/EthFundMe.json'
+import CampaignContract, {abi} from '../build/contracts/Campaign.json'
 
 class CreateCampaignButton extends Component {
   constructor(props, context) {
@@ -33,25 +32,27 @@ class CreateCampaignButton extends Component {
         ethfundmeInstance = instance
         return ethfundmeInstance.createCampaign('web campaign', 10, 1, { from: coinbase })
       }).then((result) => {
-
-        console.log(`campaignAddress: ${result.logs[0].args.campaignAddress}`)
         
         const campaignAddress = result.logs[0].args.campaignAddress
+        console.log(`campaignAddress: ${campaignAddress}`)
+        
         // const web3Contract = web3.eth.contract(abi, campaignAddress)
-        const web3Contract = web3.eth.contract(CampaignContract)
+        // const web3Contract = web3.eth.contract(parsedAbi)
+        // const web3Contract = web3.eth.contract(abi)
+        // const web3Contract = web3.eth.contract(abi).at(campaignAddress)
         // const web3Contract = contract(CampaignContract).at(campaignAddress).contract
 
-        console.log(`typeof web3Contract: ${typeof web3Contract}`)
-        console.log(web3Contract)
+        // console.log(`typeof web3Contract: ${typeof web3Contract}`)
+        // console.log(web3Contract)
 
-        let contractConfig = {
-          contractName: web3Contract.abi.contractName,
-          web3Contract: web3Contract.abi.abi
-        }
+        // let contractConfig = {
+        //   contractName: campaignAddress,
+        //   web3Contract: web3.eth.contract(abi, campaignAddress)
+        // }
 
-        let events = []
+        // let events = []
           
-        drizzle.addContract({contractConfig, events})
+        // this.context.drizzle.addContract({contractConfig, events})
 
         // let action = {type: 'ADD_CONTRACT', drizzle, contractConfig, events, web3}
         // this.props.onCreateCampaignClick(action)
