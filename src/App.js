@@ -4,10 +4,10 @@ import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
 import CreateCampaignButtonContainer from './CreateCampaignButton'
-import CampaginContainer from './Campaign'
+// import CampaginContainer from './Campaign'
+import Campaigns from './campaign/Campaigns'
 
 import './App.css'
-import CampaignContainer from './Campaign';
 
 console.log(`web3 version: ${web3.version.api}`)
 
@@ -54,11 +54,13 @@ class App extends Component {
         <p>
           numCampaigns: {numCampaigns}
         </p>
-        {
+        {/* {
           campaigns.map((campaign, index) => 
             <CampaignContainer key={index} index={index} />
           )
-        }
+        } */}
+
+        <Campaigns />
 
       </div>
     )

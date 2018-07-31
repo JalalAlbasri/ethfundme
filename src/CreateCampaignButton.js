@@ -6,6 +6,8 @@ const contract = require('truffle-contract')
 import EthFundMeContract from '../build/contracts/EthFundMe.json'
 import CampaignContract, {abi} from '../build/contracts/Campaign.json'
 
+import { addCampaign } from './campaign/actions'
+
 class CreateCampaignButton extends Component {
   constructor(props, context) {
     super(props)
@@ -35,7 +37,9 @@ class CreateCampaignButton extends Component {
         
         const campaignAddress = result.logs[0].args.campaignAddress
         console.log(`campaignAddress: ${campaignAddress}`)
-        
+
+        this.props.dispatchAddCampaign(campaignAddress)
+
         // const web3Contract = web3.eth.contract(abi, campaignAddress)
         // const web3Contract = web3.eth.contract(parsedAbi)
         // const web3Contract = web3.eth.contract(abi)
@@ -82,6 +86,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onCreateCampaignClick: (action) => {
       dispatch(action)
+    },
+    dispatchAddCampaign: address => {
+      dispatch(addCampaign(address))
     }
   }
 }
