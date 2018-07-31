@@ -30,7 +30,7 @@ let getWeb3 = new Promise(function (resolve, reject) {
     } else {
       // Fallback to localhost if no web3 injection.
 
-      let provider = new Web3.providers.HttpProvider('http://localhost:7545')
+      let provider = new Web3.providers.HttpProvider('http://localhost:8545')
 
       web3 = new Web3(provider)
 

@@ -12,27 +12,59 @@ class Campaigns extends Component {
     console.log(`typeof context: ${typeof context}`)
     console.log(`typeof context.drizzle: ${typeof context.drizzle}`)
     this.drizzle = context.drizzle
+
     this.dataKey = this.drizzle.contracts.EthFundMe.methods.getNumCampaigns.cacheCall()
-    this.campaigns = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall
-    // this.dataKey = context.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(props.index)
+    this.numCampaigns = props.EthFundMe.getNumCampaigns[this.dataKey].value
+
+    this.campaignDataKeys = []
+    for (let i = 0; i < this.numCampaigns; i++) {
+      this.campaignDataKeys[i] = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(i)
+    }
   }
 
   componentDidMount() {
-    const EthFundMe = this.props.EthFundMe
-    let numCampaigns = EthFundMe.getNumCampaigns[this.dataKey].value
+    this.drizzle.contracts.EthFundMe.methods.getNumCampaigns().call().then((numCampaigns) => {
+      for (let i = 0; i < numCampaigns; i++) {
+        this.drizzle.contracts.EthFundMe.methods.campaigns(i).call().then((address) => {
+          console.log(`componentDidMount address: ${address}`)
+          this.props.dispatchAddCampaign(address)
+        })
+      }
+    })
 
-    console.log(`numCampaigns: ${numCampaigns}`)
+
+    // const EthFundMe = this.props.EthFundMe
+    // console.log(`this.numCampaigns: ${this.numCampaigns}`)
+
+    // for (let i = 0; i < this.numCampaigns; i++) {
+    //   if (this.campaignDataKeys[i] in EthFundMe.campaigns) {
+    //     let address = EthFundMe.campaigns[this.campaignDataKeys[i]].value
+    //   }
+    // }
 
     // for (let i = 0; i < numCampaigns; i++) {
-    let dataKey = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(0)
-    // let dataKey = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(i)
-    let address = EthFundMe.campaigns[dataKey].value
-    this.props.dispatchAddCampaign(address)
+    // let dataKey = this.drizzle.contracts.EthFundMe.methods.campaigns.call(0)
+    // console.log(`typeof dataKey: ${typeof dataKey}`)
+    // console.log(`dataKey: ${dataKey}`)
+    // console.log(dataKey in EthFundMe.campaigns)
+    // // let dataKey = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(i)
+    // let address = EthFundMe.campaigns[dataKey].value
+    // this.props.dispatchAddCampaign(address)
     // this.props.dispatchAddCampaign(this.EthFundMe.campaigns[this.campaigns(i)].value)
     // }
   }
 
   render() {
+    // const EthFundMe = this.props.EthFundMe
+    // console.log(`this.numCampaigns: ${this.numCampaigns}`)
+
+    // for (let i = 0; i < this.numCampaigns; i++) {
+    //   if (this.campaignDataKeys[i] in EthFundMe.campaigns) {
+    //     let address = EthFundMe.campaigns[this.campaignDataKeys[i]].value
+    //     console.log(`address: ${address}`)
+    //   }
+    // }
+
     return (
       <ul>
         {this.props.campaigns.map((campaign) =>
@@ -67,7 +99,10 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     dispatchAddCampaign: (address) => {
-      dispatch(addCampaign(address))
+      dispatch({
+        type: 'ADD_CAMPAIGN',
+        address
+      })
     }
   }
 }
