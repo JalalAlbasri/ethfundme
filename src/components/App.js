@@ -3,41 +3,28 @@ import { AccountData, ContractData } from 'drizzle-react-components'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import CreateCampaignButtonContainer from './CreateCampaignButton'
-// import CampaginContainer from './Campaign'
-import Campaigns from './campaign/Campaigns'
+import CreateCampaignButton from './CreateCampaignButton'
+import Campaigns from './Campaigns'
 
-import './App.css'
-
-console.log(`web3 version: ${web3.version.api}`)
+import '../styles/App.css'
 
 class App extends Component {
   constructor(props, context) {
     super(props)
-    console.log(`typeof context.drizzle: ${typeof context.drizzle}`)
     this.contracts = context.drizzle.contracts
     this.dataKey = this.contracts.EthFundMe.methods.getNumCampaigns.cacheCall()
   }
 
   render() {
-    console.log('App Render')
     const drizzleStatus = this.props.drizzleStatus
     const EthFundMe = this.props.EthFundMe
-
 
     // if (drizzleStatus.initialized) {
     if (!(this.dataKey in EthFundMe.getNumCampaigns)) {
       return <span> Loading </span>
     }
 
-    var numCampaigns = EthFundMe.getNumCampaigns[this.dataKey].value
-
-    var campaigns = new Array()
-    for (var i = 0; i < numCampaigns; i++) {
-      campaigns.push(i)
-    }
-
-    console.log(campaigns.length)
+    let numCampaigns = EthFundMe.getNumCampaigns[this.dataKey].value
 
     return (
       <div className="App">
@@ -49,19 +36,12 @@ class App extends Component {
         <br />
         getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" />
         <p>
-        <CreateCampaignButtonContainer />
+        <CreateCampaignButton />
         </p>
         <p>
           numCampaigns: {numCampaigns}
         </p>
-        {/* {
-          campaigns.map((campaign, index) =>
-            <CampaignContainer key={index} index={index} />
-          )
-        } */}
-
         <Campaigns />
-
       </div>
     )
   }
@@ -77,5 +57,4 @@ const mapStateToProps = (state) => {
   }
 }
 
-const AppContainer = drizzleConnect(App, mapStateToProps)
-export default AppContainer
+export default drizzleConnect(App, mapStateToProps)

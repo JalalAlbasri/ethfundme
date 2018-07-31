@@ -5,8 +5,7 @@ import { DrizzleProvider } from 'drizzle-react'
 import { LoadingContainer } from 'drizzle-react-components'
 
 import './index.css'
-import AppContainer from './App'
-// import AppDataContainer from './AppDataContainer'
+import App from './components/App'
 
 import store from './store'
 import drizzleOptions from './drizzleOptions'
@@ -15,7 +14,7 @@ ReactDOM.render(
   (
     <DrizzleProvider options={drizzleOptions} store={store}>
       <LoadingContainer>
-        <AppContainer />
+        <App />
       </LoadingContainer>
     </DrizzleProvider>
   ),
