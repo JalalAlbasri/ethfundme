@@ -8,6 +8,14 @@ import Campaigns from './Campaigns'
 
 import '../styles/App.css'
 
+// TASK: Contribute Button
+// TASK: End Campaign Button
+// TASK: Filter Campaigns by status
+// TASK: Add Campaign details to store
+// TASK: Approve/Reject for Admins + Reveal
+// TASK: Basic UI Styling
+// TASK: Withdraw Funds
+
 class App extends Component {
   constructor(props, context) {
     super(props)

@@ -10,22 +10,20 @@ import { addCampaign } from '../actions/CampaignActions'
 class CreateCampaignButton extends Component {
   constructor(props, context) {
     super(props)
-    this.drizzle = context.drizzle
     this.handleCreateCampaignClick = this.handleCreateCampaignClick.bind(this)
   }
 
   handleCreateCampaignClick(event) {
     event.preventDefault()
-    const drizzle = this.drizzle
-    const EthFundMe = contract(EthFundMeContract)
-    EthFundMe.setProvider(web3.currentProvider)
+    const web3EthFundMe = contract(EthFundMeContract)
+    web3EthFundMe.setProvider(web3.currentProvider)
     let EthFundMeInstance
 
     web3.eth.getCoinbase((err, coinbase) => {
       if (err) {
         console.log(err)
       }
-      EthFundMe.deployed().then((instance) => {
+      web3EthFundMe.deployed().then((instance) => {
         EthFundMeInstance = instance
         return EthFundMeInstance.createCampaign('web campaign', 10, 1, { from: coinbase })
       }).then((result) => {
@@ -65,4 +63,3 @@ export default drizzleConnect(
   mapStateToProps,
   mapDispatchToProps
 )
-
