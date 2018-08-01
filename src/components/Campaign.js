@@ -96,12 +96,17 @@ class Campaign extends Component {
 }
 
 Campaign.propTypes = {
-  address: PropTypes.string.isRequired
+  address: PropTypes.string.isRequired,
+  title: PropTypes.string,
+  goal: PropTypes.number,
+  duration: PropTypes.number,
+  funds: PropTypes.number,
+  status: PropTypes.string,
+  manager: PropTypes.string
 }
 
 const mapStateToProps = (state) => {
   return {
-    campaign: PropTypes.object.isRequired
   }
 }
 

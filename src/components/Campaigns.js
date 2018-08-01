@@ -52,7 +52,7 @@ Campaigns.propTypes = {
     title: PropTypes.string,
     goal: PropTypes.number,
     duration: PropTypes.number,
-    funds: PropTypes.funds,
+    funds: PropTypes.number,
     status: PropTypes.string,
     manager: PropTypes.string
   }).isRequired).isRequired

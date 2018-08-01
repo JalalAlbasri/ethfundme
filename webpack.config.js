@@ -18,18 +18,36 @@ module.exports = {
   module: {
     rules: [
       {
-        test: [/\.(js|jsx)$/],
+        test: /\.(js|jsx)$/,
         exclude: [/node_modules/, /test/, /migrations/],
         use: 'babel-loader'
       },
       {
         test: /\.css$/,
-        exclude: /node_modules/,
         use: [
           { loader: 'style-loader' },
-          { loader: 'css-loader' }
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true
+            }
+          }
         ]
-
+      },
+      {
+        test: /\.less$/,
+        use: [
+          { loader: 'style-loader' },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true
+            }
+          },
+          {
+            loader: 'less-loader'
+          }
+        ]
       }
     ]
   },
@@ -41,6 +59,6 @@ module.exports = {
     })
   ],
   node: {
-    fs: "empty"
- }
+    fs: 'empty'
+  }
 }

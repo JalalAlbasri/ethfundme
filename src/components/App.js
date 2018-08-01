@@ -3,10 +3,16 @@ import { AccountData, ContractData } from 'drizzle-react-components'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
+import 'bootstrap/dist/css/bootstrap.min.css'
+import '../styles/App.css'
+
+import $ from 'jquery'
+import Popper from 'popper.js'
+import 'bootstrap/dist/js/bootstrap.bundle.min'
+
+import Navbar from './Navbar'
 import CreateCampaignButton from './CreateCampaignButton'
 import Campaigns from './Campaigns'
-
-import '../styles/App.css'
 
 // TASK: Contribute Button
 // TASK: End Campaign Button
@@ -36,6 +42,7 @@ class App extends Component {
 
     return (
       <div className="App">
+        <Navbar />
         <p> truffle react app </p>
         <p> AccounData Component</p>
         <AccountData accountIndex="0" unit="ether" precision="3" />

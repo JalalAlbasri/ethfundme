@@ -172,13 +172,6 @@ contract Campaign is Approvable {
     uint timestamp;
   }
 
-  // struct Contributor {
-  //   address addr;
-  //   uint totalContributed;
-  //   uint numContributions;
-  //   mapping (uint => Contribution) contributions;
-  // }
-
   /**
     STATE VARIABLES
    */
@@ -193,9 +186,6 @@ contract Campaign is Approvable {
   uint public duration;
   address public manager;
 
-  // uint public numContributors;
-  // mapping (address => Contributor) public contributors;
-  
   Contribution[] public contributions;
   mapping (address => uint) public totalContributed;
   mapping (address => bool) public hasContributed;
@@ -278,24 +268,9 @@ contract Campaign is Approvable {
      //Integer Overflow Protection
     require(funds + msg.value > funds);
     require(totalContributed[msg.sender] + msg.value > totalContributed[msg.sender]);
-    // require(contributors[msg.sender].totalContributed + msg.value > contributors[msg.sender].totalContributed);
     _;
   }
   
-  //FIXME: Logic in this modifier doesn't belong in a modifier.
-  // modifier newContributor() {
-  //   if (!hasContributed[msg.sender]) {
-  //     contributors[msg.sender] = Contributor({
-  //       addr: msg.sender,
-  //       totalContributed: 0,
-  //       numContributions: 0
-  //     });
-  //     hasContributed[msg.sender] = true;
-  //     numContributors++;
-  //   }
-  //   _;
-  // }
-
   /**
     FUNCTIONS
    */
@@ -317,14 +292,10 @@ contract Campaign is Approvable {
     notManager 
     transitionState
     onlyDuringCampaignState(CampaignStates.Active)
-    // newContributor 
     validateContribution {
       hasContributed[msg.sender] = true;
       contributions.push(Contribution(msg.sender, msg.value, now));
       totalContributed[msg.sender] += msg.value;
-      // contributors[msg.sender].contributions[contributors[msg.sender].numContributions] = Contribution(msg.value, now);
-      // contributors[msg.sender].numContributions++;
-      // contributors[msg.sender].totalContributed += msg.value;
       funds += msg.value;
     }
   
@@ -353,9 +324,8 @@ contract Campaign is Approvable {
       if (campaignState == CampaignStates.Successful) {
         require(msg.sender == manager);
         hasWithdrawn[msg.sender] = true;
-        // TODO: switch these two lines and see if linter warns you about reentrancy vulnerability
-        msg.sender.transfer(funds);
         funds = 0;
+        msg.sender.transfer(funds);
       }
 
       if(campaignState == CampaignStates.Unsuccessful || campaignState == CampaignStates.Cancelled) {
