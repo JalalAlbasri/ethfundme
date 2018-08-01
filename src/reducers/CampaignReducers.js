@@ -11,6 +11,11 @@ function campaigns(state = initialState, action) {
           address: action.address
         }
       ]
+    case 'UPDATE_CAMPAIGN':
+      return state.map((campaign) => (
+        (campaign.address === action.campaign.address)
+          ? { ...action.campaign } : campaign
+      ))
     default:
       return state
   }

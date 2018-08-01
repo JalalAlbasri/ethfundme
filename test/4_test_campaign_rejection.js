@@ -3,7 +3,7 @@ let Campaign = artifacts.require('Campaign')
 
 let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
-contract('Campaign Rejection', accounts => {
+contract('Campaign Rejection', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 
@@ -17,15 +17,15 @@ contract('Campaign Rejection', accounts => {
   let voteSecret1 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption1, salt]).toString('hex')
   let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
 
-  before('setup and reject campaign', done => {
-    EthFundMe.deployed().then(instance => {
+  before('setup and reject campaign', (done) => {
+    EthFundMe.deployed().then((instance) => {
       EthFundMeInstance = instance
       return EthFundMeInstance.createCampaign('test campaign', 10, 1, { from: accounts[3] })
     })
       .then(() => {
         return EthFundMeInstance.campaigns.call(0)
       })
-      .then(campaignAddress => {
+      .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
         return CampaignInstance.vote(voteSecret0, { from: accounts[0] })
       })
@@ -46,15 +46,15 @@ contract('Campaign Rejection', accounts => {
       })
   })
 
-  it('should set approval state correctly to Rejected', done => {
-    CampaignInstance.approvalState.call().then(approvalState => {
+  it('should set approval state correctly to Rejected', (done) => {
+    CampaignInstance.approvalState.call().then((approvalState) => {
       assert.equal(approvalState, 3, 'approvalState should be 3 (Rejected)')
       done()
     })
   })
 
-  it('should set campaign state correctly to Unsuccessful', done => {
-    CampaignInstance.campaignState.call().then(campaignState => {
+  it('should set campaign state correctly to Unsuccessful', (done) => {
+    CampaignInstance.campaignState.call().then((campaignState) => {
       assert.equal(campaignState, 3, 'approvalState should be 3 (Unsuccessful)')
       done()
     })
@@ -62,4 +62,3 @@ contract('Campaign Rejection', accounts => {
 
   // TODO: try to make a contribution and have it fail
 })
-

@@ -33,8 +33,7 @@ class Campaigns extends Component {
   render() {
     return (
       <ul>
-        {this.props.campaigns.map((campaign) =>
-          <Campaign
+        {this.props.campaigns.map((campaign) => <Campaign
             key={campaign.address}
             {...campaign}
             />)}
@@ -49,7 +48,12 @@ Campaigns.contextTypes = {
 
 Campaigns.propTypes = {
   campaigns: PropTypes.arrayOf(PropTypes.shape({
-    address: PropTypes.string.isRequired
+    address: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    goal: PropTypes.number,
+    duration: PropTypes.number,
+    funds: PropTypes.funds,
+    manager: PropTypes.string
   }).isRequired).isRequired
 }
 
