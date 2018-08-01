@@ -53,6 +53,7 @@ Campaigns.propTypes = {
     goal: PropTypes.number,
     duration: PropTypes.number,
     funds: PropTypes.funds,
+    status: PropTypes.string,
     manager: PropTypes.string
   }).isRequired).isRequired
 }

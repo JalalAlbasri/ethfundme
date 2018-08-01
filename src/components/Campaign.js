@@ -7,6 +7,14 @@ import CampaignContract from '../../build/contracts/Campaign.json'
 
 import { updateCampaign } from '../actions/CampaignActions'
 
+const CAMPAIGN_STATES = {
+  0: 'PENDING',
+  1: 'ACTIVE',
+  2: 'SUCCESSFUL',
+  3: 'UNSUCCESSFUL',
+  4: 'CANCELLED'
+}
+
 class Campaign extends Component {
   constructor(props) {
     super(props)
@@ -49,11 +57,25 @@ class Campaign extends Component {
         })
         .then((funds) => {
           this.campaign.funds = Number(funds)
+          return CampaignInstance.campaignState.call({ from: coinbase })
+        })
+        .then((status) => {
+          this.campaign.status = CAMPAIGN_STATES[Number(status)]
           return CampaignInstance.manager.call({ from: coinbase })
         })
-        .then((manager)=> {
+        .then((manager) => {
           this.campaign.manager = manager
           this.props.dispatchUpdateCampaign(this.campaign)
+        // TODO: Get Contributions, will only be able to interact with contributions once we have an approved campaign!
+          //   return CampaignInstance.getNumContributions.call({ from: coinbase })
+        // })
+        // .then((numContributions) => {
+        //   for (let i = 0; i < numContributions; i++) {
+        //     CampaignInstance.contributions.call(i, { from: coinbase })
+        //       .then((contribution) => {
+        //         console.log(contribution)
+        //       })
+        //   }
         })
     })
   }
@@ -66,6 +88,7 @@ class Campaign extends Component {
         <p> goal: {this.campaign.goal} </p>
         <p> duration: {this.campaign.duration} </p>
         <p> funds: {this.campaign.funds} </p>
+        <p> status: {this.campaign.status} </p>
         <p> manager: {this.campaign.manager} </p>
       </li>
     )
