@@ -4,7 +4,6 @@ import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
-import '../styles/App.css'
 
 import $ from 'jquery'
 import Popper from 'popper.js'

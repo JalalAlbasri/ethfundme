@@ -1,0 +1,7 @@
+{
+  "extends": "stylelint-config-recommended",
+  "rules": {
+    "declaration-empty-line-before": "never",
+    "declaration-block-single-line-max-declarations": 3
+  }
+}

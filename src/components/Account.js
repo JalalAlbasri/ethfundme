@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import '../styles/Account.less'
-
 function AdminBadge(props) {
   if (!props.showAdminBadge) {
     return null
