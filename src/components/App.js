@@ -42,20 +42,19 @@ class App extends Component {
     return (
       <div className="App">
         <Navbar />
-        <p> truffle react app </p>
-        <p> AccounData Component</p>
-        <AccountData accountIndex="0" unit="ether" precision="3" />
-        <p> ContractData Component </p>
-        getNumCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" />
-        <br />
-        getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" />
-        <p>
-        <CreateCampaignButton />
-        </p>
-        <p>
-          numCampaigns: {numCampaigns}
-        </p>
-        <Campaigns />
+        <div className="container">
+          <p> ContractData Component </p>
+          getNumCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" />
+          <br />
+          getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" />
+          <p>
+          <CreateCampaignButton />
+          </p>
+          <p>
+            numCampaigns: {numCampaigns}
+          </p>
+          <Campaigns />
+        </div>
       </div>
     )
   }

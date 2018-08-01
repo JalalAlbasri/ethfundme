@@ -2,9 +2,11 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-function AdminBadge(props) {
-  if (!props.showAdminBadge) {
-    return null
+function UserBadge(props) {
+  if (!props.showUserBadge) {
+    return (
+      <span className="badge badge-success admin-badge">User</span>
+    )
   }
 
   return (
@@ -32,8 +34,8 @@ class Account extends Component {
     }
 
     return (
-      <div className="Account ml-auto">
-        <AdminBadge showAdminBadge={this.isAdmin} />
+      <div className="Account">
+        <UserBadge showUserBadge={this.isAdmin} />
         <span className="badge badge-primary">{this.props.account}</span>
       </div>
     )
