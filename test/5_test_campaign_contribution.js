@@ -79,22 +79,23 @@ contract('Campaign Contribution', (accounts) => {
   })
 
   it('should set numContributions correctly', (done) => {
-    CampaignInstance.getNumContributions.call(accounts[4]).then((numContributions) => {
+    CampaignInstance.getNumContributions.call().then((numContributions) => {
       assert.equal(numContributions, 1, 'numContributions should be 1')
       done()
     })
   })
 
   it('should set totalContributed correctly', (done) => {
-    CampaignInstance.getTotalContributed.call(accounts[4]).then((totalContributed) => {
+    CampaignInstance.totalContributed.call(accounts[4]).then((totalContributed) => {
       assert.equal(totalContributed, 1, 'total contribution should be 1')
       done()
     })
   })
 
   it('should set contribution array correctly', (done) => {
-    CampaignInstance.getContribution.call(accounts[4], 0).then((contribution) => {
-      assert.equal(contribution[0], 1, 'contribution amount should be 1')
+    CampaignInstance.contributions.call(0).then((contribution) => {
+      assert.equal(contribution[0], accounts[4], 'contribution address should be accounts[4]')
+      assert.equal(contribution[1], 1, 'contribution amount should be 1')
       done()
     })
   })
@@ -115,7 +116,7 @@ contract('Campaign Contribution', (accounts) => {
 
   it('should make a single contribution of 2 ether from accounts[5]', (done) => {
     CampaignInstance.contribute({ from: accounts[5], value: 2 }).then(() => {
-      return CampaignInstance.hasContributed.call(accounts[4]).then((hasContributed) => {
+      return CampaignInstance.hasContributed.call(accounts[5]).then((hasContributed) => {
         assert.equal(hasContributed, true, 'accounts[5] should have contributed')
         done()
       })
@@ -123,22 +124,23 @@ contract('Campaign Contribution', (accounts) => {
   })
 
   it('should set numContributions correctly', (done) => {
-    CampaignInstance.getNumContributions.call(accounts[5]).then((numContributions) => {
-      assert.equal(numContributions, 1, 'numContributions should be 1')
+    CampaignInstance.getNumContributions.call().then((numContributions) => {
+      assert.equal(numContributions, 2, 'numContributions should be 2')
       done()
     })
   })
 
   it('should set totalContributed correctly', (done) => {
-    CampaignInstance.getTotalContributed.call(accounts[5]).then((totalContributed) => {
+    CampaignInstance.totalContributed.call(accounts[5]).then((totalContributed) => {
       assert.equal(totalContributed, 2, 'total contribution should be 2')
       done()
     })
   })
 
   it('should set contribution array correctly', (done) => {
-    CampaignInstance.getContribution.call(accounts[5], 0).then((contribution) => {
-      assert.equal(contribution[0], 2, 'contribution amount should be 2')
+    CampaignInstance.contributions.call(1).then((contribution) => {
+      assert.equal(contribution[0], accounts[5], 'contribution address should be accounts[5]')
+      assert.equal(contribution[1], 2, 'contribution amount should be 2')
       done()
     })
   })
@@ -152,23 +154,24 @@ contract('Campaign Contribution', (accounts) => {
 
   it('should make a second contribution of 3 ether from accounts[4]', (done) => {
     CampaignInstance.contribute({ from: accounts[4], value: 3 }).then(() => {
-      CampaignInstance.getNumContributions.call(accounts[4]).then((numContributions) => {
-        assert.equal(numContributions, 2, 'numContributions should be 2')
+      CampaignInstance.getNumContributions.call().then((numContributions) => {
+        assert.equal(numContributions, 3, 'numContributions should be 3')
         done()
       })
     })
   })
 
   it('should set totalContributed correctly', (done) => {
-    CampaignInstance.getTotalContributed.call(accounts[4]).then((totalContributed) => {
+    CampaignInstance.totalContributed.call(accounts[4]).then((totalContributed) => {
       assert.equal(totalContributed, 4, 'total contribution should be 4')
       done()
     })
   })
 
   it('should set contribution array correctly', (done) => {
-    CampaignInstance.getContribution.call(accounts[4], 1).then((contribution) => {
-      assert.equal(contribution[0], 3, 'contribution amount should be 3')
+    CampaignInstance.contributions.call(2).then((contribution) => {
+      assert.equal(contribution[0], accounts[4], 'contribution address should be accounts[4]')
+      assert.equal(contribution[1], 3, 'contribution amount should be 3')
       done()
     })
   })

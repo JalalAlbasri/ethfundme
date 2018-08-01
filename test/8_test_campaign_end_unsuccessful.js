@@ -14,7 +14,7 @@ const increaseTime = function (duration) {
       method: 'evm_increaseTime',
       params: [duration],
       id: id
-    }, err1 => {
+    }, (err1) => {
       if (err1) return reject(err1)
 
       web3.currentProvider.sendAsync({
@@ -28,7 +28,7 @@ const increaseTime = function (duration) {
   })
 }
 
-contract('Campaign End Unsuccessfully', accounts => {
+contract('Campaign End Unsuccessfully', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 
@@ -42,15 +42,15 @@ contract('Campaign End Unsuccessfully', accounts => {
   let voteSecret1 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption1, salt]).toString('hex')
   let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
 
-  before('setup and reject campaign', done => {
-    EthFundMe.deployed().then(instance => {
+  before('setup and reject campaign', (done) => {
+    EthFundMe.deployed().then((instance) => {
       EthFundMeInstance = instance
       return EthFundMeInstance.createCampaign('test campaign', 10, 1, { from: accounts[3] })
     })
       .then(() => {
         return EthFundMeInstance.campaigns.call(0)
       })
-      .then(campaignAddress => {
+      .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
         return CampaignInstance.vote(voteSecret0, { from: accounts[0] })
       })
@@ -81,55 +81,55 @@ contract('Campaign End Unsuccessfully', accounts => {
   })
 
   // time travel
-  it('should increase evm time past end date', done => {
+  it('should increase evm time past end date', (done) => {
     increaseTime(TWO_DAYS).then(() => {
       return CampaignInstance.isActive.call()
-    }).then(isActive => {
+    }).then((isActive) => {
       assert.equal(isActive, false, 'isActive should be false')
       done()
     })
   })
 
-  it('should end before goal is met and state should be set to Unsuccessful', done => {
+  it('should end before goal is met and state should be set to Unsuccessful', (done) => {
     CampaignInstance.endCampaign({ from: accounts[3] }).then(() => {
       return CampaignInstance.campaignState.call()
-    }).then(campaignState => {
+    }).then((campaignState) => {
       assert.equal(campaignState, 3, 'campaignState should be 3 (Unsuccessful)')
       done()
     })
   })
 
-  it('should not allow the Campaign manager to withdraw funds', done => {
-    CampaignInstance.withdraw({ fron: accounts[3] }).catch(e => {
+  it('should not allow the Campaign manager to withdraw funds', (done) => {
+    CampaignInstance.withdraw({ fron: accounts[3] }).catch((e) => {
       return CampaignInstance.funds.call()
-    }).then(funds => {
+    }).then((funds) => {
       assert.equal(funds, 6, 'funds should be 6')
       done()
     })
   })
 
-  it('should not allow the non contributors to withdraw funds', done => {
-    CampaignInstance.withdraw({ fron: accounts[6] }).catch(e => {
+  it('should not allow the non contributors to withdraw funds', (done) => {
+    CampaignInstance.withdraw({ fron: accounts[6] }).catch((e) => {
       return CampaignInstance.funds.call()
-    }).then(funds => {
+    }).then((funds) => {
       assert.equal(funds, 6, 'funds should be 6')
       done()
     })
   })
 
-  it('should allow contributors to withdraw contributed funds', done => {
+  it('should allow contributors to withdraw contributed funds', (done) => {
     CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
       return CampaignInstance.funds.call()
-    }).then(funds => {
+    }).then((funds) => {
       assert.equal(funds, 3, 'funds should be 3')
       done()
     })
   })
 
-  it('should not allow a contributor to withdraw funds again', done => {
-    CampaignInstance.withdraw({ fron: accounts[4] }).catch(e => {
+  it('should not allow a contributor to withdraw funds again', (done) => {
+    CampaignInstance.withdraw({ fron: accounts[4] }).catch((e) => {
       return CampaignInstance.funds.call()
-    }).then(funds => {
+    }).then((funds) => {
       assert.equal(funds, 3, 'funds should be 3')
       done()
     })

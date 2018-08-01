@@ -167,16 +167,17 @@ contract Campaign is Approvable {
   }
 
   struct Contribution {
+    address addr;
     uint amount;
     uint timestamp;
   }
 
-  struct Contributor {
-    address addr;
-    uint totalContributed;
-    uint numContributions;
-    mapping (uint => Contribution) contributions;
-  }
+  // struct Contributor {
+  //   address addr;
+  //   uint totalContributed;
+  //   uint numContributions;
+  //   mapping (uint => Contribution) contributions;
+  // }
 
   /**
     STATE VARIABLES
@@ -185,7 +186,6 @@ contract Campaign is Approvable {
   CampaignStates public campaignState = CampaignStates.Pending;
   uint public funds = address(this).balance;
   uint public endDate;
-  mapping (address => bool) hasWithdrawn;
 
   uint public id;
   string public title;
@@ -193,9 +193,14 @@ contract Campaign is Approvable {
   uint public duration;
   address public manager;
 
-  uint public numContributors;
-  mapping (address => Contributor) public contributors;
+  // uint public numContributors;
+  // mapping (address => Contributor) public contributors;
+  
+  Contribution[] public contributions;
+  mapping (address => uint) public totalContributed;
   mapping (address => bool) public hasContributed;
+  mapping (address => bool) hasWithdrawn;
+
 
   /**
     CONSTRUCTOR
@@ -272,23 +277,24 @@ contract Campaign is Approvable {
     require(msg.value > 0); 
      //Integer Overflow Protection
     require(funds + msg.value > funds);
-    require(contributors[msg.sender].totalContributed + msg.value > contributors[msg.sender].totalContributed);
+    require(totalContributed[msg.sender] + msg.value > totalContributed[msg.sender]);
+    // require(contributors[msg.sender].totalContributed + msg.value > contributors[msg.sender].totalContributed);
     _;
   }
   
   //FIXME: Logic in this modifier doesn't belong in a modifier.
-  modifier newContributor() {
-    if (!hasContributed[msg.sender]) {
-      contributors[msg.sender] = Contributor({
-        addr: msg.sender,
-        totalContributed: 0,
-        numContributions: 0
-      });
-      hasContributed[msg.sender] = true;
-      numContributors++;
-    }
-    _;
-  }
+  // modifier newContributor() {
+  //   if (!hasContributed[msg.sender]) {
+  //     contributors[msg.sender] = Contributor({
+  //       addr: msg.sender,
+  //       totalContributed: 0,
+  //       numContributions: 0
+  //     });
+  //     hasContributed[msg.sender] = true;
+  //     numContributors++;
+  //   }
+  //   _;
+  // }
 
   /**
     FUNCTIONS
@@ -311,11 +317,14 @@ contract Campaign is Approvable {
     notManager 
     transitionState
     onlyDuringCampaignState(CampaignStates.Active)
-    newContributor 
+    // newContributor 
     validateContribution {
-      contributors[msg.sender].contributions[contributors[msg.sender].numContributions] = Contribution(msg.value, now);
-      contributors[msg.sender].numContributions++;
-      contributors[msg.sender].totalContributed += msg.value;
+      hasContributed[msg.sender] = true;
+      contributions.push(Contribution(msg.sender, msg.value, now));
+      totalContributed[msg.sender] += msg.value;
+      // contributors[msg.sender].contributions[contributors[msg.sender].numContributions] = Contribution(msg.value, now);
+      // contributors[msg.sender].numContributions++;
+      // contributors[msg.sender].totalContributed += msg.value;
       funds += msg.value;
     }
   
@@ -344,15 +353,16 @@ contract Campaign is Approvable {
       if (campaignState == CampaignStates.Successful) {
         require(msg.sender == manager);
         hasWithdrawn[msg.sender] = true;
-        funds = 0;
+        // TODO: switch these two lines and see if linter warns you about reentrancy vulnerability
         msg.sender.transfer(funds);
+        funds = 0;
       }
 
       if(campaignState == CampaignStates.Unsuccessful || campaignState == CampaignStates.Cancelled) {
         require(hasContributed[msg.sender] == true);
         hasWithdrawn[msg.sender] = true;
-        funds -= contributors[msg.sender].totalContributed;
-        msg.sender.transfer(contributors[msg.sender].totalContributed);
+        funds -= totalContributed[msg.sender];
+        msg.sender.transfer(totalContributed[msg.sender]);
       }
   }
 
@@ -361,18 +371,8 @@ contract Campaign is Approvable {
   // Decide this when building the frontend. If it can help update state correctly in the frontend it
   // might be a good idea, otherwise it's unneccessary.
 
-
-  function getTotalContributed(address contributor) public view returns(uint totalContributed) {
-    totalContributed = contributors[contributor].totalContributed;
-  }
-  
-  function getNumContributions(address contributor) public view returns(uint numContributions) {
-    numContributions = contributors[contributor].numContributions;
-  }
-
-  function getContribution(address contributor, uint i) public view returns(uint amount, uint timestamp) {
-    amount = contributors[contributor].contributions[i].amount;
-    timestamp = contributors[contributor].contributions[i].timestamp;
+  function getNumContributions() public view returns(uint numContributions) {
+    return contributions.length;
   }
 
   // HELPERS
