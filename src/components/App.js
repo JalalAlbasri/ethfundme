@@ -10,10 +10,10 @@ import Campaigns from './Campaigns'
 // TASK: Contribute Button
 // TASK: End Campaign Button
 // TASK: Filter Campaigns by status
-// TASK: Add Campaign details to store
 // TASK: Approve/Reject for Admins + Reveal
 // TASK: Basic UI Styling
 // TASK: Withdraw Funds
+// TASK: Create campaign form
 
 class App extends Component {
   constructor(props, context) {
@@ -39,10 +39,10 @@ class App extends Component {
         <div className="container">
           <div className="row">
             <div className="col-md-10 offset-md-1">
-              <p> ContractData Component </p>
-              getNumCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" />
-              <br />
-              getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" />
+              {/* <p> ContractData Component </p> */}
+              {/* getNumCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" /> */}
+              {/* <br /> */}
+              {/* getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" /> */}
               <p>
                 numCampaigns: {numCampaigns}
               </p>
