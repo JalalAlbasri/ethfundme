@@ -2,23 +2,84 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
 const contract = require('truffle-contract')
 import CampaignContract from '../../build/contracts/Campaign.json'
 
 import { updateCampaign } from '../actions/CampaignActions'
 
 const CAMPAIGN_STATES = {
-  0: 'PENDING',
-  1: 'ACTIVE',
-  2: 'SUCCESSFUL',
-  3: 'UNSUCCESSFUL',
-  4: 'CANCELLED'
+  0: 'Pending',
+  1: 'Active',
+  2: 'Successful',
+  3: 'Unsuccessful',
+  4: 'Cancelled'
+}
+
+function GoalProgress(props) {
+
+  if (props.funds <= props.goal) {
+    const progress = props.funds / props.goal * 100
+
+    const progressBarStyle = {
+      width: progress + "%"
+    }
+
+    return (
+      <div className="progress">
+        <div className="progress-bar progress-bar-striped"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuenow={progress}
+          aria-valuemax="100"
+          style={progressBarStyle}
+        >
+          {props.funds}
+        </div>
+      </div>
+    ) 
+  }
+  else {
+    const goalProgress = (props.goal / props.funds) * 100
+    const surplusProgress = ((props.funds - props.goal) / props.funds) * 100
+
+    const goalProgressBarStyle = {
+      width: goalProgress + '%'
+    }
+
+    const surplusProgressBarStyle = {
+      width: surplusProgress + '%'
+    }
+
+    return (
+      <div className="progress">
+        <div className="progress-bar progress-bar-striped"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuenow={goalProgress}
+          aria-valuemax="100"
+          style={goalProgressBarStyle}
+        >
+          {props.goal}
+        </div>
+        <div className="progress-bar progress-bar-striped bg-success"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuenow={surplusProgress}
+          aria-valuemax="100"
+          style={surplusProgressBarStyle}
+        >
+          {props.funds - props.goal}
+        </div>
+      </div>
+    )
+  }
 }
 
 class Campaign extends Component {
   constructor(props) {
     super(props)
-    console.log(`props.campaign: ${props.address}`)
     this.campaign = {
       address: props.address,
       title: props.title,
@@ -81,19 +142,48 @@ class Campaign extends Component {
   }
 
   render() {
+    let duration
+    if (this.campaign.duration) {
+      duration = this.campaign.duration / (60 * 60 * 24)
+    }
+
+    this.campaign.funds = 15
+    this.campaign.goal = 10
+
     return (
-      <li>
-        <p> address: {this.campaign.address} </p>
-        <p> title: {this.campaign.title} </p>
-        <p> goal: {this.campaign.goal} </p>
-        <p> duration: {this.campaign.duration} </p>
-        <p> funds: {this.campaign.funds} </p>
-        <p> status: {this.campaign.status} </p>
-        <p> manager: {this.campaign.manager} </p>
-      </li>
+      <div className={'Campaign card border-warning mb-3 ' + this.campaign.status}>
+        <div className="card-header h5 bg-transparent border-warning d-flex">
+          <span className="mr-auto">{this.campaign.title}</span>
+          <span className="status ml-auto">
+            {this.campaign.status}
+            <FontAwesomeIcon className="status-icon" icon="circle" />
+          </span>
+        </div>
+        <div className="card-body">
+          <div className="row" >
+            <div className="col-md-6">
+              <p> Address: {this.campaign.address} </p>
+              <p> Manager: {this.campaign.manager} </p>
+            </div>
+            <div className="details col-md-6">
+              { duration
+                ? <p>{duration} day{duration > 1 ? 's' : ''}</p>
+                : ''
+              }
+              <p> {this.campaign.funds} eth raised of {this.campaign.goal} eth</p>
+            </div>
+
+          </div>
+          {
+            (this.campaign.funds >= 0) ? 
+              <GoalProgress funds={this.campaign.funds} goal={this.campaign.goal} /> : ''
+          }
+        </div>
+      </div>
     )
   }
 }
+
 
 Campaign.propTypes = {
   address: PropTypes.string.isRequired,

@@ -52,7 +52,6 @@ Account.propTypes = {
 }
 
 const mapStateToProps = (state) => {
-  console.log(`typeof state.accounts[0]: ${typeof state.accounts[0]}`)
   return {
     EthFundMe: state.contracts.EthFundMe,
     account: state.accounts[0]

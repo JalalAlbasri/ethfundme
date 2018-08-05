@@ -6,10 +6,22 @@ import { LoadingContainer } from 'drizzle-react-components'
 
 import './index.css'
 import './styles/styles.less'
-import App from './components/App'
+
+import 'bootstrap/dist/css/bootstrap.min.css'
+
+import $ from 'jquery'
+import Popper from 'popper.js'
+import 'bootstrap/dist/js/bootstrap.bundle.min'
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCircle } from '@fortawesome/free-solid-svg-icons'
 
 import store from './store'
 import drizzleOptions from './drizzleOptions'
+
+import App from './components/App'
+
+library.add(faCircle)
 
 ReactDOM.render(
   (

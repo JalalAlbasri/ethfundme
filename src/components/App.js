@@ -3,12 +3,6 @@ import { AccountData, ContractData } from 'drizzle-react-components'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import 'bootstrap/dist/css/bootstrap.min.css'
-
-import $ from 'jquery'
-import Popper from 'popper.js'
-import 'bootstrap/dist/js/bootstrap.bundle.min'
-
 import Navbar from './Navbar'
 import CreateCampaignButton from './CreateCampaignButton'
 import Campaigns from './Campaigns'
