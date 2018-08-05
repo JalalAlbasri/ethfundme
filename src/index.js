@@ -14,7 +14,7 @@ import Popper from 'popper.js'
 import 'bootstrap/dist/js/bootstrap.bundle.min'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCircle } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import store from './store'
 import drizzleOptions from './drizzleOptions'
@@ -22,6 +22,7 @@ import drizzleOptions from './drizzleOptions'
 import App from './components/App'
 
 library.add(faCircle)
+library.add(faPlus)
 
 ReactDOM.render(
   (

@@ -37,17 +37,27 @@ class App extends Component {
       <div className="App">
         <Navbar />
         <div className="container">
-          <p> ContractData Component </p>
-          getNumCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" />
-          <br />
-          getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" />
-          <p>
-          <CreateCampaignButton />
-          </p>
-          <p>
-            numCampaigns: {numCampaigns}
-          </p>
-          <Campaigns />
+          <div className="row">
+            <div className="col-md-10 offset-md-1">
+              <p> ContractData Component </p>
+              getNumCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" />
+              <br />
+              getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" />
+              <p>
+                numCampaigns: {numCampaigns}
+              </p>
+            </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-10 offset-md-1 d-flex flex-row-reverse">
+              <CreateCampaignButton />
+            </div>
+          </div>
+          <div className="row">
+            <div className="col-md-10 offset-md-1">
+              <Campaigns />
+            </div>
+          </div>
         </div>
       </div>
     )

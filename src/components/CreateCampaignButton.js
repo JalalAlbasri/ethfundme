@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+
+
 const contract = require('truffle-contract')
 import EthFundMeContract from '../../build/contracts/EthFundMe.json'
 
@@ -36,7 +39,13 @@ class CreateCampaignButton extends Component {
   }
 
   render() {
-    return <button onClick={(event) => this.handleCreateCampaignClick(event)}>CreateCampaign</button>
+    return <button
+      type="button"
+      className="btn btn-outline-success"
+      onClick={(event) => this.handleCreateCampaignClick(event)}>
+        <FontAwesomeIcon className="plus-icon" icon="plus" />
+        CreateCampaign
+      </button>
   }
 }
 

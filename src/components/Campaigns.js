@@ -32,12 +32,12 @@ class Campaigns extends Component {
 
   render() {
     return (
-      <ul>
+      <div>
         {this.props.campaigns.map((campaign) => <Campaign
             key={campaign.address}
             {...campaign}
             />)}
-      </ul>
+      </div>
     )
   }
 }

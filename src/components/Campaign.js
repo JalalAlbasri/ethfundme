@@ -18,12 +18,11 @@ const CAMPAIGN_STATES = {
 }
 
 function GoalProgress(props) {
-
   if (props.funds <= props.goal) {
     const progress = props.funds / props.goal * 100
 
     const progressBarStyle = {
-      width: progress + "%"
+      width: progress + '%'
     }
 
     return (
@@ -38,21 +37,21 @@ function GoalProgress(props) {
           {props.funds}
         </div>
       </div>
-    ) 
+    )
   }
-  else {
-    const goalProgress = (props.goal / props.funds) * 100
-    const surplusProgress = ((props.funds - props.goal) / props.funds) * 100
 
-    const goalProgressBarStyle = {
-      width: goalProgress + '%'
-    }
+  const goalProgress = (props.goal / props.funds) * 100
+  const surplusProgress = ((props.funds - props.goal) / props.funds) * 100
 
-    const surplusProgressBarStyle = {
-      width: surplusProgress + '%'
-    }
+  const goalProgressBarStyle = {
+    width: goalProgress + '%'
+  }
 
-    return (
+  const surplusProgressBarStyle = {
+    width: surplusProgress + '%'
+  }
+
+  return (
       <div className="progress">
         <div className="progress-bar progress-bar-striped"
           role="progressbar"
@@ -73,8 +72,7 @@ function GoalProgress(props) {
           {props.funds - props.goal}
         </div>
       </div>
-    )
-  }
+  )
 }
 
 class Campaign extends Component {
@@ -161,11 +159,11 @@ class Campaign extends Component {
         </div>
         <div className="card-body">
           <div className="row" >
-            <div className="col-md-6">
+            <div className="col-md-8">
               <p> Address: {this.campaign.address} </p>
               <p> Manager: {this.campaign.manager} </p>
             </div>
-            <div className="details col-md-6">
+            <div className="details col-md-4">
               { duration
                 ? <p>{duration} day{duration > 1 ? 's' : ''}</p>
                 : ''
@@ -175,8 +173,8 @@ class Campaign extends Component {
 
           </div>
           {
-            (this.campaign.funds >= 0) ? 
-              <GoalProgress funds={this.campaign.funds} goal={this.campaign.goal} /> : ''
+            (this.campaign.funds >= 0)
+              ? <GoalProgress funds={this.campaign.funds} goal={this.campaign.goal} /> : ''
           }
         </div>
       </div>
