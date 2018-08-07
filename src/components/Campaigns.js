@@ -32,10 +32,11 @@ class Campaigns extends Component {
 
   render() {
     return (
-      <div>
-        {this.props.campaigns.map((campaign) => <Campaign
+      <div className="Campaigns">
+        {this.props.campaigns.map((campaign, i) => <Campaign
             key={campaign.address}
-            {...campaign}
+            // {...campaign}
+            i={i}
             />)}
       </div>
     )
@@ -47,15 +48,18 @@ Campaigns.contextTypes = {
 }
 
 Campaigns.propTypes = {
-  campaigns: PropTypes.arrayOf(PropTypes.shape({
-    address: PropTypes.string.isRequired,
-    title: PropTypes.string,
-    goal: PropTypes.number,
-    duration: PropTypes.number,
-    funds: PropTypes.number,
-    status: PropTypes.string,
-    manager: PropTypes.string
-  }).isRequired).isRequired
+  campaigns: PropTypes.arrayOf(
+    PropTypes.shape(PropTypes.object.isRequire).isRequired
+  ).isRequired
+  // campaigns: PropTypes.arrayOf(PropTypes.shape({
+  //   address: PropTypes.string.isRequired,
+  //   title: PropTypes.string,
+  //   goal: PropTypes.number,
+  //   duration: PropTypes.number,
+  //   funds: PropTypes.number,
+  //   status: PropTypes.number,
+  //   manager: PropTypes.string
+  // }).isRequired).isRequired
 }
 
 

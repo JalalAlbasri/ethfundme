@@ -21,10 +21,6 @@ class Account extends Component {
     this.dataKey = context.drizzle.contracts.EthFundMe.methods.isAdmin.cacheCall(props.account)
   }
 
-  componentDidMount() {
-
-  }
-
   render() {
     const EthFundMe = this.props.EthFundMe
     this.isAdmin = false

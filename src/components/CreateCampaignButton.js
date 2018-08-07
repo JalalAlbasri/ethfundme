@@ -41,10 +41,10 @@ class CreateCampaignButton extends Component {
   render() {
     return <button
       type="button"
-      className="btn btn-success"
+      className="btn btn-outline-success"
       onClick={(event) => this.handleCreateCampaignClick(event)}>
         <FontAwesomeIcon className="plus-icon" icon="plus" />
-        CreateCampaign
+        Create Campaign
       </button>
   }
 }

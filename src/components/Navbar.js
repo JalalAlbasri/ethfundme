@@ -4,6 +4,7 @@ import Account from './Account'
 
 const Navbar = () => {
   return (
+    // TODO: Collapse the navbars properly when mobile/ sm
     <nav className="navbar navbar-expand-md">
       <div className="w-50 d-flex justify-content-start" />
       <a className="navbar-brand d-flex mx-auto justify-content-center" href="/">
