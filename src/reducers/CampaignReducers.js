@@ -13,6 +13,7 @@ function campaigns(state = initialState, action) {
         }
       ]
     case 'UPDATE_CAMPAIGN':
+      console.log(`UPDATE_CAMPAIGN action.campaign.hasVoted: ${action.campaign.hasVoted}`)
       return state.map((campaign) => (
         (campaign.address === action.campaign.address)
           ? { ...action.campaign } : campaign

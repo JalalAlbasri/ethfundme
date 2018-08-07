@@ -88,14 +88,20 @@ contract EthFundMe {
   function getNumCampaigns() public view returns (uint) {
     return campaigns.length;
   }
+  
+  modifier notAdmin() {
+    require(isAdmin[msg.sender] == false, "Admins cannot create campaigns");
+    _;
+  }
 
-  function createCampaign(string title, uint goal, uint duration) public returns(address) {
+  function createCampaign(string title, uint goal, uint duration) public 
+    notAdmin
+    returns(address) {
     Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, msg.sender, address(this));
     campaigns.push(address(newCampaign));
     emit CampaignCreated(address(newCampaign));
     return address(newCampaign);
   }
-
 
 }
 

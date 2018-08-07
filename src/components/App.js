@@ -44,7 +44,7 @@ class App extends Component {
               {/* <br /> */}
               {/* getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" /> */}
               <p>
-                numCampaigns: {numCampaigns}
+                {/* numCampaigns: {numCampaigns} */}
               </p>
             </div>
           </div>

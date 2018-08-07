@@ -32,29 +32,30 @@ class Campaign extends Component {
     }
 
     return (
-      <div className={'Campaign card border-warning mb-3 ' + CAMPAIGN_STATES[this.props.campaign.campaignState]}>
+      <div className={'Campaign card mb-3 ' + CAMPAIGN_STATES[this.props.campaign.campaignState]}>
         <div className="card-header h6 bg-transparent d-flex">
           <span className="mr-auto">{this.props.campaign.title}</span>
           {
             (Object.prototype.hasOwnProperty.call(this.props.campaign, 'campaignState'))
               ? <span className="status ml-auto">
-                {CAMPAIGN_STATES[this.props.campaign.campaignState]}
                 <FontAwesomeIcon className="status-icon" icon="circle" />
+                {CAMPAIGN_STATES[this.props.campaign.campaignState]}
               </span> : ''
           }
         </div>
         <div className="card-body">
-          <div className="row" >
+          <div className="row mb-3">
             <div className="col-md-8">
-              <p> Address: {this.props.campaign.address} </p>
-              <p> Manager: {this.props.campaign.manager} </p>
+              <div> Address: {this.props.campaign.address} </div>
+              <div> Manager: {this.props.campaign.manager} </div>
             </div>
             <div className="details col-md-4">
+            {/* TODO: countdown timer */}
               { duration
-                ? <p>{duration} day{duration > 1 ? 's' : ''}</p>
+                ? <div>{duration} day{duration > 1 ? 's' : ''}</div>
                 : ''
               }
-              <p> {this.props.campaign.funds} eth raised of {this.props.campaign.goal} eth</p>
+              <div> {this.props.campaign.funds} eth raised of {this.props.campaign.goal} eth</div>
             </div>
 
           </div>

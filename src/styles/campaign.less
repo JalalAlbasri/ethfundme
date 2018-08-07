@@ -2,12 +2,41 @@
   font-size: 16px;
 
   .status-icon {
-    margin: 0 4px;
+    margin: 0 5px;
   }
 
   &.Pending {
+    border-color: @md-amber-500;
     .status {
       color: @md-amber-500;
+    } 
+  }
+
+  &.Active {
+    border-color: @md-blue-500;
+    .status {
+      color: @md-blue-500;
+    } 
+  }
+
+  &.Successful {
+    border-color: @md-green-500;
+    .status {
+      color: @md-green-500;
+    } 
+  }
+
+  &.Unsuccessful {
+    border-color: @md-red-500;
+    .status {
+      color: @md-red-500;
+    } 
+  }
+
+  &.Cancelled {
+    border-color: @md-grey-500;
+    .status {
+      color: @md-grey-500;
     } 
   }
 

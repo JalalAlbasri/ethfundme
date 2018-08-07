@@ -2,10 +2,11 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import { placeVote } from '../actions/CampaignActions'
+import { placeVote, revealVote } from '../actions/CampaignActions'
 
 let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const APPROVAL_STATES = {
   0: 'Commit',
@@ -20,36 +21,41 @@ class Vote extends Component {
     super(props)
 
     this.state = {
-      salt: 0
+      salt: '',
+      voteOption: true
     }
 
-    this.handleChange = this.handleChange.bind(this)
-    this.handleApprove = this.handleApprove.bind(this)
-    this.handleReject = this.handleReject.bind(this)
+    this.handleChangeSalt = this.handleChangeSalt.bind(this)
+    this.handleChangeVoteOption = this.handleChangeVoteOption.bind(this)
+    this.handleVote = this.handleVote.bind(this)
+    this.handleReveal = this.handleReveal.bind(this)
   }
 
-  handleChange(event) {
+  handleChangeVoteOption(event) {
+    this.setState({
+      voteOption: !this.state.voteOption
+    })
+    event.preventDefault()
+  }
+
+  handleChangeSalt(event) {
     this.setState({
       salt: event.target.value
     })
     event.preventDefault()
   }
 
-  handleApprove(event) {
-    console.log('approve')
-    this.vote(true)
-    event.preventDefault()
-  }
-
-  handleReject(event) {
-    console.log('reject')
-    this.vote(false)
-    event.preventDefault()
-  }
-
-  vote(voteOption) {
-    let voteSecret = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption, this.state.salt]).toString('hex')
+  handleVote(event) {
+    console.log(`handleVote this.state.voteOption: ${this.state.voteOption}, this.state.salt: ${this.state.salt}`)
+    let voteSecret = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [this.state.voteOption, this.state.salt]).toString('hex')
     this.props.dispatchPlaceVote(this.props.campaign, voteSecret)
+    event.preventDefault()
+  }
+
+  handleReveal(event) {
+    console.log(`handleReveal this.state.voteOption: ${this.state.voteOption}, this.state.salt: ${this.state.salt}`)
+    this.props.dispatchRevealVote(this.props.campaign, this.state.voteOption, this.state.salt)
+    event.preventDefault()
   }
 
   componentDidMount() {
@@ -59,55 +65,82 @@ class Vote extends Component {
   render() {
     if (this.props.account.isAdmin) {
       return (
-        <div className="Vote">
-          <p>Approval Status: {APPROVAL_STATES[this.props.campaign.approvalState]}</p>
-          <p>hasVoted: {(this.props.campaign.hasVoted) ? 'has voted' : 'has not voted'}</p>
+        <div className={'Vote ' + APPROVAL_STATES[this.props.campaign.approvalState]}>
+          <div>
+            Approval Status:
+          {
+            (Object.prototype.hasOwnProperty.call(this.props.campaign, 'approvalState'))
+              ? <span className="status ml-auto">
+                <FontAwesomeIcon className="status-icon" icon="circle" />
+                {APPROVAL_STATES[this.props.campaign.approvalState]}
+              </span> : ''
+          }
+          </div>
+          {/* <p>hasVoted: {(this.props.campaign.hasVoted) ? 'has voted' : 'has not voted'}</p> */}
+          {/* <p>hasRevealed: {(this.props.campaign.hasRevealed) ? 'has revealed' : 'has not revealed'}</p> */}
           {
             (this.props.campaign.approvalState === 0)
-              ? <p> {this.props.campaign.numVoteSecrets} {(this.props.campaign.numVoteSecrets === 1) ? 'vote has' : 'votes have'} been placed </p> : null
+              ? <div> {this.props.campaign.numVoteSecrets} {(this.props.campaign.numVoteSecrets === 1) ? 'vote has' : 'votes have'} been placed </div> : null
+          }
+          {
+            (this.props.campaign.approvalState === 1)
+              ? <div> {this.props.campaign.numVoteReveals} {(this.props.campaign.numVoteReveals === 1) ? 'vote has' : 'votes have'} been revealed </div> : null
           }
 
           {/* TODO: Hide the form once you submit it */}
           {/* TODO: Only show form if this admin has not voted */}
 
-          <form>
-            <div className="form-row">
-              <div className="col-sm-3">
-                {/* TODO: Generate random number for salt */}
-                <input type="number" className="form-control" value={this.state.salt} onChange={this.handleChange}/>
-              </div>
-              {
-                (this.props.campaign.approvalState === 0 && !this.props.campaign.hasVoted)
-                  ? (
-                  <div className="col-auto">
-                    <button type="submit" className="btn btn-outline-success" onClick={this.handleApprove}>
-                      Approve
-                    </button>
+        {
+          /* TODO: Generate random number for salt */
+          ((this.props.campaign.approvalState === 0 && !this.props.campaign.hasVoted) || (this.props.campaign.approvalState === 1 && !this.props.campaign.hasRevealed))
+            ? (<form>
+                <div className="form-row">
+                  <div className="col-sm-3">
+                      <input
+                          type="number"
+                          className="form-control"
+                          placeholder="Salt"
+                          value={this.state.salt}
+                          onChange={this.handleChangeSalt}
+                        />
                   </div>
-                  ) : ''
-              }
-              {
-                (this.props.campaign.approvalState === 0 && !this.props.campaign.hasVoted)
-                  ? (
+
                   <div className="col-auto">
-                    <button type="submit" className="btn btn-outline-danger" onClick={this.handleReject}>
-                      Reject
-                    </button>
+                    <div className="btn-group btn-group-toggle" data-toggle="buttons" onClick={this.handleChangeVoteOption}>
+                      <label className="btn btn-outline-success active">
+                        <input type="radio" name="voteOptions" id="approve" autoComplete="off"/>Approve
+                      </label>
+                      <label className="btn btn-outline-danger">
+                        <input type="radio" name="voteOptions" id="reject" autoComplete="off"/>Reject
+                      </label>
+                    </div>
                   </div>
-                  ) : ''
-              }
-              {
-                (this.props.campaign.approvalState === 1 && !this.props.campaign.hasRevealed)
-                  ? (
-                  <div className="col-auto">
-                    <button type="submit" className="btn btn-outline-primary">
-                      Reveal
-                    </button>
-                  </div>
-                  ) : ''
-              }
-            </div>
-          </form>
+
+                  {
+                    (this.props.campaign.approvalState === 0)
+                      ? (
+                      <div className="col-auto">
+                        <button type="submit" className={'btn btn-outline-' + ((this.state.voteOption) ? 'success' : 'danger')} onClick={this.handleVote}>
+                          Vote
+                        </button>
+                      </div>
+                      ) : null
+                  }
+                  {
+                    (this.props.campaign.approvalState === 1)
+                      ? (
+                      <div className="col-auto">
+                        <button type="submit" className="btn btn-outline-primary" onClick={this.handleReveal}>
+                          Reveal
+                        </button>
+                      </div>
+                      ) : ''
+                  }
+
+                </div>
+              </form>
+            ) : null
+          }
         </div>
       )
     }
@@ -136,6 +169,9 @@ const mapDispathToProps = (dispatch) => {
   return {
     dispatchPlaceVote: (campaign, voteSecret) => {
       dispatch(placeVote(campaign, voteSecret))
+    },
+    dispatchRevealVote: (campaign, voteOption, salt) => {
+      dispatch(revealVote(campaign, voteOption, salt))
     }
   }
 }
