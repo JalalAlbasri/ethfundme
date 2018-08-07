@@ -27,7 +27,6 @@ class Vote extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.handleApprove = this.handleApprove.bind(this)
     this.handleReject = this.handleReject.bind(this)
-    this.loaded = false
   }
 
   handleChange(event) {
@@ -66,8 +65,6 @@ class Vote extends Component {
 
   render() {
     if (this.props.account.isAdmin) {
-    // TODO: is loaded required?
-      // if (this.isAdmin && this.loaded) {
       return (
         <div className="Vote">
           <p>Approval Status: {APPROVAL_STATES[this.props.campaign.approvalState]}</p>
