@@ -10,12 +10,18 @@
 }
 
 .jumbotron {
+  z-index: 10000;
   background-image: url('../../public/jumbo.png');
-  border-radius: 0;
+  border-radius: 0 !important;
   background-size: 100% 100%;
   width: 100%;
   text-align: center;
   color: #fff;
+
+  img {
+    width: 100px;
+    height: 100px;
+  }
 
   hr {
     border-top-color: #fff;
@@ -28,6 +34,7 @@
     border-color: #fff;
   }
 
+
   // p {
   //   .fund;
   //   &.lead {
@@ -35,4 +42,15 @@
   //   }
   // }
   
+}
+
+.sidebar-left {
+  // width: 220px;
+  // position: -webkit-sticky;
+  // position: sticky !important;
+  top: 68px !important;
+}
+
+.sidebar-right {
+  top: 32px !important;
 }

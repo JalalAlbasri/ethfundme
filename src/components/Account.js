@@ -8,14 +8,20 @@ function UserBadge(props) {
   if (!props.showUserBadge) {
     return (
       <div className="mb-1">
-        <span className="badge badge-success admin-badge">User</span>
+        <span className="badge badge-success admin-badge">
+          <img src="../../public/metamask-fox.svg"/>
+          User
+        </span>
       </div>
     )
   }
 
   return (
     <div className="mb-1">
-      <span className="badge badge-danger admin-badge">Admin</span>
+      <span className="badge badge-danger admin-badge">
+        <img src="../../public/metamask-fox.svg"/>
+        Admin
+      </span>
     </div>
   )
 }
@@ -34,7 +40,7 @@ class Account extends Component {
       <div className="Account">
         <UserBadge showUserBadge={this.props.account.isAdmin} />
         <div className="mb-3">
-          <span className="badge badge-primary address-badge">{this.props.account.address}</span>
+          <span className="badge badge-info address-badge">{this.props.account.address}</span>
         </div>
       </div>
     )

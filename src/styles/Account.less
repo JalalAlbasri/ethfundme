@@ -1,19 +1,32 @@
 .Account {
-  // text-align: right;
-  // text-align: -webkit-right;
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  z-index: 100000;
+
+  @media(min-width: 601px) {
+    text-align: right;
+    text-align: -webkit-right;
+  }
   
-  // .admin-badge {
-  //   display: table-cell;
-  // }
+  .admin-badge {
+    display: table-cell;
+  }
 
   .badge {
     line-height: 18px;
   }
 
   .address-badge {
-    width: 175px;
+    width: 162px;
     word-wrap: break-word;
     white-space: normal;
+  }
+
+  img {
+    width: 24px;
+    height: 24px;
+    padding-right: 4px;
   }
 
 }

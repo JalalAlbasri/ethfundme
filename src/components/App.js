@@ -36,34 +36,44 @@ class App extends Component {
 
     return (
       <div className="App">
-        <Navbar />
+        <Account />
         <div className="container-fluid">
           <div className="row">
             <div className="jumbotron">
-              <h1 className="display-4">Welcome to <span className="eth">eth</span><span className="fund">fund</span><span className="me">me</span></h1>
-              <p className="lead">ethfundme is an Ethereum Smart Contract Based Crowd Funding Application.</p>
+            {/* <div className="jumbotron mb-0"> */}
+              <img src="../../public/logo.svg"/>
+              <h1 className="display-4">Ethereum Smart Contract Crowd Funding</h1>
+              {/* <h1 className="display-4"><span className="eth">eth</span><span className="fund">fund</span><span className="me">me</span></h1> */}
+              {/* <p className="lead">Fund Your Future</p> */}
+              {/* <p className="lead">Ethereum Smart Contract Based Crowd Funding</p> */}
               <hr className="my-4" />
-              <p>Smart Contracts are used to intelligently, securely and trustlessly manage Campaign funds to ensure delivery to Campaingn Managers or Contributors.</p>
-              <CreateCampaignButton />
+              <p className="lead">Intelligently, Securely and Trustlessly Manage Campaigns with Smart Contracts</p>
+              <CreateCampaignButton text="Get Started"/>
               {/* <a className="btn btn-outline-success btn-lg" href="#" role="button">Learn more</a> */}
             </div>
           </div>
+          <Navbar />
           <div className="row">
-            <div className="col-md-3">
-              <div className="container">
-                <div className="mb-3">
+            <div className="col-md-2">
+              <div className="sticky-top sidebar-left">
+                {/* <div className="mb-3">
                   <Account />
-                </div>
+                </div> */}
                 <div className="mb-3">
                   <CreateCampaignButton />
                 </div>
               </div>
             </div>
-            <div className="col-md-9">
+            <div className="col-md-8">
               <div className="container">
                   <Campaigns />
               </div>
             </div>
+            {/* <div className="col-md-2">
+                <div className="sticky-top sidebar-right">
+                  <Account />
+                </div>
+            </div> */}
           </div>
         </div>
       </div>
