@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-import { updateCampaign } from '../actions/CampaignActions'
+import { getCampaignDetails } from '../actions/CampaignActions'
 import GoalProgress from './GoalProgress'
 import Vote from './Vote'
 
@@ -22,7 +22,7 @@ class Campaign extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatchUpdateCampaign(this.props.campaign.address)
+    this.props.dispatchGetCampaignDetails(this.props.campaign.address)
   }
 
   render() {
@@ -85,8 +85,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchUpdateCampaign: (address) => {
-      dispatch(updateCampaign(address))
+    dispatchGetCampaignDetails: (address) => {
+      dispatch(getCampaignDetails(address))
     }
   }
 }

@@ -10,7 +10,7 @@ function accountUpdated(account) {
   }
 }
 
-export function updateAccount(address) {
+export function getAccountDetails(address) {
   return function (dispatch) {
     const web3EthFundMe = contract(EthFundMeContract)
     web3EthFundMe.setProvider(web3.currentProvider)

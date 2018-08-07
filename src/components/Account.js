@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import { updateAccount } from '../actions/AccountActions'
+import { getAccountDetails } from '../actions/AccountActions'
 
 function UserBadge(props) {
   if (!props.showUserBadge) {
@@ -19,7 +19,7 @@ function UserBadge(props) {
 class Account extends Component {
   constructor(props, context) {
     super(props)
-    this.props.dispatchUpdateAccount(this.props.accountAddress)
+    this.props.dispatchGetAccountDetails(this.props.accountAddress)
   }
 
   componentDidMount() {
@@ -55,8 +55,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchUpdateAccount: (address) => {
-      dispatch(updateAccount(address))
+    dispatchGetAccountDetails: (address) => {
+      dispatch(getAccountDetails(address))
     }
   }
 }

@@ -9,14 +9,46 @@ export const addCampaign = (address) => ({
   address
 })
 
-function campaignUpdated(campaign) {
+export function updateCampaign(campaign) {
   return {
     type: UPDATE_CAMPAIGN,
     campaign
   }
 }
 
-export function updateCampaign(address) {
+export function placeVote(campaign, voteSecret) {
+  return function (dispatch) {
+    const web3Campaign = contract(CampaignContract)
+    web3Campaign.setProvider(web3.currentProvider)
+    let CampaignInstance
+
+    web3.eth.getCoinbase((err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+      web3Campaign
+        .at(campaign.address)
+        .then((instance) => {
+          CampaignInstance = instance
+          return CampaignInstance.vote(voteSecret, { from: coinbase })
+        })
+        .then((result) => {
+          return CampaignInstance.hasVoted.call(coinbase, { from: coinbase })
+        })
+        .then((hasVoted) => {
+          dispatch(updateCampaign({
+            ...campaign,
+            hasVoted
+          }))
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    })
+  }
+}
+
+export function getCampaignDetails(address) {
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -78,7 +110,7 @@ export function updateCampaign(address) {
         })
         .then((hasRevealed) => {
           campaign.hasRevealed = hasRevealed
-          dispatch(campaignUpdated(campaign))
+          dispatch(updateCampaign(campaign))
         })
         .catch((err) => {
           console.log(err)

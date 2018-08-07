@@ -2,8 +2,7 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-const contract = require('truffle-contract')
-import CampaignContract from '../../build/contracts/Campaign.json'
+import { placeVote } from '../actions/CampaignActions'
 
 let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
@@ -50,13 +49,7 @@ class Vote extends Component {
 
   vote(voteOption) {
     let voteSecret = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption, this.state.salt]).toString('hex')
-    this.CampaignInstance.vote(voteSecret, { from: this.coinbase })
-      .then((result) => {
-
-      })
-      .catch((err) => {
-
-      })
+    this.props.dispatchPlaceVote(this.props.campaign, voteSecret)
   }
 
   componentDidMount() {
@@ -68,7 +61,7 @@ class Vote extends Component {
       return (
         <div className="Vote">
           <p>Approval Status: {APPROVAL_STATES[this.props.campaign.approvalState]}</p>
-
+          <p>hasVoted: {(this.props.campaign.hasVoted) ? 'has voted' : 'has not voted'}</p>
           {
             (this.props.campaign.approvalState === 0)
               ? <p> {this.props.campaign.numVoteSecrets} {(this.props.campaign.numVoteSecrets === 1) ? 'vote has' : 'votes have'} been placed </p> : null
@@ -139,4 +132,12 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default drizzleConnect(Vote, mapStateToProps)
+const mapDispathToProps = (dispatch) => {
+  return {
+    dispatchPlaceVote: (campaign, voteSecret) => {
+      dispatch(placeVote(campaign, voteSecret))
+    }
+  }
+}
+
+export default drizzleConnect(Vote, mapStateToProps, mapDispathToProps)
