@@ -22,71 +22,10 @@ const CAMPAIGN_STATES = {
 class Campaign extends Component {
   constructor(props) {
     super(props)
-
-    console.log(`this.props.campaign: ${JSON.stringify(props.campaign)}`)
-    console.log(`this.props.i: ${props.i}`)
-
-    // this.campaign = {
-    //   address: props.address,
-    //   title: props.title,
-    //   goal: props.goal,
-    //   duration: props.duration,
-    //   funds: props.funds,
-    //   manager: props.manager
-    // }
   }
 
   componentDidMount() {
-    console.log('campaign mounted')
     this.props.dispatchUpdateCampaign(this.props.campaign.address)
-    // const web3Campaign = contract(CampaignContract)
-    // web3Campaign.setProvider(web3.currentProvider)
-    // let CampaignInstance
-
-    // web3.eth.getCoinbase((err, coinbase) => {
-    //   if (err) {
-    //     console.log(err)
-    //   }
-    //   web3Campaign.at(this.campaign.address)
-    //     .then((instance) => {
-    //       CampaignInstance = instance
-    //       return CampaignInstance.title.call({ from: coinbase })
-    //     })
-    //     .then((title) => {
-    //       this.campaign.title = title
-    //       return CampaignInstance.goal.call({ from: coinbase })
-    //     })
-    //     .then((goal) => {
-    //       this.campaign.goal = Number(goal)
-    //       return CampaignInstance.duration.call({ from: coinbase })
-    //     })
-    //     .then((duration) => {
-    //       this.campaign.duration = Number(duration)
-    //       return CampaignInstance.funds.call({ from: coinbase })
-    //     })
-    //     .then((funds) => {
-    //       this.campaign.funds = Number(funds)
-    //       return CampaignInstance.campaignState.call({ from: coinbase })
-    //     })
-    //     .then((status) => {
-    //       this.campaign.status = CAMPAIGN_STATES[Number(status)]
-    //       return CampaignInstance.manager.call({ from: coinbase })
-    //     })
-    //     .then((manager) => {
-    //       this.campaign.manager = manager
-    //       this.props.dispatchUpdateCampaign(this.campaign)
-    //     // TODO: Get Contributions, will only be able to interact with contributions once we have an approved campaign!
-    //       //   return CampaignInstance.getNumContributions.call({ from: coinbase })
-    //     // })
-    //     // .then((numContributions) => {
-    //     //   for (let i = 0; i < numContributions; i++) {
-    //     //     CampaignInstance.contributions.call(i, { from: coinbase })
-    //     //       .then((contribution) => {
-    //     //         console.log(contribution)
-    //     //       })
-    //     //   }
-    //     })
-    // })
   }
 
   render() {
@@ -130,7 +69,6 @@ class Campaign extends Component {
         {/* TODO: Don't show the footer unless there's content in it */}
         <div className="card-footer bg-transparent">
           <Vote i={this.props.i}/>
-          {/* <Vote address={this.props.campaign.address}/> */}
         </div>
       </div>
     )
@@ -140,17 +78,9 @@ class Campaign extends Component {
 
 Campaign.propTypes = {
   campaign: PropTypes.object.isRequired
-  // address: PropTypes.string.isRequired,
-  // title: PropTypes.string,
-  // goal: PropTypes.number,
-  // duration: PropTypes.number,
-  // funds: PropTypes.number,
-  // status: PropTypes.string,
-  // manager: PropTypes.string
 }
 
 const mapStateToProps = (state, ownProps) => {
-  console.log(`campaign, mapStateToProps, ownProps.i: ${ownProps.i}`)
   return {
     campaign: state.campaigns[ownProps.i]
   }

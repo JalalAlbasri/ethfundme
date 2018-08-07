@@ -35,7 +35,6 @@ class Campaigns extends Component {
       <div className="Campaigns">
         {this.props.campaigns.map((campaign, i) => <Campaign
             key={campaign.address}
-            // {...campaign}
             i={i}
             />)}
       </div>
@@ -51,15 +50,6 @@ Campaigns.propTypes = {
   campaigns: PropTypes.arrayOf(
     PropTypes.shape(PropTypes.object.isRequire).isRequired
   ).isRequired
-  // campaigns: PropTypes.arrayOf(PropTypes.shape({
-  //   address: PropTypes.string.isRequired,
-  //   title: PropTypes.string,
-  //   goal: PropTypes.number,
-  //   duration: PropTypes.number,
-  //   funds: PropTypes.number,
-  //   status: PropTypes.number,
-  //   manager: PropTypes.string
-  // }).isRequired).isRequired
 }
 
 

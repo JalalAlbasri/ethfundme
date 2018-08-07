@@ -17,7 +17,6 @@ function UserBadge(props) {
 class Account extends Component {
   constructor(props, context) {
     super(props)
-    console.log(props.account)
     this.dataKey = context.drizzle.contracts.EthFundMe.methods.isAdmin.cacheCall(props.account)
   }
 

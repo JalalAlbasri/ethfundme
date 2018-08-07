@@ -63,41 +63,7 @@ class Vote extends Component {
   }
 
   componentDidMount() {
-    // const web3Campaign = contract(CampaignContract)
-    // web3Campaign.setProvider(web3.currentProvider)
 
-    // web3.eth.getCoinbase((err, coinbase) => {
-    //   if (err) {
-    //     console.log(err)
-    //   }
-    //   this.coinbase = coinbase
-    //   web3Campaign.at(this.props.address)
-    //     .then((instance) => {
-    //       this.CampaignInstance = instance
-    //       return this.CampaignInstance.approvalState.call({ from: coinbase })
-    //     })
-    //     .then((approvalState) => {
-    //       this.approvalState = Number(approvalState)
-    //       return this.CampaignInstance.numVoteSecrets.call({ from: coinbase })
-    //     })
-    //     .then((numVoteSecrets) => {
-    //       this.numVoteSecrets = Number(numVoteSecrets)
-    //       return this.CampaignInstance.numVoteReveals.call({ from: coinbase })
-    //     })
-    //     .then((numVoteReveals) => {
-    //       this.numVoteReveals = Number(numVoteReveals)
-    //       return this.CampaignInstance.hasVoted.call(coinbase, { from: coinbase })
-    //     })
-    //     .then((hasVoted) => {
-    //       console.log(`typeof hasVoted: ${typeof hasVoted}`)
-    //       this.hasVoted = hasVoted
-    //       return this.CampaignInstance.hasRevealed.call(coinbase, { from: coinbase })
-    //     })
-    //     .then((hasRevealed) => {
-    //       this.hasRevealed = hasRevealed
-    //       this.loaded = true
-    //     })
-    // })
   }
 
   render() {

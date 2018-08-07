@@ -10,7 +10,6 @@ export const addCampaign = (address) => ({
 })
 
 function campaignUpdated(campaign) {
-  console.log(`campaignUpdated: ${JSON.stringify(campaign)}`)
   return {
     type: UPDATE_CAMPAIGN,
     campaign
@@ -18,8 +17,6 @@ function campaignUpdated(campaign) {
 }
 
 export function updateCampaign(address) {
-  console.log('updateCampaign')
-
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -76,13 +73,11 @@ export function updateCampaign(address) {
           return CampaignInstance.hasVoted.call(coinbase, { from: coinbase })
         })
         .then((hasVoted) => {
-          console.log(`typeof hasVoted: ${typeof hasVoted}`)
           campaign.hasVoted = hasVoted
           return CampaignInstance.hasRevealed.call(coinbase, { from: coinbase })
         })
         .then((hasRevealed) => {
           campaign.hasRevealed = hasRevealed
-          console.log(`campaign: ${JSON.stringify(campaign)}`)
           dispatch(campaignUpdated(campaign))
         })
     })

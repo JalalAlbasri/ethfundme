@@ -13,7 +13,6 @@ function campaigns(state = initialState, action) {
         }
       ]
     case 'UPDATE_CAMPAIGN':
-      console.log(`UPDATE_CAMPAIGN: ${JSON.stringify(action.campaign)}`)
       return state.map((campaign) => (
         (campaign.address === action.campaign.address)
           ? { ...action.campaign } : campaign
