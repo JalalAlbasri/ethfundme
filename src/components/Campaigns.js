@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { addCampaign } from '../actions/CampaignActions'
 import Campaign from './Campaign'
 
-
+// TODO: refactor this stuff to use actions and reducers?
 class Campaigns extends Component {
   constructor(props, context) {
     super(props)
