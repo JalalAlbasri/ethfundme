@@ -4,6 +4,7 @@ import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
 import Navbar from './Navbar'
+import Account from './Account'
 import CreateCampaignButton from './CreateCampaignButton'
 import Campaigns from './Campaigns'
 
@@ -36,26 +37,32 @@ class App extends Component {
     return (
       <div className="App">
         <Navbar />
-        <div className="container">
+        <div className="container-fluid">
           <div className="row">
-            <div className="col-md-10 offset-md-1">
-              {/* <p> ContractData Component </p> */}
-              {/* getNumCampaigns: <ContractData contract="EthFundMe" method="getNumCampaigns" /> */}
-              {/* <br /> */}
-              {/* getNumAdmins: <ContractData contract="EthFundMe" method="getNumAdmins" /> */}
-              <p>
-                {/* numCampaigns: {numCampaigns} */}
-              </p>
-            </div>
-          </div>
-          <div className="row mb-3">
-            <div className="col-md-10 offset-md-1 d-flex flex-row-reverse">
+            <div className="jumbotron">
+              <h1 className="display-4">Welcome to <span className="eth">eth</span><span className="fund">fund</span><span className="me">me</span></h1>
+              <p className="lead">ethfundme is an Ethereum Smart Contract Based Crowd Funding Application.</p>
+              <hr className="my-4" />
+              <p>Smart Contracts are used to intelligently, securely and trustlessly manage Campaign funds to ensure delivery to Campaingn Managers or Contributors.</p>
               <CreateCampaignButton />
+              {/* <a className="btn btn-outline-success btn-lg" href="#" role="button">Learn more</a> */}
             </div>
           </div>
           <div className="row">
-            <div className="col-md-10 offset-md-1">
-              <Campaigns />
+            <div className="col-md-3">
+              <div className="container">
+                <div className="mb-3">
+                  <Account />
+                </div>
+                <div className="mb-3">
+                  <CreateCampaignButton />
+                </div>
+              </div>
+            </div>
+            <div className="col-md-9">
+              <div className="container">
+                  <Campaigns />
+              </div>
             </div>
           </div>
         </div>

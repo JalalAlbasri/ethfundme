@@ -67,34 +67,37 @@ class Vote extends Component {
       return (
         <div className={'Vote ' + APPROVAL_STATES[this.props.campaign.approvalState]}>
           <div>
-            Approval Status:
-          {
-            (Object.prototype.hasOwnProperty.call(this.props.campaign, 'approvalState'))
-              ? <span className="status ml-auto">
-                <FontAwesomeIcon className="status-icon" icon="circle" />
-                {APPROVAL_STATES[this.props.campaign.approvalState]}
-              </span> : ''
-          }
-          </div>
-          {/* <p>hasVoted: {(this.props.campaign.hasVoted) ? 'has voted' : 'has not voted'}</p> */}
-          {/* <p>hasRevealed: {(this.props.campaign.hasRevealed) ? 'has revealed' : 'has not revealed'}</p> */}
-          {
-            (this.props.campaign.approvalState === 0)
-              ? <div> {this.props.campaign.numVoteSecrets} {(this.props.campaign.numVoteSecrets === 1) ? 'vote has' : 'votes have'} been placed </div> : null
-          }
-          {
-            (this.props.campaign.approvalState === 1)
-              ? <div> {this.props.campaign.numVoteReveals} {(this.props.campaign.numVoteReveals === 1) ? 'vote has' : 'votes have'} been revealed </div> : null
-          }
+            <div>
+              Approval Status:
+            {
+              (Object.prototype.hasOwnProperty.call(this.props.campaign, 'approvalState'))
+                ? <span className="status ml-auto">
+                  <FontAwesomeIcon className="status-icon" icon="circle" />
+                  {APPROVAL_STATES[this.props.campaign.approvalState]}
+                </span> : ''
+            }
+            </div>
+            {/* <p>hasVoted: {(this.props.campaign.hasVoted) ? 'has voted' : 'has not voted'}</p> */}
+            {/* <p>hasRevealed: {(this.props.campaign.hasRevealed) ? 'has revealed' : 'has not revealed'}</p> */}
+            {
+              (this.props.campaign.approvalState === 0)
+                ? <div> {this.props.campaign.numVoteSecrets} {(this.props.campaign.numVoteSecrets === 1) ? 'vote has' : 'votes have'} been placed </div> : null
+            }
+            {
+              (this.props.campaign.approvalState === 1)
+                ? <div> {this.props.campaign.numVoteReveals} {(this.props.campaign.numVoteReveals === 1) ? 'vote has' : 'votes have'} been revealed </div> : null
+            }
 
-          {/* TODO: Hide the form once you submit it */}
-          {/* TODO: Only show form if this admin has not voted */}
+          </div>
 
         {
-          /* TODO: Generate random number for salt */
           ((this.props.campaign.approvalState === 0 && !this.props.campaign.hasVoted) || (this.props.campaign.approvalState === 1 && !this.props.campaign.hasRevealed))
-            ? (<form>
+            ? (<div className="mt-3">
+              <form>
                 <div className="form-row">
+                  <div className="col-auto d-flex align-items-center">
+                    <label className="mb-0">Place Vote:</label>
+                  </div>
                   <div className="col-sm-3">
                       <input
                           type="number"
@@ -139,6 +142,7 @@ class Vote extends Component {
 
                 </div>
               </form>
+            </div>
             ) : null
           }
         </div>

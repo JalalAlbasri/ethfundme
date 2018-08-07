@@ -7,12 +7,16 @@ import { getAccountDetails } from '../actions/AccountActions'
 function UserBadge(props) {
   if (!props.showUserBadge) {
     return (
-      <span className="badge badge-success admin-badge">User</span>
+      <div className="mb-1">
+        <span className="badge badge-success admin-badge">User</span>
+      </div>
     )
   }
 
   return (
-    <span className="badge badge-danger admin-badge">Admin</span>
+    <div className="mb-1">
+      <span className="badge badge-danger admin-badge">Admin</span>
+    </div>
   )
 }
 
@@ -29,7 +33,9 @@ class Account extends Component {
     return (
       <div className="Account">
         <UserBadge showUserBadge={this.props.account.isAdmin} />
-        <span className="badge badge-primary">{this.props.account.address}</span>
+        <div className="mb-3">
+          <span className="badge badge-primary address-badge">{this.props.account.address}</span>
+        </div>
       </div>
     )
   }
