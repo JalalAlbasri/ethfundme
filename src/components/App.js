@@ -42,8 +42,8 @@ class App extends Component {
             <div className="jumbotron">
             {/* <div className="jumbotron mb-0"> */}
               <img src="../../public/logo.svg"/>
-              <h1 className="display-4">Ethereum Smart Contract Crowd Funding</h1>
-              {/* <h1 className="display-4"><span className="eth">eth</span><span className="fund">fund</span><span className="me">me</span></h1> */}
+              <h1 className="display-4"><span className="eth">eth</span><span className="fund">fund</span><span className="me">me</span></h1>
+              <h1 className="title">Ethereum Smart Contract Crowd Funding</h1>
               {/* <p className="lead">Fund Your Future</p> */}
               {/* <p className="lead">Ethereum Smart Contract Based Crowd Funding</p> */}
               <hr className="my-4" />
