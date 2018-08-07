@@ -29,12 +29,14 @@ class CreateCampaignButton extends Component {
       web3EthFundMe.deployed().then((instance) => {
         EthFundMeInstance = instance
         return EthFundMeInstance.createCampaign('web campaign', 10, 1, { from: coinbase })
-      }).then((result) => {
-        const campaignAddress = result.logs[0].args.campaignAddress
-        this.props.dispatchAddCampaign(campaignAddress)
-      }).catch((err) => {
-        console.log(err)
       })
+        .then((result) => {
+          const campaignAddress = result.logs[0].args.campaignAddress
+          this.props.dispatchAddCampaign(campaignAddress)
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     })
   }
 

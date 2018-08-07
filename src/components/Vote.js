@@ -19,8 +19,6 @@ const APPROVAL_STATES = {
 class Vote extends Component {
   constructor(props, context) {
     super(props)
-    // TODO: Lift this state to the top and put in store (create reducer etc. and pass it in in mapStateToProps)
-    this.dataKey = context.drizzle.contracts.EthFundMe.methods.isAdmin.cacheCall(props.account)
 
     this.state = {
       salt: 0
@@ -67,15 +65,9 @@ class Vote extends Component {
   }
 
   render() {
-    const EthFundMe = this.props.EthFundMe
-    this.isAdmin = false
-
-    if (this.dataKey in EthFundMe.isAdmin) {
-      this.isAdmin = EthFundMe.isAdmin[this.dataKey].value
-    }
-
-    if (this.isAdmin) {
-    // if (this.isAdmin && this.loaded) {
+    if (this.props.account.isAdmin) {
+    // TODO: is loaded required?
+      // if (this.isAdmin && this.loaded) {
       return (
         <div className="Vote">
           <p>Approval Status: {APPROVAL_STATES[this.props.campaign.approvalState]}</p>
@@ -138,14 +130,14 @@ Vote.contextTypes = {
 }
 
 Vote.propTypes = {
-  account: PropTypes.string.isRequired,
+  account: PropTypes.object.isRequired,
   campaign: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
     EthFundMe: state.contracts.EthFundMe,
-    account: state.accounts[0],
+    account: state.account,
     campaign: state.campaigns[ownProps.i]
   }
 }

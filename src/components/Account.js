@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
+import { updateAccount } from '../actions/AccountActions'
+
 function UserBadge(props) {
   if (!props.showUserBadge) {
     return (
@@ -17,21 +19,17 @@ function UserBadge(props) {
 class Account extends Component {
   constructor(props, context) {
     super(props)
-    this.dataKey = context.drizzle.contracts.EthFundMe.methods.isAdmin.cacheCall(props.account)
+    this.props.dispatchUpdateAccount(this.props.accountAddress)
+  }
+
+  componentDidMount() {
   }
 
   render() {
-    const EthFundMe = this.props.EthFundMe
-    this.isAdmin = false
-
-    if (this.dataKey in EthFundMe.isAdmin) {
-      this.isAdmin = EthFundMe.isAdmin[this.dataKey].value
-    }
-
     return (
       <div className="Account">
-        <UserBadge showUserBadge={this.isAdmin} />
-        <span className="badge badge-primary">{this.props.account}</span>
+        <UserBadge showUserBadge={this.props.account.isAdmin} />
+        <span className="badge badge-primary">{this.props.account.address}</span>
       </div>
     )
   }
@@ -43,14 +41,24 @@ Account.contextTypes = {
 
 
 Account.propTypes = {
-  account: PropTypes.string.isRequired
+  accountAddress: PropTypes.string.isRequired,
+  account: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => {
   return {
     EthFundMe: state.contracts.EthFundMe,
-    account: state.accounts[0]
+    accountAddress: state.accounts[0],
+    account: state.account
   }
 }
 
-export default drizzleConnect(Account, mapStateToProps)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    dispatchUpdateAccount: (address) => {
+      dispatch(updateAccount(address))
+    }
+  }
+}
+
+export default drizzleConnect(Account, mapStateToProps, mapDispatchToProps)

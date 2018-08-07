@@ -52,8 +52,8 @@ export function updateCampaign(address) {
           campaign.funds = Number(funds)
           return CampaignInstance.campaignState.call({ from: coinbase })
         })
-        .then((status) => {
-          campaign.status = Number(status)
+        .then((campaignState) => {
+          campaign.campaignState = Number(campaignState)
           return CampaignInstance.manager.call({ from: coinbase })
         })
         .then((manager) => {
@@ -79,6 +79,9 @@ export function updateCampaign(address) {
         .then((hasRevealed) => {
           campaign.hasRevealed = hasRevealed
           dispatch(campaignUpdated(campaign))
+        })
+        .catch((err) => {
+          console.log(err)
         })
     })
   }

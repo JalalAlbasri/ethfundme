@@ -4,9 +4,6 @@ import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const contract = require('truffle-contract')
-import CampaignContract from '../../build/contracts/Campaign.json'
-
 import { updateCampaign } from '../actions/CampaignActions'
 import GoalProgress from './GoalProgress'
 import Vote from './Vote'
@@ -35,13 +32,13 @@ class Campaign extends Component {
     }
 
     return (
-      <div className={'Campaign card border-warning mb-3 ' + this.props.campaign.status}>
+      <div className={'Campaign card border-warning mb-3 ' + CAMPAIGN_STATES[this.props.campaign.campaignState]}>
         <div className="card-header h6 bg-transparent d-flex">
           <span className="mr-auto">{this.props.campaign.title}</span>
           {
-            (this.props.campaign.status)
+            (Object.prototype.hasOwnProperty.call(this.props.campaign, 'campaignState'))
               ? <span className="status ml-auto">
-                {this.props.campaign.status}
+                {CAMPAIGN_STATES[this.props.campaign.campaignState]}
                 <FontAwesomeIcon className="status-icon" icon="circle" />
               </span> : ''
           }
