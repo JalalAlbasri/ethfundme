@@ -16,6 +16,14 @@ const CAMPAIGN_STATES = {
   4: 'Cancelled'
 }
 
+const APPROVAL_STATES = {
+  0: 'Commit',
+  1: 'Reveal',
+  2: 'Approved',
+  3: 'Rejected',
+  4: 'Cancelled'
+}
+
 class Campaign extends Component {
   constructor(props) {
     super(props)
@@ -65,7 +73,7 @@ class Campaign extends Component {
           }
         </div>
         {/* TODO: Don't show the footer unless there's content in it */}
-        <div className="card-footer bg-transparent">
+        <div className="card-footer">
           <Vote i={this.props.i}/>
         </div>
       </div>

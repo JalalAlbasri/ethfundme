@@ -36,7 +36,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <Account />
+        {/* <Account /> */}
         <div className="container-fluid">
           <div className="row">
             <div className="jumbotron">
@@ -69,11 +69,11 @@ class App extends Component {
                   <Campaigns />
               </div>
             </div>
-            {/* <div className="col-md-2">
+            <div className="col-md-2">
                 <div className="sticky-top sidebar-right">
                   <Account />
                 </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>
