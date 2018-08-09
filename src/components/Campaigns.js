@@ -33,9 +33,9 @@ class Campaigns extends Component {
   render() {
     return (
       <div className="Campaigns">
-        {this.props.campaigns.map((campaign, i) => <Campaign
+        {this.props.campaigns.map((campaign, campaignIndex) => <Campaign
             key={campaign.address}
-            i={i}
+            campaignIndex={campaignIndex}
             />)}
       </div>
     )

@@ -90,21 +90,29 @@ export function getCampaignDetails(address) {
         .then((numContributions) => {
           campaign.numContributions = numContributions
 
+          let contributionPromises = []
+
           // FIXME: dispatch occurs before promises in loop resolve
           if (campaign.numContributions > 0) {
             for (let i = 0; i < campaign.numContributions; i++) {
-              CampaignInstance.contributions.call(i, { from: coinbase }).then((contribution) => {
+              let contributionPromise = CampaignInstance.contributions.call(i, { from: coinbase }).then((contribution) => {
                 campaign.contributions[i] = {
                   address: contribution[0],
                   amount: Number(contribution[1]),
                   time: Number(contribution[2])
                 }
               })
+              contributionPromises.push(contributionPromise)
             }
           }
 
+          return Promise.all(contributionPromises)
+        })
+
+        .then(() => {
           dispatch(updateCampaign(campaign))
         })
+
         .catch((err) => {
           console.log(err)
         })

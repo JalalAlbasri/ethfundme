@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
 class Contribution extends Component {
   constructor(props, context) {
     super(props)
@@ -14,13 +12,16 @@ class Contribution extends Component {
   }
 
   render() {
+    // console.log(`this.props.contribution.time: ${this.props.contribution.time}`)
+    // console.log(`typeof this.props.contribution.time: ${typeof this.props.contribution.time}`)
+    const time = new Date(this.props.contribution.time)
     return (
-      <div className="Contribution">
-        {console.log('Contribution!')}
-        <p> address: {this.props.contribution.address} </p>
-        <p> amount: {this.props.contribution.amount} </p>
-        <p> time: {new Date(this.props.contribution.time)} </p>
-      </div>
+      <tr className="Contribution">
+        <th scope="row">{this.props.contributionIndex + 1}</th>
+        <td>{this.props.contribution.address}</td>
+        <td className="center">{this.props.contribution.amount}</td>
+        {/* <td>{time.toString()}</td> */}
+      </tr>
     )
   }
 }
@@ -30,12 +31,14 @@ Contribution.contextTypes = {
 }
 
 Contribution.propTypes = {
-  contribution: PropTypes.object.isRequired
+  contribution: PropTypes.object.isRequired,
+  contributionIndex: PropTypes.number.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    contribution: state.campaigns[ownProps.campaignIndexd].contributions[ownProps.contributionIndex]
+    contribution: state.campaigns[ownProps.campaignIndex].contributions[ownProps.contributionIndex],
+    contributionIndex: ownProps.contributionIndex
   }
 }
 

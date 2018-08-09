@@ -98,10 +98,12 @@ module.exports = function (callback) {
 
       for (let i = 0; i < NUM_APPROVALS; i++) {
         for (let j = 4; j < accounts.length; j++) {
-          let contribution = Math.ceil((Math.random() + 1) * 3)
-          console.log(`contributing ${contribution} eth from account ${j} to campaign ${i}...`)
-          let contributePromise = CampaignInstances[i].contribute({ from: accounts[j], value: contribution })
-          contributePromises.push(contributePromise)
+          let contribution = Math.ceil((Math.random()) * 10)
+          if (contribution > 0) {
+            console.log(`contributing ${contribution} eth from account ${j} to campaign ${i}...`)
+            let contributePromise = CampaignInstances[i].contribute({ from: accounts[j], value: contribution })
+            contributePromises.push(contributePromise)
+          }
         }
       }
       return Promise.all(contributePromises)

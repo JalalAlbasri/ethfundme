@@ -8,7 +8,7 @@ import { getCampaignDetails } from '../actions/CampaignActions'
 
 import GoalProgress from './GoalProgress'
 import Vote from './Vote'
-import Contribution from './Contribution'
+import Contributions from './Contributions'
 
 // TODO: Could just use an array for these, also, move them out to antoher file
 const CAMPAIGN_STATES = {
@@ -75,26 +75,13 @@ class Campaign extends Component {
               ? <GoalProgress funds={this.props.campaign.funds} goal={this.props.campaign.goal} /> : ''
           }
         </div>
+
+       {(this.props.campaign.contributions || {}).length > 0
+            && <Contributions campaignIndex={this.props.campaignIndex} />}
+
         {/* TODO: Don't show the footer unless there's content in it */}
-
-
-       {console.log(`this.props.campaign: ${JSON.stringify(this.props.campaign)}`)}
-
-        <div className="Contributions">
-          {(this.props.campaign.contributions || {}).length > 0
-            && this.props.campaign.contributions.map((contribution, i) => (
-              <Contribution
-                key={i}
-                campaignIndex={this.props.i}
-                contributionIndex={i}
-              />
-            ))
-          }
-        </div>
-
         <div className="card-footer">
-        {/* TODO: Change i to campaignId */}
-          <Vote campaignIndex={this.props.i}/>
+          <Vote campaignIndex={this.props.campaignIndex}/>
         </div>
       </div>
     )
@@ -108,7 +95,7 @@ Campaign.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    campaign: state.campaigns[ownProps.i]
+    campaign: state.campaigns[ownProps.campaignIndex]
   }
 }
 
