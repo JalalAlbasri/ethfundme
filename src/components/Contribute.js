@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
+import { contribute } from '../actions/CampaignActions'
+
 class Contribute extends Component {
   constructor(props, context) {
     super(props)
@@ -24,13 +26,18 @@ class Contribute extends Component {
   }
 
   handleContribute(event) {
-    console.log('handle contribute')
+    this.props.dispatchContribute(this.props.campaign, this.state.contribution)
     event.preventDefault()
   }
 
   render() {
-    // TODO: Only non admin
-    if (this.props.campaign.campaignState === 1) {
+    console.log(`this.props.account ${web3.toChecksumAddress(this.props.account.address)}`)
+    console.log(`this.props.campaign.manager ${web3.toChecksumAddress(this.props.campaign.manager)}`)
+    if (
+      !this.props.account.isAdmin
+      && web3.toChecksumAddress(this.props.account.address)
+        !== web3.toChecksumAddress(this.props.campaign.manager)
+      && this.props.campaign.campaignState === 1) {
       return (
         <div className="Contribute container mb-3">
           <form>
@@ -64,17 +71,22 @@ Contribute.contextTypes = {
 }
 
 Contribute.propTypes = {
+  account: PropTypes.object.isRequired,
   campaign: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
+    account: state.account,
     campaign: state.campaigns[ownProps.campaignIndex]
   }
 }
 
 const mapDispathToProps = (dispatch) => {
   return {
+    dispatchContribute: (campaign, contribution) => {
+      dispatch(contribute(campaign, contribution))
+    }
   }
 }
 

@@ -120,6 +120,31 @@ export function getCampaignDetails(address) {
   }
 }
 
+export function contribute(campaign, contribution) {
+  return function (dispatch) {
+    const web3Campaign = contract(CampaignContract)
+    web3Campaign.setProvider(web3.currentProvider)
+    let CampaignInstance
+
+    web3.eth.getCoinbase((err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+      web3Campaign
+        .at(campaign.address)
+        .then((instance) => {
+          CampaignInstance = instance
+          return CampaignInstance.contribute({ from: coinbase, value: contribution })
+        }).then((result) => {
+          dispatch(getCampaignDetails(campaign.address))
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    })
+  }
+}
+
 export function placeVote(campaign, voteSecret) {
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
@@ -151,9 +176,6 @@ export function revealVote(campaign, voteOption, salt) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
     let CampaignInstance
-
-    let hasRevealed
-    let numVoteReveals
 
     web3.eth.getCoinbase((err, coinbase) => {
       if (err) {

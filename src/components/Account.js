@@ -38,10 +38,22 @@ class Account extends Component {
   render() {
     return (
       <div className="Account">
-        <UserBadge showUserBadge={this.props.account.isAdmin} />
-        <div className="mb-3">
-          <span className="badge badge-info address-badge">{this.props.account.address}</span>
+        <div className="">
+          <span className={'badge account-badge ' + ((this.props.account.isAdmin) ? 'admin' : '')}>
+            {(this.props.account.isAdmin) ? 'Admin' : 'User'}
+            <img src="../../public/metamask-fox.svg"/>
+            {Number.prototype.toPrecision.call(Number(this.props.account.balance), 4)} eth
+          </span>
         </div>
+        <div>
+          <span className="badge address-badge">
+            {this.props.account.address}
+          </span>
+        </div>
+        {/* <UserBadge showUserBadge={this.props.account.isAdmin} />
+        <div>
+          <span className="badge badge-info address-badge">{this.props.account.address}</span>
+        </div> */}
       </div>
     )
   }

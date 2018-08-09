@@ -20,6 +20,7 @@ class Campaigns extends Component {
     }
   }
 
+  // FIXME: It's not adding campaigns in the correct order, maybe we can use normal web3 to handle the intial campaign adding
   componentDidMount() {
     this.drizzle.contracts.EthFundMe.methods.getNumCampaigns().call().then((numCampaigns) => {
       for (let i = 0; i < numCampaigns; i++) {

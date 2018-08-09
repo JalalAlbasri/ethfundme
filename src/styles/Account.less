@@ -9,24 +9,36 @@
     text-align: -webkit-right;
   // }
   
-  .admin-badge {
-    display: table-cell;
+  .badge {
+    text-align: center;
+    line-height: 18px;
+    color: #fff;
+    width: 162px;
   }
 
-  .badge {
-    line-height: 18px;
+  .account-badge {
+    display: table-cell;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: @md-amber-500;
+    &.admin {
+      background-color: @md-pink-500;
+    }
   }
 
   .address-badge {
     width: 162px;
     word-wrap: break-word;
     white-space: normal;
+    background-color: @md-grey-700; 
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
   }
 
   img {
     width: 24px;
     height: 24px;
-    padding-right: 4px;
+    padding: 0 4px;
   }
 
 }

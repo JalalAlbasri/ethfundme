@@ -26,14 +26,27 @@ export function getAccountDetails(address) {
       }
       web3EthFundMe.deployed().then((instance) => {
         EthFundMeInstance = instance
-        return EthFundMeInstance.isAdmin.call(address, { from: coinbase })
-      })
-        .then((isAdmin) => {
-          account.isAdmin = isAdmin
-          dispatch(accountUpdated(account))
-        }).catch((err) => {
-          console.log(err)
+        return new Promise((resolve, reject) => {
+          web3.eth.getBalance(coinbase, (err, balance) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(balance)
+            }
+          })
         })
+          .then((balance) => {
+            account.balance = Number(web3.fromWei(balance))
+            console.log(`account.balance ${account.balance}`)
+            return EthFundMeInstance.isAdmin.call(address, { from: coinbase })
+          })
+          .then((isAdmin) => {
+            account.isAdmin = isAdmin
+            dispatch(accountUpdated(account))
+          }).catch((err) => {
+            console.log(err)
+          })
+      })
     })
   }
 }
