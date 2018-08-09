@@ -9,6 +9,7 @@ import { getCampaignDetails } from '../actions/CampaignActions'
 import GoalProgress from './GoalProgress'
 import Vote from './Vote'
 import Contributions from './Contributions'
+import Contribute from './Contribute'
 
 // TODO: Could just use an array for these, also, move them out to antoher file
 const CAMPAIGN_STATES = {
@@ -76,13 +77,14 @@ class Campaign extends Component {
           }
         </div>
 
-       {(this.props.campaign.contributions || {}).length > 0
+        {(this.props.campaign.contributions || {}).length > 0
             && <Contributions campaignIndex={this.props.campaignIndex} />}
 
         {/* TODO: Don't show the footer unless there's content in it */}
-        <div className="card-footer">
-          <Vote campaignIndex={this.props.campaignIndex}/>
-        </div>
+
+        <Contribute campaignIndex={this.props.campaignIndex} />
+
+        <Vote campaignIndex={this.props.campaignIndex}/>
       </div>
     )
   }

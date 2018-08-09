@@ -12,8 +12,6 @@ class Contribution extends Component {
   }
 
   render() {
-    // console.log(`this.props.contribution.time: ${this.props.contribution.time}`)
-    // console.log(`typeof this.props.contribution.time: ${typeof this.props.contribution.time}`)
     const time = new Date(this.props.contribution.time)
     return (
       <tr className="Contribution">

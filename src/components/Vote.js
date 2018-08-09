@@ -58,14 +58,10 @@ class Vote extends Component {
     event.preventDefault()
   }
 
-  componentDidMount() {
-
-  }
-
   render() {
     if (this.props.account.isAdmin) {
       return (
-        <div className={'Vote ' + APPROVAL_STATES[this.props.campaign.approvalState]}>
+        <div className={'Vote card-footer ' + APPROVAL_STATES[this.props.campaign.approvalState]}>
           <div>
             <div>
               Approval Status:

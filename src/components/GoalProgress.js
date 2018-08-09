@@ -1,3 +1,4 @@
+// TODO: Rename to just Progress
 import React from 'react'
 
 function GoalProgress(props) {
@@ -10,7 +11,7 @@ function GoalProgress(props) {
 
     return (
       <div className="progress">
-        <div className="progress-bar"
+        <div className="progress-bar goal"
         // <div className="progress-bar progress-bar-striped"
           role="progressbar"
           aria-valuemin="0"
@@ -36,8 +37,8 @@ function GoalProgress(props) {
   }
 
   return (
-      <div className="progress">
-        <div className="progress-bar"
+      <div className="GoalProgress progress">
+        <div className="progress-bar goal"
         // <div className="progress-bar progress-bar-striped"
           role="progressbar"
           aria-valuemin="0"
@@ -47,7 +48,7 @@ function GoalProgress(props) {
         >
           {props.goal}
         </div>
-        <div className="progress-bar bg-success"
+        <div className="progress-bar surplus"
         // <div className="progress-bar progress-bar-striped bg-success"
           role="progressbar"
           aria-valuemin="0"
