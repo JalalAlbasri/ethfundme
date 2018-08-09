@@ -1,7 +1,6 @@
 let EthFundMe = artifacts.require('EthFundMe')
 let Campaign = artifacts.require('Campaign')
 
-
 contract('Campaign Creation', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance

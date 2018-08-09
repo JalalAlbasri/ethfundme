@@ -78,11 +78,7 @@ class Campaign extends Component {
         {/* TODO: Don't show the footer unless there's content in it */}
 
 
-       {
-         console.log(`this.props.campaign: ${JSON.stringify(this.props.campaign)}`)
-         if ()
-         console.log(`this.props.campaign.contributions.length: `)
-        }
+       {console.log(`this.props.campaign: ${JSON.stringify(this.props.campaign)}`)}
 
         <div className="Contributions">
           {(this.props.campaign.contributions || {}).length > 0
