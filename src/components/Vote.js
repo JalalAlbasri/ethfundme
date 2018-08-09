@@ -163,9 +163,8 @@ Vote.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    EthFundMe: state.contracts.EthFundMe,
     account: state.account,
-    campaign: state.campaigns[ownProps.i]
+    campaign: state.campaigns[ownProps.campaignIndex]
   }
 }
 

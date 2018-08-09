@@ -23,7 +23,8 @@ export function getCampaignDetails(address) {
     let CampaignInstance
 
     let campaign = {
-      address
+      address,
+      contributions: []
     }
 
     web3.eth.getCoinbase((err, coinbase) => {
@@ -80,6 +81,28 @@ export function getCampaignDetails(address) {
         })
         .then((hasRevealed) => {
           campaign.hasRevealed = hasRevealed
+          return CampaignInstance.hasContributed.call(coinbase, { from: coinbase })
+        })
+        .then((hasContributed) => {
+          campaign.hasContributed = hasContributed
+          return CampaignInstance.getNumContributions.call({ from: coinbase })
+        })
+        .then((numContributions) => {
+          campaign.numContributions = numContributions
+
+          // FIXME: dispatch occurs before promises in loop resolve
+          if (campaign.numContributions > 0) {
+            for (let i = 0; i < campaign.numContributions; i++) {
+              CampaignInstance.contributions.call(i, { from: coinbase }).then((contribution) => {
+                campaign.contributions[i] = {
+                  address: contribution[0],
+                  amount: Number(contribution[1]),
+                  time: Number(contribution[2])
+                }
+              })
+            }
+          }
+
           dispatch(updateCampaign(campaign))
         })
         .catch((err) => {
@@ -143,7 +166,6 @@ export function revealVote(campaign, voteOption, salt) {
     })
   }
 }
-
 
 
 // TODO: Get Contributions, will only be able to interact with contributions once we have an approved campaign!

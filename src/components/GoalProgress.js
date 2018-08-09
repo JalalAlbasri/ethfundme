@@ -10,7 +10,8 @@ function GoalProgress(props) {
 
     return (
       <div className="progress">
-        <div className="progress-bar progress-bar-striped"
+        <div className="progress-bar"
+        // <div className="progress-bar progress-bar-striped"
           role="progressbar"
           aria-valuemin="0"
           aria-valuenow={progress}
@@ -36,7 +37,8 @@ function GoalProgress(props) {
 
   return (
       <div className="progress">
-        <div className="progress-bar progress-bar-striped"
+        <div className="progress-bar"
+        // <div className="progress-bar progress-bar-striped"
           role="progressbar"
           aria-valuemin="0"
           aria-valuenow={goalProgress}
@@ -45,7 +47,8 @@ function GoalProgress(props) {
         >
           {props.goal}
         </div>
-        <div className="progress-bar progress-bar-striped bg-success"
+        <div className="progress-bar bg-success"
+        // <div className="progress-bar progress-bar-striped bg-success"
           role="progressbar"
           aria-valuemin="0"
           aria-valuenow={surplusProgress}

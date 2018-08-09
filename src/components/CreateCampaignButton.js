@@ -9,7 +9,6 @@ const contract = require('truffle-contract')
 import EthFundMeContract from '../../build/contracts/EthFundMe.json'
 
 import { addCampaign } from '../actions/CampaignActions'
-import Campaign from './Campaign';
 
 class CreateCampaignButton extends Component {
   constructor(props, context) {
@@ -64,7 +63,6 @@ CreateCampaignButton.PropTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    EthFundMe: state.contracts.EthFundMe
   }
 }
 

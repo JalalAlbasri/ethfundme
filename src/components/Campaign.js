@@ -5,9 +5,12 @@ import PropTypes from 'prop-types'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { getCampaignDetails } from '../actions/CampaignActions'
+
 import GoalProgress from './GoalProgress'
 import Vote from './Vote'
+import Contribution from './Contribution'
 
+// TODO: Could just use an array for these, also, move them out to antoher file
 const CAMPAIGN_STATES = {
   0: 'Pending',
   1: 'Active',
@@ -73,8 +76,29 @@ class Campaign extends Component {
           }
         </div>
         {/* TODO: Don't show the footer unless there's content in it */}
+
+
+       {
+         console.log(`this.props.campaign: ${JSON.stringify(this.props.campaign)}`)
+         if ()
+         console.log(`this.props.campaign.contributions.length: `)
+        }
+
+        <div className="Contributions">
+          {(this.props.campaign.contributions || {}).length > 0
+            && this.props.campaign.contributions.map((contribution, i) => (
+              <Contribution
+                key={i}
+                campaignIndex={this.props.i}
+                contributionIndex={i}
+              />
+            ))
+          }
+        </div>
+
         <div className="card-footer">
-          <Vote i={this.props.i}/>
+        {/* TODO: Change i to campaignId */}
+          <Vote campaignIndex={this.props.i}/>
         </div>
       </div>
     )

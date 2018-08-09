@@ -10,17 +10,19 @@ import "./Campaign.sol";
 // DONE: Rewrite state transition according to solidy state machine pattern
 
 // Contract Developement 2
+// TASK: Implement Circuit Breaker Pattern!
 // TASK: Comment Contracts and Tests
 // TASK: Review All variable/function etc Names
 // TASK: Review All variable/function etc accessibility
 // TASK: Split Contract Files
 // TASK: Write Solidity Tests
 // TASK: Review uints and restrict size if possible
-// TASK: Use a library/Package to advance time in tests
+// DONE: Use a library/Package to advance time in tests
 // TASK: Review Security Best Practices
 // TASK: Review Design Patterns
 // TASK: Error messages for require statements
 // TASK: Campaign Factory Contract
+// TASK: Use a Library
 
 // Frontend
 // TASK: Set up React Project and React Crash Course

@@ -40,7 +40,7 @@ class Account extends Component {
       <div className="Account">
         <UserBadge showUserBadge={this.props.account.isAdmin} />
         <div className="mb-3">
-          <span className="badge address-badge">{this.props.account.address}</span>
+          <span className="badge badge-info address-badge">{this.props.account.address}</span>
         </div>
       </div>
     )
@@ -59,7 +59,6 @@ Account.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    EthFundMe: state.contracts.EthFundMe,
     accountAddress: state.accounts[0],
     account: state.account
   }
