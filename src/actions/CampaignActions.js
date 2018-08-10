@@ -3,21 +3,26 @@ export const UPDATE_CAMPAIGN = 'UPDATE_CAMPAIGN'
 
 const contract = require('truffle-contract')
 import CampaignContract from '../../build/contracts/Campaign.json'
+import EthFundMeContract from '../../build/contracts/EthFundMe.json'
 
-export const addCampaign = (address) => ({
-  type: ADD_CAMPAIGN,
-  address
-})
+function campaignAdded(campaign) {
+  return {
+    type: ADD_CAMPAIGN,
+    campaign
+  }
+}
 
-export function updateCampaign(campaign) {
+function campaignUpdated(campaign) {
   return {
     type: UPDATE_CAMPAIGN,
     campaign
   }
 }
 
-export function getCampaignDetails(address) {
-  return function (dispatch) {
+function getCampaignDetails(address) {
+  console.log(`getCampaignDetails() address: ${address}`)
+
+  return new Promise((resolve, reject) => {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
     let CampaignInstance
@@ -95,13 +100,14 @@ export function getCampaignDetails(address) {
           // FIXME: dispatch occurs before promises in loop resolve
           if (campaign.numContributions > 0) {
             for (let i = 0; i < campaign.numContributions; i++) {
-              let contributionPromise = CampaignInstance.contributions.call(i, { from: coinbase }).then((contribution) => {
-                campaign.contributions[i] = {
-                  address: contribution[0],
-                  amount: Number(contribution[1]),
-                  time: Number(contribution[2])
-                }
-              })
+              let contributionPromise = CampaignInstance.contributions.call(i, { from: coinbase })
+                .then((contribution) => {
+                  campaign.contributions[i] = {
+                    address: contribution[0],
+                    amount: Number(contribution[1]),
+                    time: Number(contribution[2])
+                  }
+                })
               contributionPromises.push(contributionPromise)
             }
           }
@@ -110,11 +116,99 @@ export function getCampaignDetails(address) {
         })
 
         .then(() => {
-          dispatch(updateCampaign(campaign))
+          resolve(campaign)
         })
 
         .catch((err) => {
-          console.log(err)
+          reject(err)
+        })
+    })
+  })
+}
+
+function addCampaign(campaignAddress) {
+  return function (dispatch) {
+    getCampaignDetails(campaignAddress).then((campaign) => {
+      console.log(`addCampaign, campaign: ${JSON.stringify(campaign)}`)
+      dispatch(campaignAdded(campaign))
+    })
+  }
+}
+
+export function updateCampaign(campaignAddress) {
+  return function (dispatch) {
+    getCampaignDetails(campaignAddress).then((campaign) => {
+      dispatch(campaignUpdated(campaign))
+    })
+  }
+}
+
+export function addCampaigns() {
+  console.log('addCampaigns')
+  return function (dispatch) {
+    const web3EthFundMe = contract(EthFundMeContract)
+    web3EthFundMe.setProvider(web3.currentProvider)
+
+    let EthFundMeInstance
+
+    web3.eth.getCoinbase((err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+      web3EthFundMe.deployed().then((instance) => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.getNumCampaigns.call({ from: coinbase })
+      })
+        .then((numCampaigns) => {
+          // let campaignPromises = []
+
+          for (let i = 0; i < numCampaigns; i++) {
+            EthFundMeInstance.campaigns.call(i, { from: coinbase })
+            // let campaignPromise = EthFundMeInstance.campaigns.call(i, { from: coinbase })
+              .then((campaignAddress) => {
+                dispatch(addCampaign(campaignAddress))
+              })
+            // campaignPromises.push(campaignPromise)
+          }
+
+          // return Promise.all(campaignPromises)
+        })
+    })
+  }
+}
+
+function updateCampaigns() {
+  return function (dispatch, getState) {
+    const web3Campaign = contract(CampaignContract)
+    web3Campaign.setProvider(web3.currentProvider)
+
+    const state = getState()
+    const campaigns = state.campaigns
+
+    for (let i = 0; i < campaigns.length; i++) {
+      dispatch(updateCampaign(campaigns[i].address))
+    }
+  }
+}
+
+export function createCampaign(title, duration, goal) {
+  return function (dispatch) {
+    const web3EthFundMe = contract(EthFundMeContract)
+    web3EthFundMe.setProvider(web3.currentProvider)
+
+    let EthFundMeInstance
+
+    web3.eth.getCoinbase((err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+      web3EthFundMe.deployed().then((instance) => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.createCampaign(title, duration, goal, { from: coinbase })
+      })
+        .then((result) => {
+          const campaignAddress = result.logs[0].args.campaignAddress
+          dispatch(addCampaign(campaignAddress))
         })
     })
   }
@@ -136,7 +230,7 @@ export function contribute(campaign, contribution) {
           CampaignInstance = instance
           return CampaignInstance.contribute({ from: coinbase, value: contribution })
         }).then((result) => {
-          dispatch(getCampaignDetails(campaign.address))
+          dispatch(updateCampaign(campaign.address))
         })
         .catch((err) => {
           console.log(err)
@@ -197,14 +291,29 @@ export function revealVote(campaign, voteOption, salt) {
   }
 }
 
+export function timeTravel() {
+  const id = Date.now()
 
-// TODO: Get Contributions, will only be able to interact with contributions once we have an approved campaign!
-//   return CampaignInstance.getNumContributions.call({ from: coinbase })
-// })
-// .then((numContributions) => {
-//   for (let i = 0; i < numContributions; i++) {
-//     CampaignInstance.contributions.call(i, { from: coinbase })
-//       .then((contribution) => {
-//         console.log(contribution)
-//       })
-//   }
+  return function (dispatch) {
+    return new Promise((resolve, reject) => {
+      web3.currentProvider.sendAsync({
+        jsonrpc: '2.0',
+        method: 'evm_increaseTime',
+        params: [1],
+        id: id
+      }, (err1) => {
+        if (err1) return reject(err1)
+
+        web3.currentProvider.sendAsync({
+          jsonrpc: '2.0',
+          method: 'evm_mine',
+          id: id + 1
+        }, (err2, res) => {
+          return err2 ? reject(err2) : resolve(res)
+        })
+      })
+    }).then(() => {
+      dispatch(updateCampaigns())
+    })
+  }
+}

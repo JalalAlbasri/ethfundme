@@ -2,44 +2,31 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import { addCampaign } from '../actions/CampaignActions'
+import { addCampaigns } from '../actions/CampaignActions'
 import Campaign from './Campaign'
 
-// TODO: refactor this stuff to use actions and reducers?
 class Campaigns extends Component {
   constructor(props, context) {
     super(props)
-    this.drizzle = context.drizzle
-
-    this.dataKey = this.drizzle.contracts.EthFundMe.methods.getNumCampaigns.cacheCall()
-    this.numCampaigns = props.EthFundMe.getNumCampaigns[this.dataKey].value
-
-    this.campaignDataKeys = []
-    for (let i = 0; i < this.numCampaigns; i++) {
-      this.campaignDataKeys[i] = this.drizzle.contracts.EthFundMe.methods.campaigns.cacheCall(i)
-    }
   }
 
-  // FIXME: It's not adding campaigns in the correct order, maybe we can use normal web3 to handle the intial campaign adding
   componentDidMount() {
-    this.drizzle.contracts.EthFundMe.methods.getNumCampaigns().call().then((numCampaigns) => {
-      for (let i = 0; i < numCampaigns; i++) {
-        this.drizzle.contracts.EthFundMe.methods.campaigns(i).call().then((address) => {
-          this.props.dispatchAddCampaign(address)
-        })
-      }
-    })
+    this.props.dispatchAddCampaigns()
   }
 
   render() {
-    return (
-      <div className="Campaigns">
-        {this.props.campaigns.map((campaign, campaignIndex) => <Campaign
-            key={campaign.address}
-            campaignIndex={campaignIndex}
-            />)}
-      </div>
-    )
+    if (this.props.campaigns.length > 0) {
+      return (
+
+        <div className="Campaigns">
+          {this.props.campaigns.map((campaign, campaignIndex) => <Campaign
+              key={campaign.address}
+              campaignIndex={campaignIndex}
+              />)}
+        </div>
+      )
+    }
+    return null
   }
 }
 
@@ -63,8 +50,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchAddCampaign: (address) => {
-      dispatch(addCampaign(address))
+    dispatchAddCampaigns: () => {
+      dispatch(addCampaigns())
     }
   }
 }

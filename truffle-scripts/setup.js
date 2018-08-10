@@ -14,6 +14,18 @@ const REJECT_VOTE_OPTION = false
 const APPROVE_VOTE_SECRET = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [APPROVE_VOTE_OPTION, SALT]).toString('hex')
 const REJECT_VOTE_SECRET = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [REJECT_VOTE_OPTION, SALT]).toString('hex')
 
+const GOAL_MIN = 20
+const GOAL_MAX = 30
+const DURATION_MIN = 1
+const DURATION_MAX = 7
+const CONTRIBUTION_MIN = 1
+const CONTRIBUTION_MAX = 8
+
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min // The maximum is exclusive and the minimum is inclusive
+}
+
 module.exports = function (callback) {
   const accounts = web3.eth.accounts
 
@@ -27,7 +39,10 @@ module.exports = function (callback) {
 
     for (let i = 0; i < NUM_CAMPAIGNS; i++) {
       console.log(`creating campaign ${i}...`)
-      let createCampaignPromise = EthFundMeInstance.createCampaign('Campaign ' + i, 30, 1, { from: accounts[3] })
+      let goal = getRandomInt(GOAL_MIN, GOAL_MAX)
+      let duration = getRandomInt(DURATION_MIN, DURATION_MAX)
+
+      let createCampaignPromise = EthFundMeInstance.createCampaign('Campaign ' + i, goal, duration, { from: accounts[3] })
         .then((result) => {
           CampaignInstances.push(Campaign.at(result.logs[0].args.campaignAddress))
         })
@@ -98,7 +113,7 @@ module.exports = function (callback) {
 
       for (let i = 0; i < NUM_APPROVALS; i++) {
         for (let j = 4; j < accounts.length; j++) {
-          let contribution = Math.ceil((Math.random()) * 10)
+          let contribution = getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX)
           if (contribution > 0) {
             console.log(`contributing ${contribution} eth from account ${j} to campaign ${i}...`)
             let contributePromise = CampaignInstances[i].contribute({ from: accounts[j], value: contribution })

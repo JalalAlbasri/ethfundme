@@ -31,8 +31,6 @@ class Contribute extends Component {
   }
 
   render() {
-    console.log(`this.props.account ${web3.toChecksumAddress(this.props.account.address)}`)
-    console.log(`this.props.campaign.manager ${web3.toChecksumAddress(this.props.campaign.manager)}`)
     if (
       !this.props.account.isAdmin
       && web3.toChecksumAddress(this.props.account.address)

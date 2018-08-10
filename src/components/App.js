@@ -60,6 +60,9 @@ class App extends Component {
                   <Account />
                 </div> */}
                 <div className="mb-3">
+                  <Account />
+                </div>
+                <div className="mb-3">
                   <CreateCampaignButton />
                 </div>
               </div>
@@ -69,11 +72,11 @@ class App extends Component {
                   <Campaigns />
               </div>
             </div>
-            <div className="col-md-2">
+            {/* <div className="col-md-2">
                 <div className="sticky-top sidebar-right">
                   <Account />
                 </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
