@@ -7,6 +7,7 @@ import Navbar from './Navbar'
 import Account from './Account'
 import CreateCampaignButton from './CreateCampaignButton'
 import Campaigns from './Campaigns'
+import TimeTravel from './TimeTravel'
 
 // TASK: Contribute Button
 // TASK: End Campaign Button
@@ -64,6 +65,9 @@ class App extends Component {
                 </div>
                 <div className="mb-3">
                   <CreateCampaignButton />
+                </div>
+                <div className="mb-3">
+                  <TimeTravel />
                 </div>
               </div>
             </div>

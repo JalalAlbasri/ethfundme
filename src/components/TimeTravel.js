@@ -16,6 +16,7 @@ class CreateCampaignButton extends Component {
   }
 
   handleTimeTravelClick(event) {
+    console.log('Time Travel')
     event.preventDefault()
   }
 
