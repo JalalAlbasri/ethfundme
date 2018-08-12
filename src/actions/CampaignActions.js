@@ -6,6 +6,7 @@ import CampaignContract from '../../build/contracts/Campaign.json'
 import EthFundMeContract from '../../build/contracts/EthFundMe.json'
 
 function campaignAdded(campaign) {
+  console.log(`campaignAdded() campaign.address: ${campaign.address}`)
   return {
     type: ADD_CAMPAIGN,
     campaign
@@ -126,16 +127,17 @@ function getCampaignDetails(address) {
   })
 }
 
-function addCampaign(campaignAddress) {
+function addCampaign(campaignAddress, campaignIndex) {
+  console.log(`addCampaign(), campaignAddress: ${campaignAddress}`)
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
-      console.log(`addCampaign, campaign: ${JSON.stringify(campaign)}`)
-      dispatch(campaignAdded(campaign))
+      dispatch(campaignAdded({ ...campaign, campaignIndex }))
     })
   }
 }
 
 export function updateCampaign(campaignAddress) {
+  console.log(`updateCampaign(), campaignAddress: ${campaignAddress}`)
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
       dispatch(campaignUpdated(campaign))
@@ -144,7 +146,7 @@ export function updateCampaign(campaignAddress) {
 }
 
 export function addCampaigns() {
-  console.log('addCampaigns')
+  console.log('addCampaigns()')
   return function (dispatch) {
     const web3EthFundMe = contract(EthFundMeContract)
     web3EthFundMe.setProvider(web3.currentProvider)
@@ -160,24 +162,19 @@ export function addCampaigns() {
         return EthFundMeInstance.getNumCampaigns.call({ from: coinbase })
       })
         .then((numCampaigns) => {
-          // let campaignPromises = []
-
           for (let i = 0; i < numCampaigns; i++) {
             EthFundMeInstance.campaigns.call(i, { from: coinbase })
-            // let campaignPromise = EthFundMeInstance.campaigns.call(i, { from: coinbase })
               .then((campaignAddress) => {
-                dispatch(addCampaign(campaignAddress))
+                dispatch(addCampaign(campaignAddress, i))
               })
-            // campaignPromises.push(campaignPromise)
           }
-
-          // return Promise.all(campaignPromises)
         })
     })
   }
 }
 
 function updateCampaigns() {
+  console.log('updateCampaigns()')
   return function (dispatch, getState) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -256,7 +253,7 @@ export function placeVote(campaign, voteSecret) {
           return CampaignInstance.vote(voteSecret, { from: coinbase })
         })
         .then((result) => {
-          dispatch(getCampaignDetails(campaign.address))
+          dispatch(updateCampaign(campaign.address))
         })
         .catch((err) => {
           console.log(err)

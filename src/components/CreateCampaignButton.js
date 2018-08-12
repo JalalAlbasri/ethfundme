@@ -15,7 +15,7 @@ class CreateCampaignButton extends Component {
   // TODO: Move to Campaign Actions
   handleCreateCampaignClick(event) {
     event.preventDefault()
-    this.props.dispatchCreateCampaign('', 10, 1)
+    this.props.dispatchCreateCampaign('123', 10, 1)
   }
 
   render() {

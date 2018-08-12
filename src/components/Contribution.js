@@ -35,8 +35,6 @@ Contribution.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    contribution: state.campaigns[ownProps.campaignIndex].contributions[ownProps.contributionIndex],
-    contributionIndex: ownProps.contributionIndex
   }
 }
 

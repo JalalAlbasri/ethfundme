@@ -13,7 +13,6 @@ class Contributions extends Component {
   render() {
     return (
       <div className="Contributions container">
-        {/* <p className="">Contributions</p> */}
         <table className="table table-striped">
           <thead>
             <tr>
@@ -24,10 +23,10 @@ class Contributions extends Component {
           </thead>
           <tbody>
             {
-              this.props.campaign.contributions.map((contribution, contributionIndex) => (
+              this.props.contributions.map((contribution, contributionIndex) => (
                 <Contribution
                   key={contributionIndex}
-                  campaignIndex={this.props.campaignIndex}
+                  contribution={contribution}
                   contributionIndex={contributionIndex}
                 />
               ))
@@ -44,14 +43,11 @@ Contributions.contextTypes = {
 }
 
 Contributions.propTypes = {
-  campaign: PropTypes.object.isRequired,
-  campaignIndex: PropTypes.number.isRequired
+  contributions: PropTypes.array.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    campaign: state.campaigns[ownProps.campaignIndex],
-    campaignIndex: ownProps.campaignIndex
   }
 }
 

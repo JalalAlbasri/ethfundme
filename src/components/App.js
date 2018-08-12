@@ -8,6 +8,7 @@ import Account from './Account'
 import CreateCampaignButton from './CreateCampaignButton'
 import Campaigns from './Campaigns'
 import TimeTravel from './TimeTravel'
+import Filters from './Filters'
 
 // TASK: Contribute Button
 // TASK: End Campaign Button
@@ -69,6 +70,9 @@ class App extends Component {
                 <div className="mb-3">
                   <TimeTravel />
                 </div>
+                <div className="mb-3">
+                  <Filters />
+                </div>
               </div>
             </div>
             <div className="col-md-8">
@@ -76,11 +80,14 @@ class App extends Component {
                   <Campaigns />
               </div>
             </div>
-            {/* <div className="col-md-2">
-                <div className="sticky-top sidebar-right">
-                  <Account />
-                </div>
-            </div> */}
+            <div className="col-md-2">
+              <div className="sticky-top sidebar-right d-flex justify-content-end">
+                {/* <Account /> */}
+                {/* <div className="mb-3">
+                  <Filters />
+                </div> */}
+              </div>
+            </div>
           </div>
         </div>
       </div>

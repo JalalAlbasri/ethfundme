@@ -12,21 +12,9 @@ import Contributions from './Contributions'
 import Contribute from './Contribute'
 
 // TODO: Could just use an array for these, also, move them out to antoher file
-const CAMPAIGN_STATES = {
-  0: 'Pending',
-  1: 'Active',
-  2: 'Successful',
-  3: 'Unsuccessful',
-  4: 'Cancelled'
-}
+export const CAMPAIGN_STATES = ['Pending', 'Active', 'Successful', 'Unsuccessful', 'Cancelled']
 
-const APPROVAL_STATES = {
-  0: 'Commit',
-  1: 'Reveal',
-  2: 'Approved',
-  3: 'Rejected',
-  4: 'Cancelled'
-}
+export const APPROVAL_STATES = ['Commit', 'Reveal', 'Approved', 'Rejected', 'Cancelled']
 
 class Campaign extends Component {
   constructor(props) {
@@ -34,7 +22,7 @@ class Campaign extends Component {
   }
 
   componentDidMount() {
-    this.props.dispatchUpdateCampaign(this.props.campaign.address)
+    // this.props.dispatchUpdateCampaign(this.props.campaign.address)
   }
 
   render() {
@@ -46,7 +34,7 @@ class Campaign extends Component {
     return (
       <div className={'Campaign card mb-3 ' + CAMPAIGN_STATES[this.props.campaign.campaignState]}>
         <div className="card-header h6 bg-transparent d-flex">
-          <span className="mr-auto">{this.props.campaign.title}</span>
+          <span className="mr-auto">#{this.props.campaign.campaignIndex} {this.props.campaign.title}</span>
           {
             (Object.prototype.hasOwnProperty.call(this.props.campaign, 'campaignState'))
               ? <span className="status ml-auto">
@@ -78,13 +66,13 @@ class Campaign extends Component {
         </div>
 
         {(this.props.campaign.contributions || {}).length > 0
-            && <Contributions campaignIndex={this.props.campaignIndex} />}
+            && <Contributions contributions={this.props.campaign.contributions} />}
 
         {/* TODO: Don't show the footer unless there's content in it */}
 
-        <Contribute campaignIndex={this.props.campaignIndex} />
+        <Contribute campaign={this.props.campaign} />
 
-        <Vote campaignIndex={this.props.campaignIndex}/>
+        <Vote campaign={this.props.campaign}/>
       </div>
     )
   }
@@ -97,7 +85,6 @@ Campaign.propTypes = {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    campaign: state.campaigns[ownProps.campaignIndex]
   }
 }
 
