@@ -5,6 +5,9 @@ const contract = require('truffle-contract')
 import CampaignContract from '../../build/contracts/Campaign.json'
 import EthFundMeContract from '../../build/contracts/EthFundMe.json'
 
+export const CAMPAIGN_STATES = ['Pending', 'Active', 'Successful', 'Unsuccessful', 'Cancelled']
+export const APPROVAL_STATES = ['Commit', 'Reveal', 'Approved', 'Rejected', 'Cancelled']
+
 function campaignAdded(campaign) {
   console.log(`campaignAdded() campaign.address: ${campaign.address}`)
   return {
@@ -14,6 +17,7 @@ function campaignAdded(campaign) {
 }
 
 function campaignUpdated(campaign) {
+  console.log(`campaignUpdated(), ${campaign.address}`)
   return {
     type: UPDATE_CAMPAIGN,
     campaign
@@ -60,7 +64,7 @@ function getCampaignDetails(address) {
           return CampaignInstance.campaignState.call({ from: coinbase })
         })
         .then((campaignState) => {
-          campaign.campaignState = Number(campaignState)
+          campaign.campaignState = CAMPAIGN_STATES[Number(campaignState)]
           return CampaignInstance.manager.call({ from: coinbase })
         })
         .then((manager) => {
@@ -68,7 +72,7 @@ function getCampaignDetails(address) {
           return CampaignInstance.approvalState.call({ from: coinbase })
         })
         .then((approvalState) => {
-          campaign.approvalState = Number(approvalState)
+          campaign.approvalState = APPROVAL_STATES[Number(approvalState)]
           return CampaignInstance.numVoteSecrets.call({ from: coinbase })
         })
         .then((numVoteSecrets) => {
@@ -189,6 +193,7 @@ function updateCampaigns() {
 }
 
 export function createCampaign(title, duration, goal) {
+  console.log('createCampaign')
   return function (dispatch) {
     const web3EthFundMe = contract(EthFundMeContract)
     web3EthFundMe.setProvider(web3.currentProvider)
@@ -212,6 +217,7 @@ export function createCampaign(title, duration, goal) {
 }
 
 export function contribute(campaign, contribution) {
+  console.log(`contribute, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -237,6 +243,7 @@ export function contribute(campaign, contribution) {
 }
 
 export function placeVote(campaign, voteSecret) {
+  console.log(`placeVote, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -263,6 +270,7 @@ export function placeVote(campaign, voteSecret) {
 }
 
 export function revealVote(campaign, voteOption, salt) {
+  console.log(`reveal, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -289,6 +297,7 @@ export function revealVote(campaign, voteOption, salt) {
 }
 
 export function timeTravel() {
+  console.log('timeTravel')
   const id = Date.now()
 
   return function (dispatch) {

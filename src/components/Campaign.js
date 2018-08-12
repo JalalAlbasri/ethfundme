@@ -11,11 +11,6 @@ import Vote from './Vote'
 import Contributions from './Contributions'
 import Contribute from './Contribute'
 
-// TODO: Could just use an array for these, also, move them out to antoher file
-export const CAMPAIGN_STATES = ['Pending', 'Active', 'Successful', 'Unsuccessful', 'Cancelled']
-
-export const APPROVAL_STATES = ['Commit', 'Reveal', 'Approved', 'Rejected', 'Cancelled']
-
 class Campaign extends Component {
   constructor(props) {
     super(props)
@@ -32,14 +27,14 @@ class Campaign extends Component {
     }
 
     return (
-      <div className={'Campaign card mb-3 ' + CAMPAIGN_STATES[this.props.campaign.campaignState]}>
+      <div className={'Campaign card mb-3 ' + this.props.campaign.campaignState}>
         <div className="card-header h6 bg-transparent d-flex">
           <span className="mr-auto">#{this.props.campaign.campaignIndex} {this.props.campaign.title}</span>
           {
             (Object.prototype.hasOwnProperty.call(this.props.campaign, 'campaignState'))
               ? <span className="status ml-auto">
                 <FontAwesomeIcon className="status-icon" icon="circle" />
-                {CAMPAIGN_STATES[this.props.campaign.campaignState]}
+                {this.props.campaign.campaignState}
               </span> : ''
           }
         </div>

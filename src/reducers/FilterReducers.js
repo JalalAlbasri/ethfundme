@@ -1,18 +1,58 @@
 import TOGGLE_FILTER from '../actions/FilterActions'
 
-const initialState = [true, true, true, false, false]
+const initialState = [
+  {
+    name: 'Commit',
+    isActive: true
+  },
+  {
+    name: 'Reveal',
+    isActive: true
+  },
+  {
+    name: 'Approved',
+    isActive: true
+  },
+  {
+    name: 'Rejected',
+    isActive: false
+  },
+  {
+    name: 'Pending',
+    isActive: true
+  },
+  {
+    name: 'Active',
+    isActive: true
+  },
+  {
+    name: 'Successful',
+    isActive: false
+  },
+  {
+    name: 'Unsuccessful',
+    isActive: false
+  },
+  {
+    name: 'Cancelled',
+    isActive: false
+  }
+]
+
 
 console.log(`initialState: ${initialState}`)
 console.log(`typeof initialState: ${typeof initialState}`)
 
-function filter(state = initialState, action) {
+function filters(state = initialState, action) {
   switch (action.type) {
     case 'TOGGLE_FILTER':
-      console.log(`TOGGLE_FILTER action.filterIndex: ${action.filterIndex}`)
-      return state.map((filterState, i) => (i === action.filterIndex) ? !filterState : filterState)
+      return state.map((filter) => (filter.name === action.filterName) ? {
+        name: action.filterName,
+        isActive: !filter.isActive
+      } : filter)
     default:
       return state
   }
 }
 
-export default filter
+export default filters

@@ -16,9 +16,10 @@ class Campaigns extends Component {
 
   render() {
     if (this.props.campaigns.length > 0) {
-      console.log(`typeof campaigns[0].campaignIndex: ${typeof this.props.campaigns[0].campaignIndex}`)
       let campaigns = this.props.campaigns
-        .filter((campaign) => this.props.filter[campaign.campaignState])
+        .filter((campaign) => {
+          return this.props.filters.find((filter) => filter.name === campaign.campaignState).isActive
+        })
         .sort((a, b) => a.campaignIndex > b.campaignIndex)
 
       return (
@@ -42,7 +43,7 @@ Campaigns.propTypes = {
   campaigns: PropTypes.arrayOf(
     PropTypes.shape(PropTypes.object.isRequired).isRequired
   ).isRequired,
-  filter: PropTypes.arrayOf(PropTypes.bool).isRequired
+  filters: PropTypes.array.isRequired
 }
 
 
@@ -50,7 +51,7 @@ const mapStateToProps = (state) => {
   return {
     campaigns: state.campaigns,
     EthFundMe: state.contracts.EthFundMe,
-    filter: state.filter
+    filters: state.filters
   }
 }
 

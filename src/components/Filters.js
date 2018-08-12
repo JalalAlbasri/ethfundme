@@ -2,11 +2,9 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import { CAMPAIGN_STATES, APPROVAL_STATES } from './Campaign'
-
 import FilterButton from './FilterButton'
 
-class Filter extends Component {
+class Filters extends Component {
   constructor(props, context) {
     super(props)
     this.handleFitlerChange = this.handleFitlerChange.bind(this)
@@ -25,32 +23,32 @@ class Filter extends Component {
   }
 
   render() {
-    const adminFilters = null
-    // if (this.props.isAdmin)
+    let filters = (this.props.account.isAdmin) ? this.props.filters : this.props.filters.slice(4)
 
     return (
       <div className="Filters btn-group-vertical" role="group">
-        {CAMPAIGN_STATES.map((campaignState, i) => <FilterButton
-          key={campaignState}
-          label={campaignState}
-          filterIndex={i}
+        {filters.map((filter) => <FilterButton
+          key={filter.name}
+          filter={filter}
           />)}
       </div>
     )
   }
 }
 
-Filter.contextTypes = {
+Filters.contextTypes = {
   drizzle: PropTypes.object
 }
 
-Filter.propTypes = {
+Filters.propTypes = {
+  filters: PropTypes.array.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    account: state.account
+    account: state.account,
+    filters: state.filters
   }
 }
 
-export default drizzleConnect(Filter, mapStateToProps)
+export default drizzleConnect(Filters, mapStateToProps)

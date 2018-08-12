@@ -1,40 +1,41 @@
 .Filters {
   width: 166px;
   .FilterButton {
-    // background-color: @md-grey-100;
-    
-    &.true {
-      color: #fff !important;
+    background-color: #fff;
+
+    &:hover {
+      background-color: @md-grey-200;
+      z-index: auto !important;
     }
 
-    &.filterIndex0 {
-      // color: @md-amber-500;
-      &.true {
-        background-color: @md-amber-500;
+    &.active {
+      &.Pending,
+      &.Commit {
+        color: @md-amber-900;
+        background-color: @md-amber-100;
       }
-    }
-    &.filterIndex1 {
-      // color: @md-blue-500;
-      &.true {
-        background-color: @md-blue-500;
+
+      &.Active,
+      &.Reveal {
+        color: @md-blue-900;
+        background-color: @md-blue-100;
       }
-    }
-    &.filterIndex2 {
-      // color: @md-green-500;
-      &.true {
-        background-color: @md-green-500;
+
+      &.Successful,
+      &.Approved {
+        color: @md-green-900;
+        background-color: @md-green-100;
       }
-    }
-    &.filterIndex3 {
-      // color: @md-red-500;
-      &.true {
-        background-color: @md-red-500;
+
+      &.Unsuccessful,
+      &.Rejected {
+        color: @md-red-900;
+        background-color: @md-red-100;
       }
-    }
-    &.filterIndex4 {
-      // color: @md-grey-500;
-      &.true {
-        background-color: @md-grey-500;
+
+      &.Cancelled {
+        color: @md-grey-900;
+        background-color: @md-grey-100;
       }
     }
   }
