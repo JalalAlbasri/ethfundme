@@ -6,10 +6,18 @@ import Moment from 'react-moment'
 class Contribution extends Component {
   constructor(props, context) {
     super(props)
+    this.state = {
+      timestamp: 0
+    }
   }
 
   componentDidMount() {
-
+    web3.eth.getBlock('latest', (err, block) => {
+      console.log(`block.timestamp: ${block.timestamp}`)
+      this.setState({
+        timestamp: new Date(block.timestamp * 1000)
+      })
+    })
   }
 
   render() {
@@ -19,7 +27,9 @@ class Contribution extends Component {
         <th scope="row">{this.props.contributionIndex + 1}</th>
         <td>{this.props.contribution.address}</td>
         <td className="center">{this.props.contribution.amount}</td>
-        <td className="center"><Moment fromNow date={time}/></td>
+        <td className="center">
+          <Moment from={this.state.timestamp} date={time} />
+        </td>
       </tr>
     )
   }
@@ -35,13 +45,11 @@ Contribution.propTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return {
-  }
+  return {}
 }
 
 const mapDispathToProps = (dispatch) => {
-  return {
-  }
+  return {}
 }
 
 export default drizzleConnect(Contribution, mapStateToProps, mapDispathToProps)

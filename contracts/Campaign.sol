@@ -157,7 +157,6 @@ contract Campaign is Approvable {
     DATA STRUCTURES 
    */
 
-
   enum CampaignStates {
     Pending,
     Active,
@@ -189,7 +188,7 @@ contract Campaign is Approvable {
   Contribution[] public contributions;
   mapping (address => uint) public totalContributed;
   mapping (address => bool) public hasContributed;
-  mapping (address => bool) hasWithdrawn;
+  mapping (address => bool) public hasWithdrawn;
 
 
   /**
@@ -299,6 +298,7 @@ contract Campaign is Approvable {
       funds += msg.value;
     }
   
+  // TODO: Might restrict this to only Managers
   function cancelCampaign() public
     onlyManagerOrAdmin
     transitionState
@@ -324,14 +324,14 @@ contract Campaign is Approvable {
       if (campaignState == CampaignStates.Successful) {
         require(msg.sender == manager);
         hasWithdrawn[msg.sender] = true;
-        funds = 0;
-        msg.sender.transfer(funds);
+        // funds = 0;
+        msg.sender.transfer(address(this).balance);
       }
 
       if(campaignState == CampaignStates.Unsuccessful || campaignState == CampaignStates.Cancelled) {
         require(hasContributed[msg.sender] == true);
         hasWithdrawn[msg.sender] = true;
-        funds -= totalContributed[msg.sender];
+        // funds -= totalContributed[msg.sender];
         msg.sender.transfer(totalContributed[msg.sender]);
       }
   }

@@ -2,6 +2,10 @@ import TOGGLE_FILTER from '../actions/FilterActions'
 
 const initialState = [
   {
+    name: 'All',
+    isActive: false
+  },
+  {
     name: 'Commit',
     isActive: true
   },

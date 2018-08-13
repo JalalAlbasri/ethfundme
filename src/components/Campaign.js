@@ -11,6 +11,7 @@ import Vote from './Vote'
 import Contributions from './Contributions'
 import Contribute from './Contribute'
 import CampaignEndDate from './CampaignEndDate'
+import Withdraw from './Withdraw'
 
 class Campaign extends Component {
   constructor(props) {
@@ -66,8 +67,9 @@ class Campaign extends Component {
         {/* TODO: Don't show the footer unless there's content in it */}
 
         <Contribute campaign={this.props.campaign} />
-
+        <Withdraw campaign={this.props.campaign} />
         <Vote campaign={this.props.campaign}/>
+
       </div>
     )
   }

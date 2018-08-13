@@ -15,7 +15,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
-  faCircle, faPlus, faGift, faForward
+  faCircle, faPlus, faGift, faForward, faArrowCircleDown
 } from '@fortawesome/free-solid-svg-icons'
 
 import store from './store'
@@ -27,6 +27,7 @@ library.add(faCircle)
 library.add(faPlus)
 library.add(faGift)
 library.add(faForward)
+library.add(faArrowCircleDown)
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()

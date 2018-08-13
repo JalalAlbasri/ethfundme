@@ -5,6 +5,8 @@ const contract = require('truffle-contract')
 import CampaignContract from '../../build/contracts/Campaign.json'
 import EthFundMeContract from '../../build/contracts/EthFundMe.json'
 
+import { getAccountDetails } from './AccountActions'
+
 export const CAMPAIGN_STATES = ['Pending', 'Active', 'Successful', 'Unsuccessful', 'Cancelled']
 export const APPROVAL_STATES = ['Commit', 'Reveal', 'Approved', 'Rejected', 'Cancelled']
 
@@ -55,7 +57,7 @@ function getCampaignDetails(address) {
           return CampaignInstance.goal.call({ from: coinbase })
         })
         .then((goal) => {
-          campaign.goal = Number(goal)
+          campaign.goal = web3.fromWei(Number(goal))
           return CampaignInstance.duration.call({ from: coinbase })
         })
         .then((duration) => {
@@ -67,7 +69,7 @@ function getCampaignDetails(address) {
           return CampaignInstance.funds.call({ from: coinbase })
         })
         .then((funds) => {
-          campaign.funds = Number(funds)
+          campaign.funds = web3.fromWei(Number(funds))
           return CampaignInstance.campaignState.call({ from: coinbase })
         })
         .then((campaignState) => {
@@ -100,6 +102,14 @@ function getCampaignDetails(address) {
         })
         .then((hasContributed) => {
           campaign.hasContributed = hasContributed
+          return CampaignInstance.hasWithdrawn.call(coinbase, { from: coinbase })
+        })
+        .then((hasWithdrawn) => {
+          campaign.hasWithdrawn = hasWithdrawn
+          return CampaignInstance.totalContributed.call(coinbase, { from: coinbase })
+        })
+        .then((totalContributed) => {
+          campaign.totalContributed = web3.fromWei(totalContributed)
           return CampaignInstance.getNumContributions.call({ from: coinbase })
         })
         .then((numContributions) => {
@@ -114,7 +124,7 @@ function getCampaignDetails(address) {
                 .then((contribution) => {
                   campaign.contributions[i] = {
                     address: contribution[0],
-                    amount: Number(contribution[1]),
+                    amount: web3.fromWei(Number(contribution[1])),
                     time: Number(contribution[2])
                   }
                 })
@@ -292,7 +302,34 @@ export function revealVote(campaign, voteOption, salt) {
           return CampaignInstance.reveal(voteOption, salt, { from: coinbase })
         })
         .then((result) => {
-          dispatch(getCampaignDetails(campaign.address))
+          dispatch(updateCampaign(campaign.address))
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    })
+  }
+}
+
+export function withdraw(campaign) {
+  return function (dispatch) {
+    const web3Campaign = contract(CampaignContract)
+    web3Campaign.setProvider(web3.currentProvider)
+    let CampaignInstance
+
+    web3.eth.getCoinbase((err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+      web3Campaign
+        .at(campaign.address)
+        .then((instance) => {
+          CampaignInstance = instance
+          return CampaignInstance.withdraw({ from: coinbase })
+        })
+        .then((result) => {
+          dispatch(updateCampaign(campaign.address))
+          dispatch(getAccountDetails(coinbase))
         })
         .catch((err) => {
           console.log(err)

@@ -15,7 +15,8 @@ module.exports = function (callback) {
     .then((numCampaigns) => {
       let transitionCampaignPromises = []
       for (let i = 0; i < numCampaigns; i++) {
-        let transitionCampaignPromise = EthFundMeInstance.campaigns.call(i, { from: accounts[0] })
+        let transitionCampaignPromise = EthFundMeInstance.campaigns
+          .call(i, { from: accounts[0] })
           .then((campaignAddress) => {
             Campaign.at(campaignAddress).transitionCampaign({ from: accounts[0] })
           })

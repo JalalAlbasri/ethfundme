@@ -49,8 +49,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchToggleFilter: (filterIndex) => {
-      dispatch(toggleFilter(filterIndex))
+    dispatchToggleFilter: (filterName) => {
+      dispatch(toggleFilter(filterName))
     }
   }
 }

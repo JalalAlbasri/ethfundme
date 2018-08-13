@@ -39,7 +39,7 @@ module.exports = function (callback) {
 
     for (let i = 0; i < NUM_CAMPAIGNS; i++) {
       console.log(`creating campaign ${i}...`)
-      let goal = getRandomInt(GOAL_MIN, GOAL_MAX)
+      let goal = web3.toWei(getRandomInt(GOAL_MIN, GOAL_MAX))
       let duration = getRandomInt(DURATION_MIN, DURATION_MAX)
 
       let createCampaignPromise = EthFundMeInstance.createCampaign('Campaign ' + i, goal, duration, { from: accounts[3] })
@@ -113,9 +113,9 @@ module.exports = function (callback) {
 
       for (let i = 0; i < NUM_APPROVALS; i++) {
         for (let j = 4; j < accounts.length; j++) {
-          let contribution = getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX)
+          let contribution = web3.toWei(getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX))
           if (contribution > 0) {
-            console.log(`contributing ${contribution} eth from account ${j} to campaign ${i}...`)
+            console.log(`contributing ${web3.fromWei(contribution)} eth from account ${j} to campaign ${i}...`)
             let contributePromise = CampaignInstances[i].contribute({ from: accounts[j], value: contribution })
             contributePromises.push(contributePromise)
           }

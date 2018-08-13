@@ -18,7 +18,21 @@ class Campaigns extends Component {
     if (this.props.campaigns.length > 0) {
       let campaigns = this.props.campaigns
         .filter((campaign) => {
-          return this.props.filters.find((filter) => filter.name === campaign.campaignState).isActive
+          return this.props.filters.find((filter) => {
+            if (filter.name === 'All' && filter.isActive) {
+              return true
+            }
+
+            if (filter.name === campaign.campaignState && filter.isActive) {
+              return true
+            }
+
+            if (filter.name === campaign.approvalState && filter.isActive) {
+              return true
+            }
+
+            return false
+          })
         })
         .sort((a, b) => a.campaignIndex > b.campaignIndex)
 

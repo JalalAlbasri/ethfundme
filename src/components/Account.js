@@ -36,13 +36,16 @@ class Account extends Component {
   }
 
   render() {
+    let balance = Number(web3.fromWei(this.props.accountBalances[this.props.accountAddress]))
+    console.log(`balance: ${balance}`)
     return (
       <div className="Account">
         <div className="">
           <span className={'badge account-badge ' + ((this.props.account.isAdmin) ? 'admin' : '')}>
             {(this.props.account.isAdmin) ? 'Admin' : 'User'}
             <img src="../../public/metamask-fox.svg"/>
-            {Number.prototype.toPrecision.call(Number(this.props.account.balance), 4)} eth
+            <span>{Number.prototype.toPrecision.call(balance, 5)} eth</span>
+            {/* <span>{(balance > 0) ? Number.prototype.toPrecision.call(balance, 5) : 0} eth</span> */}
           </span>
         </div>
         <div>
@@ -72,6 +75,7 @@ Account.propTypes = {
 const mapStateToProps = (state) => {
   return {
     accountAddress: state.accounts[0],
+    accountBalances: state.accountBalances,
     account: state.account
   }
 }

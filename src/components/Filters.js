@@ -22,7 +22,9 @@ class Filters extends Component {
   }
 
   render() {
-    let filters = (this.props.account.isAdmin) ? this.props.filters : this.props.filters.slice(4)
+    // TODO: slice out admin only filters
+    // let filters = (this.props.account.isAdmin) ? this.props.filters : this.props.filters.slice(0)
+    let filters = this.props.filters
 
     return (
       <div className="Filters btn-group-vertical" role="group">
