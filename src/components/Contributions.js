@@ -19,6 +19,7 @@ class Contributions extends Component {
               <th scope="col">#</th>
               <th scope="col">From</th>
               <th scope="col" className="center">Amount</th>
+              <th scope="col" className="center">Date</th>
             </tr>
           </thead>
           <tbody>

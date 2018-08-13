@@ -18,7 +18,6 @@ class FilterButton extends Component {
   }
 
   render() {
-    console.log(`this.props.filter.name: ${this.props.filter.name}`)
     return (
       <button
         type="button"

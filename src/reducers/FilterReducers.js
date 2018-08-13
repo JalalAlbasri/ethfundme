@@ -40,9 +40,6 @@ const initialState = [
 ]
 
 
-console.log(`initialState: ${initialState}`)
-console.log(`typeof initialState: ${typeof initialState}`)
-
 function filters(state = initialState, action) {
   switch (action.type) {
     case 'TOGGLE_FILTER':

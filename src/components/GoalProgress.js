@@ -10,16 +10,19 @@ function GoalProgress(props) {
     }
 
     return (
-      <div className="progress">
-        <div className="progress-bar goal"
-        // <div className="progress-bar progress-bar-striped"
-          role="progressbar"
-          aria-valuemin="0"
-          aria-valuenow={progress}
-          aria-valuemax="100"
-          style={progressBarStyle}
-        >
-          {(props.funds > 0) ? props.funds : ''}
+      <div className="GoalProgress">
+        <p className="lead d-flex justify-content-center"> {props.funds} eth raised of {props.goal} eth</p>
+        <div className="progress">
+          <div className="progress-bar goal"
+          // <div className="progress-bar progress-bar-striped"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuenow={progress}
+            aria-valuemax="100"
+            style={progressBarStyle}
+          >
+            {(props.funds > 0) ? props.funds : ''}
+          </div>
         </div>
       </div>
     )
@@ -37,26 +40,29 @@ function GoalProgress(props) {
   }
 
   return (
-      <div className="GoalProgress progress">
-        <div className="progress-bar goal"
-        // <div className="progress-bar progress-bar-striped"
-          role="progressbar"
-          aria-valuemin="0"
-          aria-valuenow={goalProgress}
-          aria-valuemax="100"
-          style={goalProgressBarStyle}
-        >
-          {props.goal}
-        </div>
-        <div className="progress-bar surplus"
-        // <div className="progress-bar progress-bar-striped bg-success"
-          role="progressbar"
-          aria-valuemin="0"
-          aria-valuenow={surplusProgress}
-          aria-valuemax="100"
-          style={surplusProgressBarStyle}
-        >
-          {props.funds - props.goal}
+      <div className="GoalProgress">
+        <p className="lead d-flex justify-content-center"> {props.funds} eth raised of {props.goal} eth</p>
+        <div className="progress">
+          <div className="progress-bar goal"
+          // <div className="progress-bar progress-bar-striped"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuenow={goalProgress}
+            aria-valuemax="100"
+            style={goalProgressBarStyle}
+          >
+            {props.goal}
+          </div>
+          <div className="progress-bar surplus"
+          // <div className="progress-bar progress-bar-striped bg-success"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuenow={surplusProgress}
+            aria-valuemax="100"
+            style={surplusProgressBarStyle}
+          >
+            {props.funds - props.goal}
+          </div>
         </div>
       </div>
   )

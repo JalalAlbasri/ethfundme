@@ -9,7 +9,7 @@ export const CAMPAIGN_STATES = ['Pending', 'Active', 'Successful', 'Unsuccessful
 export const APPROVAL_STATES = ['Commit', 'Reveal', 'Approved', 'Rejected', 'Cancelled']
 
 function campaignAdded(campaign) {
-  console.log(`campaignAdded() campaign.address: ${campaign.address}`)
+  // console.log(`campaignAdded() campaign.address: ${campaign.address}`)
   return {
     type: ADD_CAMPAIGN,
     campaign
@@ -17,7 +17,7 @@ function campaignAdded(campaign) {
 }
 
 function campaignUpdated(campaign) {
-  console.log(`campaignUpdated(), ${campaign.address}`)
+  // console.log(`campaignUpdated(), ${campaign.address}`)
   return {
     type: UPDATE_CAMPAIGN,
     campaign
@@ -25,7 +25,7 @@ function campaignUpdated(campaign) {
 }
 
 function getCampaignDetails(address) {
-  console.log(`getCampaignDetails() address: ${address}`)
+  // console.log(`getCampaignDetails() address: ${address}`)
 
   return new Promise((resolve, reject) => {
     const web3Campaign = contract(CampaignContract)
@@ -45,6 +45,9 @@ function getCampaignDetails(address) {
         .at(campaign.address)
         .then((instance) => {
           CampaignInstance = instance
+          //   return CampaignInstance.updateState({ from: coinbase })
+          // })
+          // .then(() => {
           return CampaignInstance.title.call({ from: coinbase })
         })
         .then((title) => {
@@ -57,6 +60,10 @@ function getCampaignDetails(address) {
         })
         .then((duration) => {
           campaign.duration = Number(duration)
+          return CampaignInstance.endDate.call({ from: coinbase })
+        })
+        .then((endDate) => {
+          campaign.endDate = Number(endDate)
           return CampaignInstance.funds.call({ from: coinbase })
         })
         .then((funds) => {
@@ -76,7 +83,6 @@ function getCampaignDetails(address) {
           return CampaignInstance.numVoteSecrets.call({ from: coinbase })
         })
         .then((numVoteSecrets) => {
-          console.log(`numVoteSecrets: ${numVoteSecrets}`)
           campaign.numVoteSecrets = Number(numVoteSecrets)
           return CampaignInstance.numVoteReveals.call({ from: coinbase })
         })
@@ -85,7 +91,6 @@ function getCampaignDetails(address) {
           return CampaignInstance.hasVoted.call(coinbase, { from: coinbase })
         })
         .then((hasVoted) => {
-          console.log(`hasVoted: ${hasVoted}`)
           campaign.hasVoted = hasVoted
           return CampaignInstance.hasRevealed.call(coinbase, { from: coinbase })
         })
@@ -132,7 +137,7 @@ function getCampaignDetails(address) {
 }
 
 function addCampaign(campaignAddress, campaignIndex) {
-  console.log(`addCampaign(), campaignAddress: ${campaignAddress}`)
+  // console.log(`addCampaign(), campaignAddress: ${campaignAddress}`)
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
       dispatch(campaignAdded({ ...campaign, campaignIndex }))
@@ -141,7 +146,7 @@ function addCampaign(campaignAddress, campaignIndex) {
 }
 
 export function updateCampaign(campaignAddress) {
-  console.log(`updateCampaign(), campaignAddress: ${campaignAddress}`)
+  // console.log(`updateCampaign(), campaignAddress: ${campaignAddress}`)
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
       dispatch(campaignUpdated(campaign))
@@ -150,7 +155,7 @@ export function updateCampaign(campaignAddress) {
 }
 
 export function addCampaigns() {
-  console.log('addCampaigns()')
+  // console.log('addCampaigns()')
   return function (dispatch) {
     const web3EthFundMe = contract(EthFundMeContract)
     web3EthFundMe.setProvider(web3.currentProvider)
@@ -178,7 +183,7 @@ export function addCampaigns() {
 }
 
 function updateCampaigns() {
-  console.log('updateCampaigns()')
+  // console.log('updateCampaigns()')
   return function (dispatch, getState) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -193,7 +198,7 @@ function updateCampaigns() {
 }
 
 export function createCampaign(title, duration, goal) {
-  console.log('createCampaign')
+  // console.log('createCampaign')
   return function (dispatch) {
     const web3EthFundMe = contract(EthFundMeContract)
     web3EthFundMe.setProvider(web3.currentProvider)
@@ -217,7 +222,7 @@ export function createCampaign(title, duration, goal) {
 }
 
 export function contribute(campaign, contribution) {
-  console.log(`contribute, campaign.address: ${campaign.address}`)
+  // console.log(`contribute, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -243,7 +248,7 @@ export function contribute(campaign, contribution) {
 }
 
 export function placeVote(campaign, voteSecret) {
-  console.log(`placeVote, campaign.address: ${campaign.address}`)
+  // console.log(`placeVote, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -270,7 +275,7 @@ export function placeVote(campaign, voteSecret) {
 }
 
 export function revealVote(campaign, voteOption, salt) {
-  console.log(`reveal, campaign.address: ${campaign.address}`)
+  // console.log(`reveal, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -292,34 +297,6 @@ export function revealVote(campaign, voteOption, salt) {
         .catch((err) => {
           console.log(err)
         })
-    })
-  }
-}
-
-export function timeTravel() {
-  console.log('timeTravel')
-  const id = Date.now()
-
-  return function (dispatch) {
-    return new Promise((resolve, reject) => {
-      web3.currentProvider.sendAsync({
-        jsonrpc: '2.0',
-        method: 'evm_increaseTime',
-        params: [1],
-        id: id
-      }, (err1) => {
-        if (err1) return reject(err1)
-
-        web3.currentProvider.sendAsync({
-          jsonrpc: '2.0',
-          method: 'evm_mine',
-          id: id + 1
-        }, (err2, res) => {
-          return err2 ? reject(err2) : resolve(res)
-        })
-      })
-    }).then(() => {
-      dispatch(updateCampaigns())
     })
   }
 }

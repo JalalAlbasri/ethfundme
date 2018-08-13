@@ -37,7 +37,6 @@ export function getAccountDetails(address) {
         })
           .then((balance) => {
             account.balance = Number(web3.fromWei(balance))
-            console.log(`account.balance ${account.balance}`)
             return EthFundMeInstance.isAdmin.call(address, { from: coinbase })
           })
           .then((isAdmin) => {

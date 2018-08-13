@@ -23,7 +23,7 @@ const CONTRIBUTION_MAX = 8
 
 
 function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min // The maximum is exclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (max - min)) + min
 }
 
 module.exports = function (callback) {
@@ -58,7 +58,7 @@ module.exports = function (callback) {
 
       for (let i = 0; i < NUM_APPROVALS; i++) {
         for (let j = 0; j < NUM_ADMINS; j++) {
-          console.log(`admin ${j} voting on campaign ${i}...`)
+          console.log(`admin ${j} approving campaign ${i}...`)
           let votePromise = CampaignInstances[i].vote(APPROVE_VOTE_SECRET, { from: accounts[j] })
           votePromises.push(votePromise)
         }
@@ -85,7 +85,7 @@ module.exports = function (callback) {
 
       for (let i = NUM_APPROVALS; i < NUM_APPROVALS + NUM_REJECTIONS; i++) {
         for (let j = 0; j < NUM_ADMINS; j++) {
-          console.log(`admin ${j} voting on campaign ${i}...`)
+          console.log(`admin ${j} rejecting campaign ${i}...`)
           let votePromise = CampaignInstances[i].vote(REJECT_VOTE_SECRET, { from: accounts[j] })
           votePromises.push(votePromise)
         }

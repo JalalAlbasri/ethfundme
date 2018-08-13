@@ -8,14 +8,6 @@ let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-const APPROVAL_STATES = {
-  0: 'Commit',
-  1: 'Reveal',
-  2: 'Approved',
-  3: 'Rejected',
-  4: 'Cancelled'
-}
-
 class Vote extends Component {
   constructor(props, context) {
     super(props)
@@ -46,14 +38,12 @@ class Vote extends Component {
   }
 
   handleVote(event) {
-    console.log(`handleVote this.state.voteOption: ${this.state.voteOption}, this.state.salt: ${this.state.salt}`)
     let voteSecret = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [this.state.voteOption, this.state.salt]).toString('hex')
     this.props.dispatchPlaceVote(this.props.campaign, voteSecret)
     event.preventDefault()
   }
 
   handleReveal(event) {
-    console.log(`handleReveal this.state.voteOption: ${this.state.voteOption}, this.state.salt: ${this.state.salt}`)
     this.props.dispatchRevealVote(this.props.campaign, this.state.voteOption, this.state.salt)
     event.preventDefault()
   }
@@ -61,7 +51,7 @@ class Vote extends Component {
   render() {
     if (this.props.account.isAdmin) {
       return (
-        <div className={'Vote card-footer ' + APPROVAL_STATES[this.props.campaign.approvalState]}>
+        <div className={'Vote card-footer ' + this.props.campaign.approvalState}>
           <div>
             <div>
               Approval Status:
@@ -69,7 +59,7 @@ class Vote extends Component {
               (Object.prototype.hasOwnProperty.call(this.props.campaign, 'approvalState'))
                 ? <span className="status ml-auto">
                   <FontAwesomeIcon className="status-icon" icon="circle" />
-                  {APPROVAL_STATES[this.props.campaign.approvalState]}
+                  {this.props.campaign.approvalState}
                 </span> : ''
             }
             </div>

@@ -10,8 +10,6 @@ class FilterBadge extends Component {
   }
 
   render() {
-    console.log(`this.props.filterName: ${this.props.filterName}`)
-
     let campaignCount = 0
 
     if (this.props.campaigns.length > 0) {
@@ -19,7 +17,6 @@ class FilterBadge extends Component {
         .reduce((a, campaign) => (campaign.campaignState === this.props.filterName
           || campaign.approvalState === this.props.filterName)
           ? ++a : a, 0) // eslint-disable-line no-param-reassign
-      console.log(`campaignCount: ${campaignCount}`)
     }
     return (
       <span className="FilterBadge badge ml-auto">{campaignCount}</span>

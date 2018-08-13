@@ -10,6 +10,7 @@ import GoalProgress from './GoalProgress'
 import Vote from './Vote'
 import Contributions from './Contributions'
 import Contribute from './Contribute'
+import CampaignEndDate from './CampaignEndDate'
 
 class Campaign extends Component {
   constructor(props) {
@@ -38,19 +39,18 @@ class Campaign extends Component {
               </span> : ''
           }
         </div>
-        <div className="card-body">
+        <div className="card-body lead">
           <div className="row mb-3">
             <div className="col-md-8">
               <div> Address: {this.props.campaign.address} </div>
               <div> Manager: {this.props.campaign.manager} </div>
             </div>
             <div className="details col-md-4">
-            {/* TODO: countdown timer */}
               { duration
-                ? <div>{duration} day{duration > 1 ? 's' : ''}</div>
+                ? <div>duration {duration} day{duration > 1 ? 's' : ''}</div>
                 : ''
               }
-              <div> {this.props.campaign.funds} eth raised of {this.props.campaign.goal} eth</div>
+              <CampaignEndDate endDate={this.props.campaign.endDate} />
             </div>
 
           </div>

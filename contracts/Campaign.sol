@@ -355,4 +355,8 @@ contract Campaign is Approvable {
     return block.timestamp;
   }
 
+  function transitionCampaign() public transitionState returns(bool) {
+    return true;
+  }
+
 }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
+import Moment from 'react-moment'
 
 class Contribution extends Component {
   constructor(props, context) {
@@ -12,13 +13,13 @@ class Contribution extends Component {
   }
 
   render() {
-    const time = new Date(this.props.contribution.time)
+    const time = new Date(this.props.contribution.time * 1000)
     return (
       <tr className="Contribution">
         <th scope="row">{this.props.contributionIndex + 1}</th>
         <td>{this.props.contribution.address}</td>
         <td className="center">{this.props.contribution.amount}</td>
-        {/* <td>{time.toString()}</td> */}
+        <td className="center"><Moment fromNow date={time}/></td>
       </tr>
     )
   }

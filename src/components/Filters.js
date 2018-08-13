@@ -14,7 +14,6 @@ class Filters extends Component {
   }
 
   handleFitlerChange(event) {
-    console.log(`handleFitlerChange(), this.state.filter: ${this.state.filter}`)
     this.setState({
       filter: event.target.filter
     })

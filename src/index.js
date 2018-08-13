@@ -28,6 +28,10 @@ library.add(faPlus)
 library.add(faGift)
 library.add(faForward)
 
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+
 ReactDOM.render(
   (
     <DrizzleProvider options={drizzleOptions} store={store}>
