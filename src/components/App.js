@@ -9,11 +9,7 @@ import CreateCampaignButton from './CreateCampaignButton'
 import Campaigns from './Campaigns'
 import Filters from './Filters'
 
-// TASK: Contribute Button
 // TASK: End Campaign Button
-// TASK: Filter Campaigns by status
-// TASK: Approve/Reject for Admins + Reveal
-// TASK: Basic UI Styling
 // TASK: Withdraw Funds
 // TASK: Create campaign form
 
