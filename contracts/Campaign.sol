@@ -249,6 +249,11 @@ contract Campaign is Approvable {
     _;
   }
 
+  modifier onlyManager() {
+    require(msg.sender == manager);
+    _;
+  }
+
   modifier onlyManagerOrAdmin() {
     require(msg.sender == manager || efm.isAdmin(msg.sender));
     _;
@@ -324,14 +329,12 @@ contract Campaign is Approvable {
       if (campaignState == CampaignStates.Successful) {
         require(msg.sender == manager);
         hasWithdrawn[msg.sender] = true;
-        // funds = 0;
         msg.sender.transfer(address(this).balance);
       }
 
       if(campaignState == CampaignStates.Unsuccessful || campaignState == CampaignStates.Cancelled) {
         require(hasContributed[msg.sender] == true);
         hasWithdrawn[msg.sender] = true;
-        // funds -= totalContributed[msg.sender];
         msg.sender.transfer(totalContributed[msg.sender]);
       }
   }

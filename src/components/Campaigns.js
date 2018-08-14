@@ -33,33 +33,44 @@ class Campaigns extends Component {
             )
           ) {
             // return this.props.filters[campaign.campaignState].isActive
-            return this.props.filters[campaign.campaignState]
-              .adminFilters[campaign.approvalState].isActive
+            return this.props.filters[campaign.campaignState].adminFilters[campaign.approvalState]
+              .isActive
           }
 
           return this.props.filters[campaign.campaignState].isActive
         })
         .sort((a, b) => a.campaignIndex > b.campaignIndex)
         .sort((a, b) => {
-          if (CAMPAIGN_STATE_ORDER.indexOf(a.campaignState) > CAMPAIGN_STATE_ORDER.indexOf(b.campaignState)) {
+          if (
+            CAMPAIGN_STATE_ORDER.indexOf(a.campaignState)
+            > CAMPAIGN_STATE_ORDER.indexOf(b.campaignState)
+          ) {
             return 1
           }
 
-          if (CAMPAIGN_STATE_ORDER.indexOf(a.campaignState) < CAMPAIGN_STATE_ORDER.indexOf(b.campaignState)) {
+          if (
+            CAMPAIGN_STATE_ORDER.indexOf(a.campaignState)
+            < CAMPAIGN_STATE_ORDER.indexOf(b.campaignState)
+          ) {
             return -1
           }
 
-          if (APPROVAL_STATE_ORDER.indexOf(a.campaignState) > APPROVAL_STATE_ORDER.indexOf(b.campaignState)) {
+          if (
+            APPROVAL_STATE_ORDER.indexOf(a.approvalState)
+            > APPROVAL_STATE_ORDER.indexOf(b.approvalState)
+          ) {
             return 1
           }
 
-          if (APPROVAL_STATE_ORDER.indexOf(a.campaignState) < APPROVAL_STATE_ORDER.indexOf(b.campaignState)) {
+          if (
+            APPROVAL_STATE_ORDER.indexOf(a.approvalState)
+            < APPROVAL_STATE_ORDER.indexOf(b.approvalState)
+          ) {
             return -1
           }
 
           return 0
         })
-
 
       return (
         <div className="Campaigns">

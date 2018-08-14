@@ -12,6 +12,7 @@ import Contributions from './Contributions'
 import Contribute from './Contribute'
 import CampaignEndDate from './CampaignEndDate'
 import Withdraw from './Withdraw'
+import Cancel from './Cancel'
 
 class Campaign extends Component {
   constructor(props) {
@@ -59,16 +60,18 @@ class Campaign extends Component {
             (this.props.campaign.funds >= 0)
               ? <GoalProgress funds={this.props.campaign.funds} goal={this.props.campaign.goal} /> : ''
           }
+
+          {(this.props.campaign.contributions || {}).length > 0
+              && <Contributions contributions={this.props.campaign.contributions} />}
+
+          {/* TODO: Don't show the footer unless there's content in it */}
+
+          <Contribute campaign={this.props.campaign} />
+          <Withdraw campaign={this.props.campaign} />
+          <Cancel campaign={this.props.campaign} />
+          <Vote campaign={this.props.campaign}/>
         </div>
 
-        {(this.props.campaign.contributions || {}).length > 0
-            && <Contributions contributions={this.props.campaign.contributions} />}
-
-        {/* TODO: Don't show the footer unless there's content in it */}
-
-        <Contribute campaign={this.props.campaign} />
-        <Withdraw campaign={this.props.campaign} />
-        <Vote campaign={this.props.campaign}/>
 
       </div>
     )

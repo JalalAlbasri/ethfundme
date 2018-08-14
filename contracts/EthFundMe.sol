@@ -11,6 +11,7 @@ import "./Campaign.sol";
 
 // Contract Developement 2
 // TASK: Implement Circuit Breaker Pattern!
+// TASK: Use a Library
 // TASK: Comment Contracts and Tests
 // TASK: Review All variable/function etc Names
 // TASK: Review All variable/function etc accessibility
@@ -22,7 +23,6 @@ import "./Campaign.sol";
 // TASK: Review Design Patterns
 // TASK: Error messages for require statements
 // TASK: Campaign Factory Contract
-// TASK: Use a Library
 
 // Frontend
 // TASK: Set up React Project and React Crash Course
@@ -35,18 +35,6 @@ import "./Campaign.sol";
 // TASK: Review Grading Rubric
 // TASK: Release on testnet
 
-// EXTRAS
-// TASK: Adding Admin
-// TASK: Approval Quorum Support Adding Admin
-// TASK: Timing Approvals
-
-// STRETCH GOALS
-// TASK: Upgradable Contract
-// TASK: Check out the SafeMath library
-// TASK: Full PLCR Approval
-// TASK: Other Stretch Goals
-// TASK: ERC20 Token Acceptance
-// TASK: Multisig Contract Management for Admins
 
 contract EthFundMe {
 

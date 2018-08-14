@@ -51,7 +51,7 @@ class Vote extends Component {
   render() {
     if (this.props.account.isAdmin) {
       return (
-        <div className={'Vote card-footer ' + this.props.campaign.approvalState}>
+        <div className={'Vote mt-3 ' + this.props.campaign.approvalState}>
           <div>
             <div>
               Approval Status:
@@ -77,7 +77,7 @@ class Vote extends Component {
           </div>
 
         {
-          ((this.props.campaign.approvalState === 'Commit' && !this.props.campaign.hasVoted) || (this.props.campaign.approvalState === 1 && !this.props.campaign.hasRevealed))
+          ((this.props.campaign.approvalState === 'Commit' && !this.props.campaign.hasVoted) || (this.props.campaign.approvalState === 'Reveal' && !this.props.campaign.hasRevealed))
             ? (<div className="mt-3">
               <form>
                 <div className="form-row">

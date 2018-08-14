@@ -120,7 +120,8 @@ function getCampaignDetails(address) {
           // FIXME: dispatch occurs before promises in loop resolve
           if (campaign.numContributions > 0) {
             for (let i = 0; i < campaign.numContributions; i++) {
-              let contributionPromise = CampaignInstance.contributions.call(i, { from: coinbase })
+              let contributionPromise = CampaignInstance.contributions
+                .call(i, { from: coinbase })
                 .then((contribution) => {
                   campaign.contributions[i] = {
                     address: contribution[0],
@@ -176,16 +177,17 @@ export function addCampaigns() {
       if (err) {
         console.log(err)
       }
-      web3EthFundMe.deployed().then((instance) => {
-        EthFundMeInstance = instance
-        return EthFundMeInstance.getNumCampaigns.call({ from: coinbase })
-      })
+      web3EthFundMe
+        .deployed()
+        .then((instance) => {
+          EthFundMeInstance = instance
+          return EthFundMeInstance.getNumCampaigns.call({ from: coinbase })
+        })
         .then((numCampaigns) => {
           for (let i = 0; i < numCampaigns; i++) {
-            EthFundMeInstance.campaigns.call(i, { from: coinbase })
-              .then((campaignAddress) => {
-                dispatch(addCampaign(campaignAddress, i))
-              })
+            EthFundMeInstance.campaigns.call(i, { from: coinbase }).then((campaignAddress) => {
+              dispatch(addCampaign(campaignAddress, i))
+            })
           }
         })
     })
@@ -219,10 +221,12 @@ export function createCampaign(title, duration, goal) {
       if (err) {
         console.log(err)
       }
-      web3EthFundMe.deployed().then((instance) => {
-        EthFundMeInstance = instance
-        return EthFundMeInstance.createCampaign(title, duration, goal, { from: coinbase })
-      })
+      web3EthFundMe
+        .deployed()
+        .then((instance) => {
+          EthFundMeInstance = instance
+          return EthFundMeInstance.createCampaign(title, duration, goal, { from: coinbase })
+        })
         .then((result) => {
           const campaignAddress = result.logs[0].args.campaignAddress
           dispatch(addCampaign(campaignAddress))
@@ -247,7 +251,8 @@ export function contribute(campaign, contribution) {
         .then((instance) => {
           CampaignInstance = instance
           return CampaignInstance.contribute({ from: coinbase, value: contribution })
-        }).then((result) => {
+        })
+        .then((result) => {
           dispatch(updateCampaign(campaign.address))
         })
         .catch((err) => {
@@ -330,6 +335,32 @@ export function withdraw(campaign) {
         .then((result) => {
           dispatch(updateCampaign(campaign.address))
           dispatch(getAccountDetails(coinbase))
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    })
+  }
+}
+
+export function cancel(campaign) {
+  return function (dispatch) {
+    const web3Campaign = contract(CampaignContract)
+    web3Campaign.setProvider(web3.currentProvider)
+    let CampaignInstance
+
+    web3.eth.getCoinbase((err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+      web3Campaign
+        .at(campaign.address)
+        .then((instance) => {
+          CampaignInstance = instance
+          return CampaignInstance.cancelCampaign({ from: coinbase })
+        })
+        .then((result) => {
+          dispatch(updateCampaign(campaign.address))
         })
         .catch((err) => {
           console.log(err)

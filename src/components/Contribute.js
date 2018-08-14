@@ -35,9 +35,9 @@ class Contribute extends Component {
       !this.props.account.isAdmin
       && web3.toChecksumAddress(this.props.account.address)
         !== web3.toChecksumAddress(this.props.campaign.manager)
-      && this.props.campaign.campaignState === 1) {
+      && this.props.campaign.campaignState === 'Active') {
       return (
-        <div className="Contribute container mb-3">
+        <div className="Contribute container mt-3">
           <form>
             <div className="form-row">
               <div className="col-sm-1">
