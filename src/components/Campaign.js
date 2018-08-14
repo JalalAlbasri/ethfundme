@@ -30,62 +30,89 @@ class Campaign extends Component {
     }
 
     return (
-      <div className={'Campaign card mb-3 ' + this.props.campaign.campaignState}>
-        <div className="card-header h6 bg-transparent d-flex">
-          <span className="mr-auto">#{this.props.campaign.campaignIndex} {this.props.campaign.title}</span>
-          {
-            (Object.prototype.hasOwnProperty.call(this.props.campaign, 'campaignState'))
-              ? <span className="status ml-auto">
+      <div className="Campaign">
+        {/* <div className="row"> */}
+
+        {/* <div className="col-md-9"> */}
+        <div className={'card mb-3 ' + this.props.campaign.campaignState}>
+          <div className="card-header h6 bg-transparent d-flex">
+            {this.props.campaign.isNew ? (
+              <span className="badge badge-success mr-1">new!</span>
+            ) : null}
+            <span className="mr-auto">
+              #{this.props.campaign.id} {this.props.campaign.title}
+            </span>
+
+            {Object.prototype.hasOwnProperty.call(this.props.campaign, 'campaignState') ? (
+              <span className="status ml-auto">
                 <FontAwesomeIcon className="status-icon" icon="circle" />
                 {this.props.campaign.campaignState}
-              </span> : ''
-          }
-        </div>
-        <div className="card-body lead">
-          <div className="row mb-3">
-            <div className="col-md-8">
-              <div> Address: {this.props.campaign.address} </div>
-              <div> Manager: {this.props.campaign.manager} </div>
-            </div>
-            <div className="details col-md-4">
-              { duration
-                ? <div>duration {duration} day{duration > 1 ? 's' : ''}</div>
-                : ''
-              }
-              <CampaignEndDate endDate={this.props.campaign.endDate} />
-            </div>
-
+              </span>
+            ) : (
+              ''
+            )}
           </div>
-          {
-            (this.props.campaign.funds >= 0)
-              ? <GoalProgress funds={this.props.campaign.funds} goal={this.props.campaign.goal} /> : ''
-          }
+          <div className="card-body lead">
+            <div className="row mb-3">
+              <div className="col-md-4">
+                <img
+                  className="rounded img-fluid mx-auto d-block"
+                  src={this.props.campaign.image}
+                />
+              </div>
+              <div className="col-md-8">
+                <div className="row mb-3">
+                  <div className="col-md-8">
+                    <div> Address: {this.props.campaign.address} </div>
+                    <div> Manager: {this.props.campaign.manager} </div>
+                  </div>
+                  <div className="details col-md-4">
+                    {duration ? (
+                      <div>
+                        duration {duration} day
+                        {duration > 1 ? 's' : ''}
+                      </div>
+                    ) : (
+                      ''
+                    )}
+                    <CampaignEndDate endDate={this.props.campaign.endDate} />
+                  </div>
+                </div>
+                <p>{this.props.campaign.description}</p>
+              </div>
+            </div>
 
-          {(this.props.campaign.contributions || {}).length > 0
-              && <Contributions contributions={this.props.campaign.contributions} />}
+            {this.props.campaign.funds >= 0 ? (
+              <GoalProgress funds={this.props.campaign.funds} goal={this.props.campaign.goal} />
+            ) : (
+              ''
+            )}
 
-          {/* TODO: Don't show the footer unless there's content in it */}
+            {(this.props.campaign.contributions || {}).length > 0 && (
+              <Contributions campaign={this.props.campaign} />
+            )}
 
-          <Contribute campaign={this.props.campaign} />
-          <Withdraw campaign={this.props.campaign} />
-          <Cancel campaign={this.props.campaign} />
-          <Vote campaign={this.props.campaign}/>
+            {/* TODO: Don't show the footer unless there's content in it */}
+
+            <Contribute campaign={this.props.campaign} />
+            <Withdraw campaign={this.props.campaign} />
+            <Cancel campaign={this.props.campaign} />
+            <Vote campaign={this.props.campaign} />
+          </div>
+          {/* </div>
+          </div> */}
         </div>
-
-
       </div>
     )
   }
 }
-
 
 Campaign.propTypes = {
   campaign: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return {
-  }
+  return {}
 }
 
 const mapDispatchToProps = (dispatch) => {

@@ -8,6 +8,7 @@ import Account from './Account'
 import CreateCampaignButton from './CreateCampaignButton'
 import Campaigns from './Campaigns'
 import Filters from './Filters'
+import CreateCampaignModal from './CreateCampaignModal'
 
 // TASK: End Campaign Button
 // TASK: Create campaign form
@@ -33,6 +34,7 @@ class App extends Component {
     return (
       <div className="App">
         {/* <Account /> */}
+        <CreateCampaignModal />
         <div className="container-fluid">
           <div className="row">
             <div className="jumbotron">

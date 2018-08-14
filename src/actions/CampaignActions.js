@@ -26,6 +26,7 @@ function campaignUpdated(campaign) {
   }
 }
 
+// FIXME: Campaign HAS AN ID!!!!!
 function getCampaignDetails(address) {
   // console.log(`getCampaignDetails() address: ${address}`)
 
@@ -50,6 +51,10 @@ function getCampaignDetails(address) {
           //   return CampaignInstance.updateState({ from: coinbase })
           // })
           // .then(() => {
+          return CampaignInstance.id.call({ from: coinbase })
+        })
+        .then((id) => {
+          campaign.id = Number(id)
           return CampaignInstance.title.call({ from: coinbase })
         })
         .then((title) => {
@@ -62,6 +67,14 @@ function getCampaignDetails(address) {
         })
         .then((duration) => {
           campaign.duration = Number(duration)
+          return CampaignInstance.description.call({ from: coinbase })
+        })
+        .then((description) => {
+          campaign.description = description
+          return CampaignInstance.image.call({ from: coinbase })
+        })
+        .then((image) => {
+          campaign.image = image
           return CampaignInstance.endDate.call({ from: coinbase })
         })
         .then((endDate) => {
@@ -147,11 +160,11 @@ function getCampaignDetails(address) {
   })
 }
 
-function addCampaign(campaignAddress, campaignIndex) {
+function addCampaign(campaignAddress, isNew) {
   // console.log(`addCampaign(), campaignAddress: ${campaignAddress}`)
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
-      dispatch(campaignAdded({ ...campaign, campaignIndex }))
+      dispatch(campaignAdded({ ...campaign, isNew }))
     })
   }
 }
@@ -186,7 +199,7 @@ export function addCampaigns() {
         .then((numCampaigns) => {
           for (let i = 0; i < numCampaigns; i++) {
             EthFundMeInstance.campaigns.call(i, { from: coinbase }).then((campaignAddress) => {
-              dispatch(addCampaign(campaignAddress, i))
+              dispatch(addCampaign(campaignAddress))
             })
           }
         })
@@ -209,13 +222,14 @@ function updateCampaigns() {
   }
 }
 
-export function createCampaign(title, duration, goal) {
+export function createCampaign(title, goal, duration, description, image) {
   // console.log('createCampaign')
   return function (dispatch) {
     const web3EthFundMe = contract(EthFundMeContract)
     web3EthFundMe.setProvider(web3.currentProvider)
 
     let EthFundMeInstance
+    let campaignAddress
 
     web3.eth.getCoinbase((err, coinbase) => {
       if (err) {
@@ -225,11 +239,20 @@ export function createCampaign(title, duration, goal) {
         .deployed()
         .then((instance) => {
           EthFundMeInstance = instance
-          return EthFundMeInstance.createCampaign(title, duration, goal, { from: coinbase })
+          return EthFundMeInstance.createCampaign(
+            title,
+            web3.toWei(goal, 'ether'),
+            duration,
+            description,
+            image,
+            {
+              from: coinbase
+            }
+          )
         })
         .then((result) => {
-          const campaignAddress = result.logs[0].args.campaignAddress
-          dispatch(addCampaign(campaignAddress))
+          campaignAddress = result.logs[0].args.campaignAddress
+          dispatch(addCampaign(campaignAddress, true))
         })
     })
   }

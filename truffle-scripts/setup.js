@@ -2,6 +2,8 @@ let EthFundMe = artifacts.require('EthFundMe')
 let Campaign = artifacts.require('Campaign')
 
 let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
+let loremIpsum = require('lorem-ipsum')
+let coolImages = require('cool-images') // TODO: savedev
 
 const NUM_ADMINS = 3
 const NUM_CAMPAIGNS = 10
@@ -21,7 +23,6 @@ const DURATION_MAX = 7
 const CONTRIBUTION_MIN = 1
 const CONTRIBUTION_MAX = 8
 
-
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min
 }
@@ -32,25 +33,49 @@ module.exports = function (callback) {
   let EthFundMeInstance
   let CampaignInstances = []
 
-  EthFundMe.deployed().then((instance) => {
-    EthFundMeInstance = instance
+  let images = coolImages.many(200, 200, NUM_CAMPAIGNS)
 
-    let createCampaignPromises = []
+  EthFundMe.deployed()
+    .then((instance) => {
+      EthFundMeInstance = instance
 
-    for (let i = 0; i < NUM_CAMPAIGNS; i++) {
-      console.log(`creating campaign ${i}...`)
-      let goal = web3.toWei(getRandomInt(GOAL_MIN, GOAL_MAX))
-      let duration = getRandomInt(DURATION_MIN, DURATION_MAX)
+      let createCampaignPromises = []
 
-      let createCampaignPromise = EthFundMeInstance.createCampaign('Campaign ' + i, goal, duration, { from: accounts[3] })
-        .then((result) => {
+      for (let i = 0; i < NUM_CAMPAIGNS; i++) {
+        console.log(`creating campaign ${i}...`)
+        let title = loremIpsum({
+          count: 1,
+          units: 'sentences',
+          sentenceLowerBound: 1,
+          sentenceUpperBound: 4,
+          format: 'plain'
+        })
+        let description = loremIpsum({
+          count: 1,
+          units: 'paragraph',
+          paragraphLowerBound: 5,
+          sentenceUpperBound: 10,
+          format: 'plain'
+        })
+        let goal = web3.toWei(getRandomInt(GOAL_MIN, GOAL_MAX))
+        let duration = getRandomInt(DURATION_MIN, DURATION_MAX)
+
+        let createCampaignPromise = EthFundMeInstance.createCampaign(
+          title,
+          goal,
+          duration,
+          description,
+          images[i],
+          { from: accounts[3] }
+        ).then((result) => {
           CampaignInstances.push(Campaign.at(result.logs[0].args.campaignAddress))
         })
-      createCampaignPromises.push(createCampaignPromise)
-    }
 
-    return Promise.all(createCampaignPromises)
-  })
+        createCampaignPromises.push(createCampaignPromise)
+      }
+
+      return Promise.all(createCampaignPromises)
+    })
     .then(() => {
       // VOTE APPROVALS
       console.log(`${CampaignInstances.length} campaigns created`)
@@ -72,7 +97,9 @@ module.exports = function (callback) {
       for (let i = 0; i < NUM_APPROVALS; i++) {
         for (let j = 0; j < NUM_ADMINS - 1; j++) {
           console.log(`admin ${j} revealing vote for campaign ${i}...`)
-          let revealPromise = CampaignInstances[i].reveal(APPROVE_VOTE_OPTION, SALT, { from: accounts[j] })
+          let revealPromise = CampaignInstances[i].reveal(APPROVE_VOTE_OPTION, SALT, {
+            from: accounts[j]
+          })
           revealPromises.push(revealPromise)
         }
       }
@@ -100,7 +127,9 @@ module.exports = function (callback) {
       for (let i = NUM_APPROVALS; i < NUM_APPROVALS + NUM_REJECTIONS; i++) {
         for (let j = 0; j < NUM_ADMINS - 1; j++) {
           console.log(`admin ${j} revealing vote for campaign ${i}...`)
-          let revealPromise = CampaignInstances[i].reveal(REJECT_VOTE_OPTION, SALT, { from: accounts[j] })
+          let revealPromise = CampaignInstances[i].reveal(REJECT_VOTE_OPTION, SALT, {
+            from: accounts[j]
+          })
           revealPromises.push(revealPromise)
         }
       }
@@ -116,15 +145,19 @@ module.exports = function (callback) {
         for (let j = 4; j < accounts.length; j++) {
           let contribution = web3.toWei(getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX))
           if (contribution > 0) {
-            console.log(`contributing ${web3.fromWei(contribution)} eth from account ${j} to campaign ${i}...`)
-            let contributePromise = CampaignInstances[i].contribute({ from: accounts[j], value: contribution })
+            console.log(
+              `contributing ${web3.fromWei(contribution)} eth from account ${j} to campaign ${i}...`
+            )
+            let contributePromise = CampaignInstances[i].contribute({
+              from: accounts[j],
+              value: contribution
+            })
             contributePromises.push(contributePromise)
           }
         }
       }
       return Promise.all(contributePromises)
     })
-
 
     .then(() => {
       console.log('done')

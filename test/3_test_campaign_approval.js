@@ -25,7 +25,7 @@ contract('Campaign Approval', (accounts) => {
   before('set up contract instances', (done) => {
     EthFundMe.deployed().then((instance) => {
       EthFundMeInstance = instance
-      return EthFundMeInstance.createCampaign('test campaign', 10, 1, { from: accounts[3] })
+      return EthFundMeInstance.createCampaign('test campaign', 10, 1, 'test campaign description', 'test image url', { from: accounts[3] })
     }).then(() => {
       return EthFundMeInstance.campaigns.call(0)
     }).then((campaignAddress) => {

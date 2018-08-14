@@ -4,7 +4,6 @@ import PropTypes from 'prop-types'
 
 import Contribution from './Contribution'
 
-
 class Contributions extends Component {
   constructor(props, context) {
     super(props)
@@ -18,20 +17,30 @@ class Contributions extends Component {
             <tr>
               <th scope="col">#</th>
               <th scope="col">From</th>
-              <th scope="col" className="center">Amount</th>
-              <th scope="col" className="center">Date</th>
+              <th scope="col" className="center">
+                Amount
+              </th>
+              <th scope="col" className="center">
+                Date
+              </th>
+              {this.props.campaign.campaignState === 'Unsuccessful'
+              || this.props.campaign.campaignState === 'Cancelled' ? (
+                <th scope="col" className="center">
+                  Withdrawn
+                </th>
+                ) : null}
             </tr>
           </thead>
           <tbody>
-            {
-              this.props.contributions.map((contribution, contributionIndex) => (
-                <Contribution
-                  key={contributionIndex}
-                  contribution={contribution}
-                  contributionIndex={contributionIndex}
-                />
-              ))
-            }
+            {this.props.campaign.contributions.map((contribution, contributionIndex) => (
+              <Contribution
+                key={contributionIndex}
+                contribution={contribution}
+                contributionIndex={contributionIndex}
+                campaignState={this.props.campaign.campaignState}
+                hasWithdrawn={this.props.campaign.hasWithdrawn}
+              />
+            ))}
           </tbody>
         </table>
       </div>
@@ -44,17 +53,15 @@ Contributions.contextTypes = {
 }
 
 Contributions.propTypes = {
-  contributions: PropTypes.array.isRequired
+  campaign: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
-  return {
-  }
+  return {}
 }
 
 const mapDispathToProps = (dispatch) => {
-  return {
-  }
+  return {}
 }
 
 export default drizzleConnect(Contributions, mapStateToProps, mapDispathToProps)

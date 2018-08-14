@@ -52,4 +52,3 @@ contract('Initialization', (accounts) => {
     })
   })
 })
-

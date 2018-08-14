@@ -183,6 +183,8 @@ contract Campaign is Approvable {
   string public title;
   uint public goal;
   uint public duration;
+  string public description;
+  string public image;
   address public manager;
 
   Contribution[] public contributions;
@@ -200,6 +202,8 @@ contract Campaign is Approvable {
     string _title, 
     uint _goal,  
     uint _duration, 
+    string _description,
+    string _image,
     address _manager, 
     address efmAddress
   ) Approvable(efmAddress) public {
@@ -207,6 +211,8 @@ contract Campaign is Approvable {
     title = _title;
     goal = _goal;
     duration = _duration * 1 days;
+    description = _description;
+    image = _image;
     manager = _manager;
   }
 

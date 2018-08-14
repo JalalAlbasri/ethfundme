@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 import Moment from 'react-moment'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 class Contribution extends Component {
   constructor(props, context) {
@@ -29,6 +30,15 @@ class Contribution extends Component {
         <td className="center">
           <Moment from={this.state.timestamp} date={time} />
         </td>
+        {this.props.campaignState === 'Unsuccessful' || this.props.campaignState === 'Cancelled' ? (
+          <td className="center">
+            {this.props.hasWithdrawn ? (
+              <FontAwesomeIcon className="button-icon green" icon="check-circle" />
+            ) : (
+              <FontAwesomeIcon className="button-icon red" icon="times-circle" />
+            )}
+          </td>
+        ) : null}
       </tr>
     )
   }
@@ -40,7 +50,9 @@ Contribution.contextTypes = {
 
 Contribution.propTypes = {
   contribution: PropTypes.object.isRequired,
-  contributionIndex: PropTypes.number.isRequired
+  contributionIndex: PropTypes.number.isRequired,
+  campaignState: PropTypes.string.isRequired,
+  hasWithdrawn: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {

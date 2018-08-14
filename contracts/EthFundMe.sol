@@ -84,10 +84,10 @@ contract EthFundMe {
     _;
   }
 
-  function createCampaign(string title, uint goal, uint duration) public 
+  function createCampaign(string title, uint goal, uint duration, string description, string image) public 
     notAdmin
     returns(address) {
-    Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, msg.sender, address(this));
+    Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, description, image, msg.sender, address(this));
     campaigns.push(address(newCampaign));
     emit CampaignCreated(address(newCampaign));
     return address(newCampaign);

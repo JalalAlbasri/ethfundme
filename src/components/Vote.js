@@ -63,8 +63,6 @@ class Vote extends Component {
                 </span> : ''
             }
             </div>
-            {/* <p>hasVoted: {(this.props.campaign.hasVoted) ? 'has voted' : 'has not voted'}</p> */}
-            {/* <p>hasRevealed: {(this.props.campaign.hasRevealed) ? 'has revealed' : 'has not revealed'}</p> */}
             {
               (this.props.campaign.approvalState === 'Commit')
                 ? <div> {this.props.campaign.numVoteSecrets} {(this.props.campaign.numVoteSecrets === 1) ? 'vote has' : 'votes have'} been placed </div> : null

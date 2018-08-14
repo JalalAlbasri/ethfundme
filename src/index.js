@@ -15,7 +15,13 @@ import 'bootstrap/dist/js/bootstrap.bundle.min'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
-  faCircle, faPlus, faGift, faForward, faArrowCircleDown, faTimesCircle
+  faCircle,
+  faPlus,
+  faGift,
+  faForward,
+  faArrowCircleDown,
+  faTimesCircle,
+  faCheckCircle
 } from '@fortawesome/free-solid-svg-icons'
 
 import store from './store'
@@ -29,18 +35,17 @@ library.add(faGift)
 library.add(faForward)
 library.add(faArrowCircleDown)
 library.add(faTimesCircle)
+library.add(faCheckCircle)
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
 
 ReactDOM.render(
-  (
-    <DrizzleProvider options={drizzleOptions} store={store}>
-      <LoadingContainer>
-        <App />
-      </LoadingContainer>
-    </DrizzleProvider>
-  ),
+  <DrizzleProvider options={drizzleOptions} store={store}>
+    <LoadingContainer>
+      <App />
+    </LoadingContainer>
+  </DrizzleProvider>,
   document.getElementById('root')
 )

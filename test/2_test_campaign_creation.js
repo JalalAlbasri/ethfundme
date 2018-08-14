@@ -8,7 +8,7 @@ contract('Campaign Creation', (accounts) => {
   before('set up contract instances', (done) => {
     EthFundMe.deployed().then((instance) => {
       EthFundMeInstance = instance
-      return EthFundMeInstance.createCampaign('test campaign', 10, 1, { from: accounts[3] })
+      return EthFundMeInstance.createCampaign('test campaign', 10, 1, 'test campaign description', 'test image url', { from: accounts[3] })
     }).then(() => {
       return EthFundMeInstance.campaigns.call(0)
     }).then((campaignAddress) => {
@@ -41,6 +41,20 @@ contract('Campaign Creation', (accounts) => {
   it('should initialize campaign duration correctly', (done) => {
     CampaignInstance.duration.call().then((duration) => {
       assert.equal(duration, 1 * 24 * 60 * 60, 'goal should be 1 day in seconds')
+      done()
+    })
+  })
+
+  it('should initialize campaign description correctly', (done) => {
+    CampaignInstance.description.call().then((description) => {
+      assert.equal(description, 'test campaign description', 'title should be test campaign description')
+      done()
+    })
+  })
+
+  it('should initialize campaign image url correctly', (done) => {
+    CampaignInstance.image.call().then((image) => {
+      assert.equal(image, 'test image url', 'title should be test image url')
       done()
     })
   })
