@@ -2,36 +2,23 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import FilterButton from './FilterButton'
+import FilterGroup from './FilterGroup'
 
 class Filters extends Component {
   constructor(props, context) {
     super(props)
-    this.handleFitlerChange = this.handleFitlerChange.bind(this)
-    this.state = {
-      filter: this.props.filter
-    }
-  }
-
-  handleFitlerChange(event) {
-    this.setState({
-      filter: event.target.filter
-    })
-    this.props.dispatchChangeFilter(event.target.filter)
-    event.preventDefault()
   }
 
   render() {
-    // TODO: slice out admin only filters
-    // let filters = (this.props.account.isAdmin) ? this.props.filters : this.props.filters.slice(0)
-    let filters = this.props.filters
-
     return (
-      <div className="Filters btn-group-vertical" role="group">
-        {filters.map((filter) => <FilterButton
-          key={filter.name}
-          filter={filter}
-          />)}
+      <div className="Filters" role="group">
+        {Object.keys(this.props.filters).map((filterKey) => (
+          <FilterGroup
+            key={filterKey}
+            filterGroup={{ ...this.props.filters[filterKey], name: filterKey }}
+          />
+        ))}
+
       </div>
     )
   }
@@ -42,7 +29,8 @@ Filters.contextTypes = {
 }
 
 Filters.propTypes = {
-  filters: PropTypes.array.isRequired
+  account: PropTypes.object.isRequired,
+  filters: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {

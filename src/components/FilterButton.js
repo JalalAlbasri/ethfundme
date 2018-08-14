@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
-import { toggleFilter } from '../actions/FilterActions'
+import { setFilter } from '../actions/FilterActions'
 
 import FilterBadge from './FilterBadge'
 
@@ -13,7 +13,13 @@ class FilterButton extends Component {
   }
 
   handleClick(event) {
-    this.props.dispatchToggleFilter(this.props.filter.name)
+    console.log(`handleClick, this.props.filter.adminOnly: ${this.props.filter.adminOnly}`)
+    if (this.props.filter.adminOnly) {
+      this.props.dispatchSetFilter(this.props.filter.groupName, this.props.filter.name)
+    } else {
+      this.props.dispatchSetFilter(this.props.filter.name)
+    }
+
     event.preventDefault()
   }
 
@@ -23,12 +29,13 @@ class FilterButton extends Component {
         type="button"
         className={
           'FilterButton d-flex btn align-items-center '
-          + this.props.filter.name
-          + ((this.props.filter.isActive) ? ' active' : '')
+          + (this.props.filter.groupName ? this.props.filter.groupName : this.props.filter.name)
+          + (this.props.filter.adminOnly ? ' adminFilter btn-sm ' : ' ')
+          + (this.props.filter.isActive ? ' active' : '')
         }
         onClick={this.handleClick}>
         <span className="">{this.props.filter.name}</span>
-        <FilterBadge filterName={this.props.filter.name}/>
+        <FilterBadge groupName={this.props.filter.groupName} filterName={this.props.filter.name}/>
       </button>
     )
   }
@@ -49,8 +56,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dispatchToggleFilter: (filterName) => {
-      dispatch(toggleFilter(filterName))
+    dispatchSetFilter: (filterName, adminFilterName) => {
+      dispatch(setFilter(filterName, adminFilterName))
     }
   }
 }

@@ -92,6 +92,7 @@ module.exports = function (callback) {
       }
       return Promise.all(votePromises)
     })
+    // TODO: put some campaigns in reveal phase
     .then(() => {
       // REVEAL REJECTIONS
       let revealPromises = []

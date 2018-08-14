@@ -10,7 +10,6 @@ import Campaigns from './Campaigns'
 import Filters from './Filters'
 
 // TASK: End Campaign Button
-// TASK: Withdraw Funds
 // TASK: Create campaign form
 
 class App extends Component {

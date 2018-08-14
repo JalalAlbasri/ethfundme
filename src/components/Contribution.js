@@ -13,7 +13,6 @@ class Contribution extends Component {
 
   componentDidMount() {
     web3.eth.getBlock('latest', (err, block) => {
-      console.log(`block.timestamp: ${block.timestamp}`)
       this.setState({
         timestamp: new Date(block.timestamp * 1000)
       })

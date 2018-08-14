@@ -5,6 +5,9 @@ import PropTypes from 'prop-types'
 import { addCampaigns } from '../actions/CampaignActions'
 import Campaign from './Campaign'
 
+const CAMPAIGN_STATE_ORDER = ['Pending', 'Active', 'Successful', 'Unsuccessful', 'Cancelled']
+const APPROVAL_STATE_ORDER = ['Commit', 'Reveal', 'Approved', 'Rejected', 'Cancelled']
+
 class Campaigns extends Component {
   constructor(props, context) {
     super(props)
@@ -17,31 +20,52 @@ class Campaigns extends Component {
   render() {
     if (this.props.campaigns.length > 0) {
       let campaigns = this.props.campaigns
+        .filter((campaign) => this.props.filters[campaign.campaignState].isActive)
         .filter((campaign) => {
-          return this.props.filters.find((filter) => {
-            if (filter.name === 'All' && filter.isActive) {
-              return true
-            }
+          if (!this.props.account.isAdmin) {
+            return true
+          }
 
-            if (filter.name === campaign.campaignState && filter.isActive) {
-              return true
-            }
+          if (
+            Object.prototype.hasOwnProperty.call(
+              this.props.filters[campaign.campaignState],
+              'adminFilters'
+            )
+          ) {
+            // return this.props.filters[campaign.campaignState].isActive
+            return this.props.filters[campaign.campaignState]
+              .adminFilters[campaign.approvalState].isActive
+          }
 
-            if (filter.name === campaign.approvalState && filter.isActive) {
-              return true
-            }
-
-            return false
-          })
+          return this.props.filters[campaign.campaignState].isActive
         })
         .sort((a, b) => a.campaignIndex > b.campaignIndex)
+        .sort((a, b) => {
+          if (CAMPAIGN_STATE_ORDER.indexOf(a.campaignState) > CAMPAIGN_STATE_ORDER.indexOf(b.campaignState)) {
+            return 1
+          }
+
+          if (CAMPAIGN_STATE_ORDER.indexOf(a.campaignState) < CAMPAIGN_STATE_ORDER.indexOf(b.campaignState)) {
+            return -1
+          }
+
+          if (APPROVAL_STATE_ORDER.indexOf(a.campaignState) > APPROVAL_STATE_ORDER.indexOf(b.campaignState)) {
+            return 1
+          }
+
+          if (APPROVAL_STATE_ORDER.indexOf(a.campaignState) < APPROVAL_STATE_ORDER.indexOf(b.campaignState)) {
+            return -1
+          }
+
+          return 0
+        })
+
 
       return (
         <div className="Campaigns">
-          {campaigns.map((campaign) => <Campaign
-            key={campaign.address}
-            campaign={campaign}
-            />)}
+          {campaigns.map((campaign) => (
+            <Campaign key={campaign.address} campaign={campaign} />
+          ))}
         </div>
       )
     }
@@ -54,15 +78,14 @@ Campaigns.contextTypes = {
 }
 
 Campaigns.propTypes = {
-  campaigns: PropTypes.arrayOf(
-    PropTypes.shape(PropTypes.object.isRequired).isRequired
-  ).isRequired,
-  filters: PropTypes.array.isRequired
+  account: PropTypes.object.isRequired,
+  campaigns: PropTypes.arrayOf(PropTypes.shape(PropTypes.object.isRequired).isRequired).isRequired,
+  filters: PropTypes.object.isRequired
 }
-
 
 const mapStateToProps = (state) => {
   return {
+    account: state.account,
     campaigns: state.campaigns,
     EthFundMe: state.contracts.EthFundMe,
     filters: state.filters

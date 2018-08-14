@@ -1,6 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import PropTypes from 'prop-types'
 import Moment from 'react-moment'
 
 class CampaignEndDate extends Component {
@@ -13,7 +11,6 @@ class CampaignEndDate extends Component {
 
   componentDidMount() {
     web3.eth.getBlock('latest', (err, block) => {
-      console.log(`block.timestamp: ${block.timestamp}`)
       this.setState({
         timestamp: new Date(block.timestamp * 1000)
       })

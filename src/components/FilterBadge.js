@@ -16,10 +16,22 @@ class FilterBadge extends Component {
       campaignCount = this.props.campaigns.length
     } else if (this.props.campaigns.length > 0) {
       campaignCount = this.props.campaigns.reduce(
-        (a, campaign) => campaign.campaignState === this.props.filterName
-          || campaign.approvalState === this.props.filterName
-          ? ++a
-          : a,
+        (a, campaign) => {
+          if (this.props.groupName) {
+            if (campaign.campaignState === this.props.groupName && campaign.approvalState === this.props.filterName) {
+              return ++a
+            }
+          } else if (campaign.campaignState === this.props.filterName) {
+            return ++a
+          }
+          return a
+        },
+
+
+        // campaign.campaignState === this.props.filterName
+        //   || campaign.approvalState === this.props.filterName
+        //   ? ++a
+        //   : a,
         0
       ) // eslint-disable-line no-param-reassign
     }

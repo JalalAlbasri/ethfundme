@@ -37,7 +37,6 @@ class Account extends Component {
 
   render() {
     let balance = Number(web3.fromWei(this.props.accountBalances[this.props.accountAddress]))
-    console.log(`balance: ${balance}`)
     return (
       <div className="Account">
         <div className="">

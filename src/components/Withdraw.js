@@ -20,9 +20,6 @@ class Withdraw extends Component {
     // if campaignState === successful and account is campaign maanger and has withdrawn false
     // if campaignState === unsuccessful and account is on contributors and hasWithdrawm false
 
-    console.log(`account.address: ${web3.toChecksumAddress(this.props.account.address)}`)
-    console.log(`campaign.manager: ${web3.toChecksumAddress(this.props.campaign.manager)}`)
-
     let isManager = web3.toChecksumAddress(this.props.account.address)
       === web3.toChecksumAddress(this.props.campaign.manager)
 

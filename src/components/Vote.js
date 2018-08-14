@@ -66,18 +66,18 @@ class Vote extends Component {
             {/* <p>hasVoted: {(this.props.campaign.hasVoted) ? 'has voted' : 'has not voted'}</p> */}
             {/* <p>hasRevealed: {(this.props.campaign.hasRevealed) ? 'has revealed' : 'has not revealed'}</p> */}
             {
-              (this.props.campaign.approvalState === 0)
+              (this.props.campaign.approvalState === 'Commit')
                 ? <div> {this.props.campaign.numVoteSecrets} {(this.props.campaign.numVoteSecrets === 1) ? 'vote has' : 'votes have'} been placed </div> : null
             }
             {
-              (this.props.campaign.approvalState === 1)
+              (this.props.campaign.approvalState === 'Reveal')
                 ? <div> {this.props.campaign.numVoteReveals} {(this.props.campaign.numVoteReveals === 1) ? 'vote has' : 'votes have'} been revealed </div> : null
             }
 
           </div>
 
         {
-          ((this.props.campaign.approvalState === 0 && !this.props.campaign.hasVoted) || (this.props.campaign.approvalState === 1 && !this.props.campaign.hasRevealed))
+          ((this.props.campaign.approvalState === 'Commit' && !this.props.campaign.hasVoted) || (this.props.campaign.approvalState === 1 && !this.props.campaign.hasRevealed))
             ? (<div className="mt-3">
               <form>
                 <div className="form-row">
@@ -106,7 +106,7 @@ class Vote extends Component {
                   </div>
 
                   {
-                    (this.props.campaign.approvalState === 0)
+                    (this.props.campaign.approvalState === 'Commit')
                       ? (
                       <div className="col-auto">
                         <button type="submit" className={'btn btn-outline-' + ((this.state.voteOption) ? 'success' : 'danger')} onClick={this.handleVote}>
@@ -116,7 +116,7 @@ class Vote extends Component {
                       ) : null
                   }
                   {
-                    (this.props.campaign.approvalState === 1)
+                    (this.props.campaign.approvalState === 'Reveal')
                       ? (
                       <div className="col-auto">
                         <button type="submit" className="btn btn-outline-primary" onClick={this.handleReveal}>
