@@ -415,8 +415,11 @@ contract Campaign is Approvable {
     return block.timestamp;
   }
 
-  function transitionCampaign() public transitionState returns(bool) {
-    return true;
+  function transitionCampaign() public
+    stoppedInEmergency
+    transitionState 
+  {
+    
   }
 
   function getTotalContributedFunds() public view returns(uint) {

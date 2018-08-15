@@ -11,7 +11,7 @@ class Contribute extends Component {
     super(props)
 
     this.state = {
-      contribution: 1
+      contribution: ''
     }
 
     this.handleChangeContribution = this.handleChangeContribution.bind(this)
@@ -26,7 +26,10 @@ class Contribute extends Component {
   }
 
   handleContribute(event) {
-    this.props.dispatchContribute(this.props.campaign, this.state.contribution)
+    this.props.dispatchContribute(
+      this.props.campaign,
+      this.state.contribution ? this.state.contribution : 1
+    )
     event.preventDefault()
   }
 
@@ -35,22 +38,29 @@ class Contribute extends Component {
       !this.props.account.isAdmin
       && web3.toChecksumAddress(this.props.account.address)
         !== web3.toChecksumAddress(this.props.campaign.manager)
-      && this.props.campaign.campaignState === 'Active') {
+      && this.props.campaign.campaignState === 'Active'
+      && !this.props.campaign.isStopped
+    ) {
       return (
         <div className="Contribute container mt-3">
           <form>
             <div className="form-row">
-              <div className="col-sm-1">
+              <div className="col-md-2">
                 <input
-                    type="number"
-                    className="form-control"
-                    placeholder="Contribution"
-                    value={this.state.contribution}
-                    onChange={this.handleChangeContribution}
-                  />
+                  type="number"
+                  className="form-control"
+                  placeholder="Contribution"
+                  value={this.state.contribution}
+                  onChange={this.handleChangeContribution}
+                />
               </div>
-              <div className="col-sm-1">
-                <button type="submit" className="btn btn-outline-success" onClick={this.handleContribute}>
+              <div className="col-md-auto">
+                <button
+                  type="submit"
+                  className="btn btn-outline-success"
+                  onClick={this.handleContribute}
+                  disabled={this.props.campaign.isStopped}
+                >
                   <FontAwesomeIcon className="button-icon" icon="gift" />
                   Contribute
                 </button>

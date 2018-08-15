@@ -122,11 +122,11 @@ function getCampaignDetails(address) {
           return CampaignInstance.totalContributed.call(coinbase, { from: coinbase })
         })
         .then((totalContributed) => {
-          campaign.totalContributed = web3.fromWei(totalContributed)
+          campaign.totalContributed = web3.fromWei(Number(totalContributed))
           return CampaignInstance.getNumContributions.call({ from: coinbase })
         })
         .then((numContributions) => {
-          campaign.numContributions = numContributions
+          campaign.numContributions = Number(numContributions)
 
           let contributionPromises = []
 
@@ -339,6 +339,32 @@ export function revealVote(campaign, voteOption, salt) {
   }
 }
 
+export function cancel(campaign) {
+  return function (dispatch) {
+    const web3Campaign = contract(CampaignContract)
+    web3Campaign.setProvider(web3.currentProvider)
+    let CampaignInstance
+
+    web3.eth.getCoinbase((err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+      web3Campaign
+        .at(campaign.address)
+        .then((instance) => {
+          CampaignInstance = instance
+          return CampaignInstance.cancelCampaign({ from: coinbase })
+        })
+        .then((result) => {
+          dispatch(updateCampaign(campaign.address))
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    })
+  }
+}
+
 export function withdraw(campaign) {
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
@@ -366,7 +392,7 @@ export function withdraw(campaign) {
   }
 }
 
-export function cancel(campaign) {
+export function emergencyWithdraw(campaign) {
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -380,10 +406,11 @@ export function cancel(campaign) {
         .at(campaign.address)
         .then((instance) => {
           CampaignInstance = instance
-          return CampaignInstance.cancelCampaign({ from: coinbase })
+          return CampaignInstance.emergencyWithdraw({ from: coinbase })
         })
         .then((result) => {
           dispatch(updateCampaign(campaign.address))
+          dispatch(getAccountDetails(coinbase))
         })
         .catch((err) => {
           console.log(err)

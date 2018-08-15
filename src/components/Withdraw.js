@@ -31,11 +31,11 @@ class Withdraw extends Component {
     ) {
       return (
         <div className="Withdraw container mt-3">
-          <p>
+          <div class={'alert ' + (isManager ? 'alert-success' : 'alert-warning')}>
             {isManager
               ? 'Congratulations your campaign was successful. You may withdraw the campaign funds'
               : 'The campaign was unsuccessful. You may withdraw your contributed funds'}
-          </p>
+          </div>
           <button
             type="button"
             className="btn btn-outline-success"

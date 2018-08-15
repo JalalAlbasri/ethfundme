@@ -20,13 +20,19 @@ class Cancel extends Component {
     let isManager = web3.toChecksumAddress(this.props.account.address)
       === web3.toChecksumAddress(this.props.campaign.manager)
 
-    if (isManager && (this.props.campaign.campaignState === 'Pending' || this.props.campaign.campaignState === 'Active')) {
+    if (
+      !this.props.campaign.isStopped
+      && isManager
+      && (this.props.campaign.campaignState === 'Pending'
+        || this.props.campaign.campaignState === 'Active')
+    ) {
       return (
         <div className="Cancel mt-3 d-flex justify-content-end">
           <button
             type="button"
             className="btn btn-outline-danger"
             onClick={this.handleClick}
+            disabled={this.props.campaign.isStopped}
           >
             <FontAwesomeIcon className="button-icon" icon="times-circle" />
             Cancel Campaign

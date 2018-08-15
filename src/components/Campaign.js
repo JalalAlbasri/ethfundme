@@ -14,7 +14,8 @@ import CampaignEndDate from './CampaignEndDate'
 import Withdraw from './Withdraw'
 import Cancel from './Cancel'
 import EmergencyStop from './EmergencyStop'
-import StoppedWarning from './StoppedWarning'
+import EmergencyStopWarning from './EmergencyStopWarning'
+import EmergencyWithdraw from './EmergencyWithdraw'
 
 class Campaign extends Component {
   constructor(props) {
@@ -54,8 +55,8 @@ class Campaign extends Component {
               ''
             )}
           </div>
-          <StoppedWarning isStopped={this.props.campaign.isStopped}/>
           <div className="card-body lead">
+            <EmergencyStopWarning isStopped={this.props.campaign.isStopped}/>
             <div className="row mb-3">
               <div className="col-md-4">
                 <img
@@ -99,6 +100,7 @@ class Campaign extends Component {
 
             <Contribute campaign={this.props.campaign} />
             <Withdraw campaign={this.props.campaign} />
+            <EmergencyWithdraw campaign={this.props.campaign} />
             <Cancel campaign={this.props.campaign} />
             <Vote campaign={this.props.campaign} />
             <EmergencyStop campaign={this.props.campaign} />

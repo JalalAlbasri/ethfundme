@@ -1,4 +1,6 @@
 // TODO: Rename to just Progress
+// TODO: Use totalContributed function instead of funds
+// TODO: Put funds in the campaign details part of Campaign
 import React from 'react'
 
 function GoalProgress(props) {
