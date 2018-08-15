@@ -21,7 +21,10 @@ import {
   faForward,
   faArrowCircleDown,
   faTimesCircle,
-  faCheckCircle
+  faCheckCircle,
+  faStop,
+  faPlay,
+  faExclamationTriangle
 } from '@fortawesome/free-solid-svg-icons'
 
 import store from './store'
@@ -36,6 +39,9 @@ library.add(faForward)
 library.add(faArrowCircleDown)
 library.add(faTimesCircle)
 library.add(faCheckCircle)
+library.add(faStop)
+library.add(faPlay)
+library.add(faExclamationTriangle)
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()

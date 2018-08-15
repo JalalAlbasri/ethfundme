@@ -84,13 +84,12 @@ contract('Campaign Cancellation', (accounts) => {
     })
   })
 
-  // FIXME: Check balance changed
-  // it('should allow contributors to withdraw contributed funds', (done) => {
-  //   CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
-  //     return CampaignInstance.funds.call()
-  //   }).then((funds) => {
-  //     assert.equal(funds, 1, 'funds should be 1')
-  //     done()
-  //   })
-  // })
+  it('should allow contributors to withdraw contributed funds', (done) => {
+    CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
+      return CampaignInstance.funds.call()
+    }).then((funds) => {
+      assert.equal(funds, 0, 'funds should be 0')
+      done()
+    })
+  })
 })

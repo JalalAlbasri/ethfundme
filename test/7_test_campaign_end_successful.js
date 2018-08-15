@@ -131,15 +131,14 @@ contract('Campaign End Successfully', (accounts) => {
     })
   })
 
-  // FIXME: Check balance changed
-  // it('should allow Cmapaign manager to withdraw funds', (done) => {
-  //   CampaignInstance.withdraw({ from: accounts[3] }).then(() => {
-  //     return CampaignInstance.funds.call()
-  //   }).then((funds) => {
-  //     assert.equal(funds, 0, 'funds should be 0')
-  //     done()
-  //   })
-  // })
+  it('should allow Cmapaign manager to withdraw funds', (done) => {
+    CampaignInstance.withdraw({ from: accounts[3] }).then(() => {
+      return CampaignInstance.funds.call()
+    }).then((funds) => {
+      assert.equal(funds, 0, 'funds should be 0')
+      done()
+    })
+  })
 
   // TODO: Test trying to withdraw from an active/pending campaign
 })

@@ -154,6 +154,29 @@ contract Approvable is Administrated {
 contract Campaign is Approvable {
 
   /**
+    EMERGENCY STOP
+   */
+   bool public isStopped = false;
+
+    modifier stoppedInEmergency {
+        require(!isStopped);
+        _;
+    }
+
+    modifier onlyInEmergency {
+        require(isStopped);
+        _;
+    }
+
+     function stopContract() public onlyAdmin {
+        isStopped = true;
+    }
+
+    function resumeContract() public onlyAdmin {
+        isStopped = false;
+    }
+
+  /**
     DATA STRUCTURES 
    */
 
@@ -250,7 +273,7 @@ contract Campaign is Approvable {
 
   // ACCESS RESTRICTION
 
-  modifier notManager() {
+  modifier onlyNotManager() {
     require(msg.sender != manager);
     _;
   }
@@ -265,8 +288,13 @@ contract Campaign is Approvable {
     _;
   }
 
-  modifier hasNotWithdrawn() {
+  modifier onlyHasNotWithdrawn() {
     require(hasWithdrawn[msg.sender] == false);
+    _;
+  }
+
+  modifier onlyHasContributed() {
+    require(hasContributed[msg.sender] == true);
     _;
   }
 
@@ -296,10 +324,27 @@ contract Campaign is Approvable {
     campaignState = CampaignStates.Unsuccessful;
   }
 
+  function managerWithdrawl() private 
+    onlyManager
+  {
+      hasWithdrawn[msg.sender] = true;
+      funds = 0;
+      msg.sender.transfer(address(this).balance);
+  }
+
+  function contributorWithdrawl() private 
+    onlyHasContributed
+  {
+    hasWithdrawn[msg.sender] = true;
+    funds -= totalContributed[msg.sender];
+    msg.sender.transfer(totalContributed[msg.sender]);
+  }
+
   // INTERFACE
 
   function contribute() public payable 
-    notManager 
+    stoppedInEmergency
+    onlyNotManager 
     transitionState
     onlyDuringCampaignState(CampaignStates.Active)
     validateContribution {
@@ -311,6 +356,7 @@ contract Campaign is Approvable {
   
   // TODO: Might restrict this to only Managers
   function cancelCampaign() public
+    stoppedInEmergency
     onlyManagerOrAdmin
     transitionState
     onlyBeforeCampaignEnd
@@ -322,28 +368,33 @@ contract Campaign is Approvable {
   // FIXME: Consider removing this function. It's essentially unnecessary since withdraw will end the campaign
   // but it exists as a formal way of ending the campaign.
   function endCampaign() public 
+    stoppedInEmergency
     onlyManagerOrAdmin
     transitionState
     onlyAfterCampaignEnd
     {
     }
 
-  function withdraw() public 
-    hasNotWithdrawn
+  function withdraw() public
+    stoppedInEmergency 
+    onlyHasNotWithdrawn //TODO: Rename onlyonlyHasNotWithdrawn
     transitionState 
     onlyAfterCampaignEnd {
       if (campaignState == CampaignStates.Successful) {
-        require(msg.sender == manager);
-        hasWithdrawn[msg.sender] = true;
-        msg.sender.transfer(address(this).balance);
+        managerWithdrawl();
       }
 
       if(campaignState == CampaignStates.Unsuccessful || campaignState == CampaignStates.Cancelled) {
-        require(hasContributed[msg.sender] == true);
-        hasWithdrawn[msg.sender] = true;
-        msg.sender.transfer(totalContributed[msg.sender]);
+        contributorWithdrawl();
       }
   }
+
+  function emergencyWithdraw() public
+    onlyInEmergency
+    onlyHasNotWithdrawn
+    {
+      contributorWithdrawl();
+    }
 
   // GETTERS
   // FIXME: Should the getters transition state?
@@ -366,6 +417,14 @@ contract Campaign is Approvable {
 
   function transitionCampaign() public transitionState returns(bool) {
     return true;
+  }
+
+  function getTotalContributedFunds() public view returns(uint) {
+    uint result = 0;
+    for (uint i = 0; i < contributions.length; i++) {
+      result += contributions[i].amount;
+    }
+    return result;
   }
 
 }

@@ -26,7 +26,6 @@ function campaignUpdated(campaign) {
   }
 }
 
-// FIXME: Campaign HAS AN ID!!!!!
 function getCampaignDetails(address) {
   // console.log(`getCampaignDetails() address: ${address}`)
 
@@ -48,13 +47,14 @@ function getCampaignDetails(address) {
         .at(campaign.address)
         .then((instance) => {
           CampaignInstance = instance
-          //   return CampaignInstance.updateState({ from: coinbase })
-          // })
-          // .then(() => {
           return CampaignInstance.id.call({ from: coinbase })
         })
         .then((id) => {
           campaign.id = Number(id)
+          return CampaignInstance.isStopped.call({from: coinbase})
+        })
+        .then((isStopped) => {
+          campaign.isStopped = isStopped
           return CampaignInstance.title.call({ from: coinbase })
         })
         .then((title) => {
@@ -381,6 +381,35 @@ export function cancel(campaign) {
         .then((instance) => {
           CampaignInstance = instance
           return CampaignInstance.cancelCampaign({ from: coinbase })
+        })
+        .then((result) => {
+          dispatch(updateCampaign(campaign.address))
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    })
+  }
+}
+
+export function emergencyStop(campaign) {
+  return function (dispatch) {
+    const web3Campaign = contract(CampaignContract)
+    web3Campaign.setProvider(web3.currentProvider)
+    let CampaignInstance
+
+    web3.eth.getCoinbase((err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+      web3Campaign
+        .at(campaign.address)
+        .then((instance) => {
+          CampaignInstance = instance
+          if (campaign.isStopped)
+            return CampaignInstance.resumeContract({ from: coinbase })
+          else
+            return CampaignInstance.stopContract({ from: coinbase })
         })
         .then((result) => {
           dispatch(updateCampaign(campaign.address))

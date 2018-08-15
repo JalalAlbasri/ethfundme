@@ -117,23 +117,21 @@ contract('Campaign End Unsuccessfully', (accounts) => {
     })
   })
 
-  // FIXME: Check balance changed
-  // it('should allow contributors to withdraw contributed funds', (done) => {
-  //   CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
-  //     return CampaignInstance.funds.call()
-  //   }).then((funds) => {
-  //     assert.equal(funds, 3, 'funds should be 3')
-  //     done()
-  //   })
-  // })
+  it('should allow contributors to withdraw contributed funds', (done) => {
+    CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
+      return CampaignInstance.funds.call()
+    }).then((funds) => {
+      assert.equal(funds, 3, 'funds should be 3')
+      done()
+    })
+  })
 
-  // FIXME: Check balance changed
-  // it('should not allow a contributor to withdraw funds again', (done) => {
-  //   CampaignInstance.withdraw({ fron: accounts[4] }).catch((e) => {
-  //     return CampaignInstance.funds.call()
-  //   }).then((funds) => {
-  //     assert.equal(funds, 3, 'funds should be 3')
-  //     done()
-  //   })
-  // })
+  it('should not allow a contributor to withdraw funds again', (done) => {
+    CampaignInstance.withdraw({ fron: accounts[4] }).catch((e) => {
+      return CampaignInstance.funds.call()
+    }).then((funds) => {
+      assert.equal(funds, 3, 'funds should be 3')
+      done()
+    })
+  })
 })
