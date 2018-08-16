@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./EthFundMe.sol";
 import "./EmergencyStoppable.sol";
-// import "./Approvable.sol";
+import "../installed_contracts/zeppelin/contracts/ReentrancyGuard.sol";
 
 contract Administrated {
   EthFundMe public efm;
@@ -152,7 +152,7 @@ contract Approvable is Administrated, EmergencyStoppable {
   }
 }
 
-contract Campaign is Approvable {
+contract Campaign is Approvable, ReentrancyGuard {
 
   /**
     DATA STRUCTURES 
@@ -353,9 +353,11 @@ contract Campaign is Approvable {
     {
     }
 
-  function withdraw() public
-    stoppedInEmergency 
-    onlyHasNotWithdrawn //TODO: Rename onlyonlyHasNotWithdrawn
+  // Wrapper to private function doing the actual work as described in ReentrancyGuard.sol
+  function withdraw() external
+    stoppedInEmergency
+    nonReentrant // TODO: How do we test, need a reentrancy contract to call this function. 
+    onlyHasNotWithdrawn
     transitionState 
     onlyAfterCampaignEnd {
       if (campaignState == CampaignStates.Successful) {
@@ -367,8 +369,9 @@ contract Campaign is Approvable {
       }
   }
 
-  function emergencyWithdraw() public
+  function emergencyWithdraw() external
     onlyInEmergency
+    nonReentrant
     onlyHasNotWithdrawn
     {
       contributorWithdrawl();
