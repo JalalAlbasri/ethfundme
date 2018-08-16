@@ -93,7 +93,7 @@ contract('Campaign Approval', (accounts) => {
     })
   })
 
-  it('should place a votefrom accounts[1]', (done) => {
+  it('should place a vote from accounts[1]', (done) => {
     CampaignInstance.vote(voteSecret1, { from: accounts[1] }).then(() => {
       return CampaignInstance.voteSecrets.call(accounts[1]).then((voteSecret) => {
         assert.equal(voteSecret, voteSecret1, 'voteSecret should match voteSecret1')

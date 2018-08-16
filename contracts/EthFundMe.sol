@@ -1,7 +1,9 @@
 pragma solidity ^0.4.24;
 
 // import "./Approvable.sol";
+import "./EmergencyStoppable.sol";
 import "./Campaign.sol";
+
 
 // Contract Development 1
 // DONE: Timing campaigns
@@ -36,7 +38,23 @@ import "./Campaign.sol";
 // TASK: Release on testnet
 
 
-contract EthFundMe {
+contract EthFundMe is EmergencyStoppable {
+
+  modifier onlyAdmin() {
+    require(isAdmin[msg.sender]);
+    _;
+  }
+
+  /**
+    IMPLEMENT EmergencyStoppable INTERFACE
+
+   */
+    function isAuthorized() internal 
+    onlyAdmin
+    returns(bool) 
+  {
+    return true;
+  }
 
   /**
     EVENTS
@@ -52,7 +70,6 @@ contract EthFundMe {
   address[] public admins;
   mapping (address=> bool) public isAdmin;
 
-  // TODO: Adding an
   /**
     Allows initialization of the contract with up to 3 admins
    */
@@ -85,6 +102,7 @@ contract EthFundMe {
   }
 
   function createCampaign(string title, uint goal, uint duration, string description, string image) public 
+    stoppedInEmergency
     notAdmin
     returns(address) {
     Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, description, image, msg.sender, address(this));

@@ -3,7 +3,7 @@ let Campaign = artifacts.require('Campaign')
 
 let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
-contract('Campaign Emergency Stop', (accounts) => {
+contract('Campaign Emergency Stop Contributions', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 

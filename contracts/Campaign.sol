@@ -1,20 +1,8 @@
 pragma solidity ^0.4.24;
 
 import "./EthFundMe.sol";
+import "./EmergencyStoppable.sol";
 // import "./Approvable.sol";
-
-// It is a good practice to structure functions which interact
-// with other contracts (i.e. call functions or send Ether)
-// into three phases:
-// 1. check conditions
-// 2. perform actions (potentially change conditions)
-// 3. interact with other contracts
-// If these phases get mixed up, the other contract might call
-// back into the current contract and change the state or cause
-// effects (ether payout) to be done multiple times.
-// If functions that are called internally include interactions with external
-// contracts, they have to be considered interaction with
-// external contracts too.
 
 contract Administrated {
   EthFundMe public efm;
@@ -30,7 +18,18 @@ contract Administrated {
 
 }
 
-contract Approvable is Administrated {
+contract Approvable is Administrated, EmergencyStoppable {
+
+  /**
+    IMPLEMENT EmergencyStoppable INTERFACE
+    
+   */
+  function isAuthorized() internal 
+    onlyAdmin
+    returns(bool) 
+  {
+    return true;
+  }
 
   /**
     DATA STRUCTURES
@@ -123,6 +122,7 @@ contract Approvable is Administrated {
    */
 
   function vote(bytes32 secretVote) public 
+    stoppedInEmergency
     onlyAdmin 
     onlyDuringApprovalState(ApprovalStates.Commit) 
     endCommit {
@@ -134,6 +134,7 @@ contract Approvable is Administrated {
   }
 
   function reveal(bool voteOption, uint salt) public 
+    stoppedInEmergency
     onlyVotedAdmin 
     onlyNotRevealedAdmin
     onlyDuringApprovalState(ApprovalStates.Reveal) 
@@ -152,29 +153,6 @@ contract Approvable is Administrated {
 }
 
 contract Campaign is Approvable {
-
-  /**
-    EMERGENCY STOP
-   */
-   bool public isStopped = false;
-
-    modifier stoppedInEmergency {
-        require(!isStopped);
-        _;
-    }
-
-    modifier onlyInEmergency {
-        require(isStopped);
-        _;
-    }
-
-     function stopContract() public onlyAdmin {
-        isStopped = true;
-    }
-
-    function resumeContract() public onlyAdmin {
-        isStopped = false;
-    }
 
   /**
     DATA STRUCTURES 
