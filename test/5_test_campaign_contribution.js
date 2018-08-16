@@ -18,10 +18,24 @@ contract('Campaign Contribution', (accounts) => {
   let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
 
   before('setup and reject campaign', (done) => {
-    EthFundMe.deployed().then((instance) => {
-      EthFundMeInstance = instance
-      return EthFundMeInstance.createCampaign('test campaign', 10, 1, 'test campaign description', 'test image url', { from: accounts[3] })
-    })
+    EthFundMe.deployed()
+      .then((instance) => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] })
+      })
+      .then(() => {
+        return EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[1] })
+      })
+      .then(() => {
+        return EthFundMeInstance.createCampaign(
+          'test campaign',
+          10,
+          1,
+          'test campaign description',
+          'test image url',
+          { from: accounts[3] }
+        )
+      })
       .then(() => {
         return EthFundMeInstance.campaigns.call(0)
       })
@@ -61,12 +75,14 @@ contract('Campaign Contribution', (accounts) => {
   })
 
   it('should try to make a contribution of 0 and fail', (done) => {
-    CampaignInstance.contribute({ from: accounts[4], value: 0 }).catch((e) => {
-      return CampaignInstance.hasContributed.call(accounts[4])
-    }).then((hasContributed) => {
-      assert.equal(hasContributed, false, 'accounts[4] should not have contributed')
-      done()
-    })
+    CampaignInstance.contribute({ from: accounts[4], value: 0 })
+      .catch((e) => {
+        return CampaignInstance.hasContributed.call(accounts[4])
+      })
+      .then((hasContributed) => {
+        assert.equal(hasContributed, false, 'accounts[4] should not have contributed')
+        done()
+      })
   })
 
   it('should make a single contribution of 1 ether from accounts[4]', (done) => {

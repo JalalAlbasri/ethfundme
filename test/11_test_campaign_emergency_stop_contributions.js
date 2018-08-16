@@ -21,6 +21,12 @@ contract('Campaign Emergency Stop Contributions', (accounts) => {
     EthFundMe.deployed()
       .then((instance) => {
         EthFundMeInstance = instance
+        return EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] })
+      })
+      .then(() => {
+        return EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[1] })
+      })
+      .then(() => {
         return EthFundMeInstance.createCampaign(
           'test campaign',
           10,
@@ -138,7 +144,7 @@ contract('Campaign Emergency Stop Contributions', (accounts) => {
         done()
       })
   })
-  
+
   it('should accept new contributions once resumed', (done) => {
     CampaignInstance.contribute({ from: accounts[7], value: 1 }).then(() => {
       return CampaignInstance.hasContributed.call(accounts[7]).then((hasContributed) => {

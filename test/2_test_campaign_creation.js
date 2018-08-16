@@ -6,15 +6,31 @@ contract('Campaign Creation', (accounts) => {
   let CampaignInstance
 
   before('set up contract instances', (done) => {
-    EthFundMe.deployed().then((instance) => {
-      EthFundMeInstance = instance
-      return EthFundMeInstance.createCampaign('test campaign', 10, 1, 'test campaign description', 'test image url', { from: accounts[3] })
-    }).then(() => {
-      return EthFundMeInstance.campaigns.call(0)
-    }).then((campaignAddress) => {
-      CampaignInstance = Campaign.at(campaignAddress)
-      done()
-    })
+    EthFundMe.deployed()
+      .then((instance) => {
+        EthFundMeInstance = instance
+        return EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] })
+      })
+      .then(() => {
+        return EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[1] })
+      })
+      .then(() => {
+        return EthFundMeInstance.createCampaign(
+          'test campaign',
+          10,
+          1,
+          'test campaign description',
+          'test image url',
+          { from: accounts[3] }
+        )
+      })
+      .then(() => {
+        return EthFundMeInstance.campaigns.call(0)
+      })
+      .then((campaignAddress) => {
+        CampaignInstance = Campaign.at(campaignAddress)
+        done()
+      })
   })
 
   it('should initialize campaign id correctly', (done) => {
@@ -47,7 +63,11 @@ contract('Campaign Creation', (accounts) => {
 
   it('should initialize campaign description correctly', (done) => {
     CampaignInstance.description.call().then((description) => {
-      assert.equal(description, 'test campaign description', 'title should be test campaign description')
+      assert.equal(
+        description,
+        'test campaign description',
+        'title should be test campaign description'
+      )
       done()
     })
   })
@@ -62,13 +82,6 @@ contract('Campaign Creation', (accounts) => {
   it('should initialize campaign manager correctly', (done) => {
     CampaignInstance.manager.call().then((manager) => {
       assert.equal(manager, accounts[3], 'manager should be accounts[3]')
-      done()
-    })
-  })
-
-  it('should initialize campaign efmAddress correctly', (done) => {
-    CampaignInstance.efm.call().then((efmAddress) => {
-      assert.equal(efmAddress, EthFundMeInstance.address, 'efmAddress should be EthFundMe.address')
       done()
     })
   })

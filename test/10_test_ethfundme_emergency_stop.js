@@ -9,6 +9,12 @@ contract('EthFundMe Emregency Stop', (accounts) => {
     EthFundMe.deployed()
       .then((instance) => {
         EthFundMeInstance = instance
+        return EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] })
+      })
+      .then(() => {
+        return EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[1] })
+      })
+      .then(() => {
         return EthFundMeInstance.createCampaign(
           'test campaign',
           10,
