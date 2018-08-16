@@ -151,6 +151,7 @@ contract('Campaign End Unsuccessfully', (accounts) => {
         return CampaignInstance.funds.call()
       })
       .then((funds) => {
+        console.log(`funds: ${funds}`)
         assert.equal(funds, 3, 'funds should be 3')
         done()
       })

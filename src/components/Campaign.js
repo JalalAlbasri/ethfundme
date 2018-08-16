@@ -87,7 +87,7 @@ class Campaign extends Component {
             </div>
 
             {this.props.campaign.funds >= 0 ? (
-              <GoalProgress funds={this.props.campaign.funds} goal={this.props.campaign.goal} />
+              <GoalProgress funds={this.props.campaign.totalContributedFunds} goal={this.props.campaign.goal} />
             ) : (
               ''
             )}

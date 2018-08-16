@@ -316,7 +316,7 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
   // Wrapper to private function doing the actual work as described in ReentrancyGuard.sol
   function withdraw() external
     stoppedInEmergency
-    nonReentrant // TODO: How do we test, need a reentrancy contract to call this function. 
+    nonReentrant // TODO: How do we test, need a reentrancy contract to call this function.
     onlyHasNotWithdrawn
     transitionState 
     onlyAfterCampaignEnd {

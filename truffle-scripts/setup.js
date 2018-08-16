@@ -39,6 +39,17 @@ module.exports = function (callback) {
     .then((instance) => {
       EthFundMeInstance = instance
 
+      let adminPromises = []
+
+      for (let i = 1; i < NUM_ADMINS; i++) {
+        console.log(`granting account ${i} admin priviledges...`)
+        let adminPromise = EthFundMeInstance.addAdminRole(accounts[i], { from: accounts[0] })
+        adminPromises.push(adminPromise)
+      }
+
+      return Promise.all(adminPromises)
+    }).then(() => {
+
       let createCampaignPromises = []
 
       for (let i = 0; i < NUM_CAMPAIGNS; i++) {

@@ -51,7 +51,7 @@ function getCampaignDetails(address) {
         })
         .then((id) => {
           campaign.id = Number(id)
-          return CampaignInstance.isStopped.call({from: coinbase})
+          return CampaignInstance.isStopped.call({ from: coinbase })
         })
         .then((isStopped) => {
           campaign.isStopped = isStopped
@@ -123,6 +123,10 @@ function getCampaignDetails(address) {
         })
         .then((totalContributed) => {
           campaign.totalContributed = web3.fromWei(Number(totalContributed))
+          return CampaignInstance.getTotalContributedFunds.call({ from: coinbase })
+        })
+        .then((totalContributedFunds) => {
+          campaign.totalContributedFunds = web3.fromWei(Number(totalContributedFunds))
           return CampaignInstance.getNumContributions.call({ from: coinbase })
         })
         .then((numContributions) => {
@@ -433,10 +437,8 @@ export function emergencyStop(campaign) {
         .at(campaign.address)
         .then((instance) => {
           CampaignInstance = instance
-          if (campaign.isStopped)
-            return CampaignInstance.resumeContract({ from: coinbase })
-          else
-            return CampaignInstance.stopContract({ from: coinbase })
+          if (campaign.isStopped) return CampaignInstance.resumeContract({ from: coinbase })
+          return CampaignInstance.stopContract({ from: coinbase })
         })
         .then((result) => {
           dispatch(updateCampaign(campaign.address))
