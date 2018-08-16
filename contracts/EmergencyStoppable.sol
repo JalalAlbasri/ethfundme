@@ -1,6 +1,8 @@
 pragma solidity ^0.4.24;
 
-contract EmergencyStoppable {
+import "./Administrated.sol";
+
+contract EmergencyStoppable is Administrated {
   bool public isStopped = false;
 
     modifier stoppedInEmergency {
@@ -13,18 +15,17 @@ contract EmergencyStoppable {
         _;
     }
 
-    modifier onlyAuthorized {
-      require(isAuthorized());
-      _;
-    }
-
     function isAuthorized() internal returns (bool);
 
-    function stopContract() public onlyAuthorized {
+    function stopContract() public 
+      onlyAdmin
+    {
         isStopped = true;
     }
 
-    function resumeContract() public onlyAuthorized {
+    function resumeContract() public 
+      onlyAdmin 
+    {
         isStopped = false;
     }
 }

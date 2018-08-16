@@ -37,7 +37,7 @@ contract('Initialization', (accounts) => {
 
   it('should add a third admin from the second admin account', (done) => {
     EthFundMeInstance.addAdminRole(accounts[2], {from: accounts[1]}).then(() => {
-      return EthFundMeInstance.isAdmin(accounts[2], {from: accounts[2});
+      return EthFundMeInstance.isAdmin(accounts[2], {from: accounts[2]});
     }).then((isAdmin) => {
       assert.equal(isAdmin, true, 'accounts 2 should be an admin')
       done()
