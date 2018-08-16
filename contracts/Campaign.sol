@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./EthFundMe.sol";
 import "./EmergencyStoppable.sol";
-import "../installed_contracts/zeppelin/contracts/ReentrancyGuard.sol";
+import "../node_modules/zeppelin-solidity/contracts/ReentrancyGuard.sol";
 
 contract Administrated {
   EthFundMe public efm;
