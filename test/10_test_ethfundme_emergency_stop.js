@@ -99,7 +99,6 @@ contract('EthFundMe Emregency Stop', (accounts) => {
       .then(() => {
         return EthFundMeInstance.getNumCampaigns.call()
       })
-
       .then((numCampaigns) => {
         assert.equal(numCampaigns, 2, 'numCampaigns should still be 1')
         done()

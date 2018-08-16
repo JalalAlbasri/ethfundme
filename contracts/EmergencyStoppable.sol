@@ -1,8 +1,5 @@
 pragma solidity ^0.4.24;
 
-// import "./Administrated.sol";
-
-// contract EmergencyStoppable is Administrated {
 contract EmergencyStoppable {
   bool public isStopped = false;
 

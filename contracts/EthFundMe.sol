@@ -39,84 +39,22 @@
 
 pragma solidity ^0.4.24;
 
-// import "./Administrated.sol";
+import "./Administrated.sol";
 import "./EmergencyStoppable.sol";
 import "./Campaign.sol";
-import '../node_modules/zeppelin-solidity/contracts/access/rbac/RBAC.sol';
 
-
-contract EthFundMe is RBAC, EmergencyStoppable {
-
-  function isAuthorized() internal {
-    return isAdmin(msg.sender);
-  }
+contract EthFundMe is Administrated, EmergencyStoppable {
 
   /**
-   * A constant role name for indicating admins.
+    Implement EmergencyStoppable Interface
    */
-  string public constant ROLE_ADMIN = "admin";
-  uint public numAdmins = 1;
-
-  /**
-   * @dev modifier to scope access to admins
-   * // reverts
-   */
-  modifier onlyAdmin()
-  {
-    checkRole(msg.sender, ROLE_ADMIN);
-    _;
-  }
-
-  modifier notAdmin()
-  {
-    require(!hasRole(msg.sender, ROLE_ADMIN));
-    _;
-  }
-
-  constructor()
-    public
-  {
-    addRole(msg.sender, ROLE_ADMIN);
-  }
-
-  /**
-   * @dev add a role to an account
-   * @param _account the account that will have the admin role
-   */
-  function addAdminRole(address _account)
-    public
-    onlyAdmin
-  {
-    addRole(_account, ROLE_ADMIN);
-    numAdmins++;
-  }
-
-  /**
-   * @dev remove a role from an account
-   * @param _account the account that will no longer have the admin role
-   */
-  function removeAdminRole(address _account)
-    public
-    onlyAdmin
-  {
-    removeRole(_account, ROLE_ADMIN);
-    numAdmins--;
-  }
-
-  function isAdmin(address _address) 
-    public
-    view
+  function isAuthorized() internal 
     returns(bool)
   {
-    return hasRole(_address, ROLE_ADMIN);
+    return isAdmin(msg.sender);
   }
-
   
-  /**
-   * @dev constructor. Sets msg.sender as admin by default
-   */
   constructor() public {
-    addRole(msg.sender, ROLE_ADMIN);
   }
 
   /**
@@ -139,7 +77,7 @@ contract EthFundMe is RBAC, EmergencyStoppable {
     stoppedInEmergency
     notAdmin
     returns(address) {
-    Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, description, image, msg.sender);
+    Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, description, image, msg.sender, address(this));
     campaigns.push(address(newCampaign));
     emit CampaignCreated(address(newCampaign));
     return address(newCampaign);

@@ -1,11 +1,20 @@
 pragma solidity ^0.4.24;
 
-import "./EmergencyStoppable.sol";
 import "./EthFundMe.sol";
-import "./Approvable.sol";
+import "./EmergencyStoppable.sol";
 import "../node_modules/zeppelin-solidity/contracts/ReentrancyGuard.sol";
 
-contract Approvable is EmergencyStoppable, EthFundMe {
+contract Campaign is ReentrancyGuard, EmergencyStoppable {
+
+  /**
+    Implement EmergencyStoppable Interface
+   */
+  function isAuthorized() 
+    internal 
+    returns(bool)
+  {
+    return efm.isAdmin(msg.sender);
+  }
 
   /**
     DATA STRUCTURES
@@ -18,123 +27,7 @@ contract Approvable is EmergencyStoppable, EthFundMe {
     Rejected,
     Cancelled
   }
-
-  ApprovalStates public approvalState = ApprovalStates.Commit;
-
-  /**
-    STATE VARIABLES
-   */
-
-  uint public numApprovals;
-  uint public numRejections;
-
-  uint public numVoteSecrets;
-  uint public numVoteReveals;
-
-  mapping(address => bytes32) public voteSecrets;
-  mapping(address => bool) public hasVoted;
-  mapping(address => bool) public hasRevealed;
-
-  /**
-    CONSTRUCTOR
-   */
-
-  constructor() public {
-    
-  }
-
-  /**
-    ABSTRACT FUNCTIONS
-   */
-
-  function onApproval() internal;
-  function onRejection() internal;
-
-  /**
-    MODIFIERS
-   */
-
-  // ACCESS RESTRICTION
-
-  modifier onlyVotedAdmin() {
-    require(hasVoted[msg.sender] == true);
-    _;
-  }
-
-  modifier onlyNotRevealedAdmin() {
-    require(hasRevealed[msg.sender] == false);
-    _;
-  }
-
-  // STATE MANAGEMENT
-
-  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
-    require(approvalState == _approvalState);
-    _;
-  }
-
-  modifier endCommit() {
-    _;
-    if (numVoteSecrets == 3) {
-      approvalState = ApprovalStates.Reveal;
-    }
-  }
-
-  // Doesn't require all votes to be revealed only enough.
-  modifier endReveal() {
-    _;
-    if (numApprovals >= 2) {
-      approvalState = ApprovalStates.Approved;
-      onApproval();
-    } 
-    if (numRejections >= 2) {
-      approvalState = ApprovalStates.Rejected;
-      onRejection();
-    }
-  }
-
-  /**
-    INTERFACE
-   */
-
-  function vote(bytes32 secretVote) public 
-    stoppedInEmergency
-    onlyAdmin 
-    onlyDuringApprovalState(ApprovalStates.Commit) 
-    endCommit {
-      voteSecrets[msg.sender] = secretVote;
-      if (hasVoted[msg.sender] == false) {
-        numVoteSecrets++;
-        hasVoted[msg.sender] = true;
-    }
-  }
-
-  function reveal(bool voteOption, uint salt) public 
-    stoppedInEmergency
-    onlyVotedAdmin 
-    onlyNotRevealedAdmin
-    onlyDuringApprovalState(ApprovalStates.Reveal) 
-    endReveal {
-      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
-
-      if (voteOption) {
-        numApprovals++;
-      } else {
-        numRejections++;
-      }
-
-      numVoteReveals++;
-      hasRevealed[msg.sender] = true;
-  }
-}
-
-
-contract Campaign is Approvable, ReentrancyGuard {
-
-  /**
-    DATA STRUCTURES 
-   */
-
+  
   enum CampaignStates {
     Pending,
     Active,
@@ -149,11 +42,17 @@ contract Campaign is Approvable, ReentrancyGuard {
     uint timestamp;
   }
 
+
+  ApprovalStates public approvalState = ApprovalStates.Commit;
+  CampaignStates public campaignState = CampaignStates.Pending;
+
+
   /**
     STATE VARIABLES
    */
 
-  CampaignStates public campaignState = CampaignStates.Pending;
+  EthFundMe public efm;
+
   uint public funds = address(this).balance;
   uint public endDate;
 
@@ -170,6 +69,15 @@ contract Campaign is Approvable, ReentrancyGuard {
   mapping (address => bool) public hasContributed;
   mapping (address => bool) public hasWithdrawn;
 
+  uint public numApprovals;
+  uint public numRejections;
+
+  uint public numVoteSecrets;
+  uint public numVoteReveals;
+
+  mapping(address => bytes32) public voteSecrets;
+  mapping(address => bool) public hasVoted;
+  mapping(address => bool) public hasRevealed;
 
   /**
     CONSTRUCTOR
@@ -182,7 +90,8 @@ contract Campaign is Approvable, ReentrancyGuard {
     uint _duration, 
     string _description,
     string _image,
-    address _manager 
+    address _manager,
+    address efmAddress
   ) public {
     id = _id;
     title = _title;
@@ -191,9 +100,56 @@ contract Campaign is Approvable, ReentrancyGuard {
     description = _description;
     image = _image;
     manager = _manager;
+    efm = EthFundMe(efmAddress);
   }
 
-  // STATE TRANSITION/RESTRICTION
+  /**
+    MODIFIERS
+   */
+
+  // ACCESS RESTRICTION
+  modifier onlyAdmin() {
+    require(efm.isAdmin(msg.sender));
+    _;
+  }
+
+  modifier onlyVotedAdmin() {
+    require(hasVoted[msg.sender] == true);
+    _;
+  }
+
+  modifier onlyNotRevealedAdmin() {
+    require(hasRevealed[msg.sender] == false);
+    _;
+  }
+
+    modifier onlyNotManager() {
+    require(msg.sender != manager);
+    _;
+  }
+
+  modifier onlyManager() {
+    require(msg.sender == manager);
+    _;
+  }
+
+  modifier onlyManagerOrAdmin() {
+    // FIXME: Is this modifier still used/required? 
+    require(msg.sender == manager || efm.isAdmin(msg.sender));
+    _;
+  }
+
+  modifier onlyHasNotWithdrawn() {
+    require(hasWithdrawn[msg.sender] == false);
+    _;
+  }
+
+  modifier onlyHasContributed() {
+    require(hasContributed[msg.sender] == true);
+    _;
+  }
+
+  // STATE MANAGEMENT
 
   modifier onlyDuringCampaignState(CampaignStates _campaignState) {
     require(campaignState == _campaignState);
@@ -225,33 +181,29 @@ contract Campaign is Approvable, ReentrancyGuard {
     _;
   }
 
-  // ACCESS RESTRICTION
-
-  modifier onlyNotManager() {
-    require(msg.sender != manager);
+  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
+    require(approvalState == _approvalState);
     _;
   }
 
-  modifier onlyManager() {
-    require(msg.sender == manager);
+  modifier endCommit() {
     _;
+    if (numVoteSecrets == 3) {
+      approvalState = ApprovalStates.Reveal;
+    }
   }
 
-  modifier onlyManagerOrAdmin() {
-    // FIXME: Not checking for admin
-    // FIXME: Is this modifier still used/required? 
-    require(msg.sender == manager);
+  // Doesn't require all votes to be revealed only enough.
+  modifier endReveal() {
     _;
-  }
-
-  modifier onlyHasNotWithdrawn() {
-    require(hasWithdrawn[msg.sender] == false);
-    _;
-  }
-
-  modifier onlyHasContributed() {
-    require(hasContributed[msg.sender] == true);
-    _;
+    if (numApprovals >= 2) {
+      approvalState = ApprovalStates.Approved;
+      onApproval();
+    } 
+    if (numRejections >= 2) {
+      approvalState = ApprovalStates.Rejected;
+      onRejection();
+    }
   }
 
   // INPUT VALIDATION
@@ -264,19 +216,17 @@ contract Campaign is Approvable, ReentrancyGuard {
     require(totalContributed[msg.sender] + msg.value > totalContributed[msg.sender]);
     _;
   }
-  
-  /**
-    FUNCTIONS
-   */
 
-  // INTERNAL FUNCTIONS
+  // PRIVATE FUNCTIONS
 
-  function onApproval() internal {
+  function onApproval() 
+    private 
+  {
     endDate = now + duration;
     campaignState = CampaignStates.Active;
   }
 
-  function onRejection() internal {
+  function onRejection() private {
     campaignState = CampaignStates.Unsuccessful;
   }
 
@@ -296,7 +246,39 @@ contract Campaign is Approvable, ReentrancyGuard {
     msg.sender.transfer(totalContributed[msg.sender]);
   }
 
-  // INTERFACE
+  /**
+    INTERFACE
+   */
+
+  function vote(bytes32 secretVote) public 
+    stoppedInEmergency
+    onlyAdmin
+    onlyDuringApprovalState(ApprovalStates.Commit) 
+    endCommit {
+      voteSecrets[msg.sender] = secretVote;
+      if (hasVoted[msg.sender] == false) {
+        numVoteSecrets++;
+        hasVoted[msg.sender] = true;
+    }
+  }
+
+  function reveal(bool voteOption, uint salt) public 
+    stoppedInEmergency
+    onlyVotedAdmin 
+    onlyNotRevealedAdmin
+    onlyDuringApprovalState(ApprovalStates.Reveal) 
+    endReveal {
+      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
+
+      if (voteOption) {
+        numApprovals++;
+      } else {
+        numRejections++;
+      }
+
+      numVoteReveals++;
+      hasRevealed[msg.sender] = true;
+  }
 
   function contribute() public payable 
     stoppedInEmergency
@@ -313,7 +295,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   // TODO: Might restrict this to only Managers
   function cancelCampaign() public
     stoppedInEmergency
-    onlyManagerOrAdmin
+    onlyManager
     transitionState
     onlyBeforeCampaignEnd
     {
@@ -356,9 +338,6 @@ contract Campaign is Approvable, ReentrancyGuard {
     }
 
   // GETTERS
-  // FIXME: Should the getters transition state?
-  // Decide this when building the frontend. If it can help update state correctly in the frontend it
-  // might be a good idea, otherwise it's unneccessary.
 
   function getNumContributions() public view returns(uint numContributions) {
     return contributions.length;
