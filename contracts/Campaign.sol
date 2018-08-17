@@ -455,4 +455,8 @@ contract Campaign is Approvable, ReentrancyGuard {
     
   }
 
+  function getCampaignState() public view returns(uint) {
+    return uint(campaignState);
+  }
+
 }

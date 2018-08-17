@@ -27,6 +27,8 @@
 // TASK: Change ETHFUNDME to CampaignFactory
 // TASK: Make sure tests work on -b 3
 // TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
+// TASK: Use OpenZeppelin Safemath
+// TASK: Approvable in its own file?
 
 // Frontend
 // DONE: Set up React Project and React Crash Course
@@ -79,7 +81,8 @@ contract EthFundMe is Administrated, EmergencyStoppable {
   function createCampaign(string title, uint goal, uint duration, string description, string image) public 
     stoppedInEmergency
     notAdmin
-    returns(address) {
+    returns(address)
+  {
     Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, description, image, msg.sender, address(this));
     campaigns.push(address(newCampaign));
     emit CampaignCreated(address(newCampaign));

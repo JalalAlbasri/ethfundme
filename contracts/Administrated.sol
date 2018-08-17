@@ -7,7 +7,7 @@ contract Administrated is RBAC {
    * A constant role name for indicating admins.
    */
   string public constant ROLE_ADMIN = "admin";
-  uint public numAdmins = 1;
+  uint public numAdmins;
 
   /**
    * @dev modifier to scope access to admins
@@ -29,6 +29,7 @@ contract Administrated is RBAC {
     public
   {
     addRole(msg.sender, ROLE_ADMIN);
+    numAdmins = 1;
   }
 
   /**

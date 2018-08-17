@@ -113,4 +113,13 @@ contract('Campaign Creation', (accounts) => {
       done()
     })
   })
+
+  it('should attempt to create a campaign from an admin account and fail', (done) => {
+    EthFundMeInstance.createCampaign('admin campaign', 10, 1, 'description', 'image').catch((e) => {
+      EthFundMeInstance.getNumCampaigns.call().then((numCampaigns) => {
+        assert.equal(numCampaigns, 1, 'there should be just one campaign')
+        done()
+      })
+    })
+  })
 })
