@@ -40,7 +40,8 @@
     }],
     "no-shadow": ["error", {
       "allow": ["done", "data", "err", "resolve", "reject"]
-    }]
+    }],
+    "linebreak-style":"off"
   },
   "globals": {
     "contract" : true,

@@ -4,8 +4,7 @@ import "./EthFundMe.sol";
 import "./EmergencyStoppable.sol";
 import "../node_modules/zeppelin-solidity/contracts/ReentrancyGuard.sol";
 
-contract Campaign is ReentrancyGuard, EmergencyStoppable {
-
+contract Approvable is EmergencyStoppable {
   /**
     Implement EmergencyStoppable Interface
    */
@@ -13,13 +12,23 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     internal 
     returns(bool)
   {
-    return efm.isAdmin(msg.sender);
+    return administrated.isAdmin(msg.sender);
   }
+
+  /**
+    Events
+  */
+  event voteCommited (
+    address indexed voteCommiter
+  );
+
+  event voteRevealed (
+    address indexed voteRevealer
+  );
 
   /**
     DATA STRUCTURES
    */
-
   enum ApprovalStates {
     Commit,
     Reveal,
@@ -27,6 +36,125 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     Rejected,
     Cancelled
   }
+
+  /**
+    STATE VARIABLES
+   */
+
+  Administrated public administrated;
+
+  ApprovalStates public approvalState = ApprovalStates.Commit;
+  
+  uint public numApprovals;
+  uint public numRejections;
+
+  uint public numVoteSecrets;
+  uint public numVoteReveals;
+
+  mapping(address => bytes32) public voteSecrets;
+  mapping(address => bool) public hasVoted;
+  mapping(address => bool) public hasRevealed;
+
+  /**
+    CONSTRUCTOR
+   */
+   constructor (address administeredAddress) public
+   {
+     administrated = Administrated(administeredAddress);
+   }
+
+  /**
+    MODIFIERS
+   */
+
+  // ACCESS RESTRICTION
+  modifier onlyAdmin() {
+    require(administrated.isAdmin(msg.sender));
+    _;
+  }
+
+  modifier onlyVotedAdmin() {
+    require(hasVoted[msg.sender] == true);
+    _;
+  }
+
+  modifier onlyNotRevealedAdmin() {
+    require(hasRevealed[msg.sender] == false);
+    _;
+  }
+
+  // STATE MANAGEMENT
+  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
+    require(approvalState == _approvalState);
+    _;
+  }
+
+  modifier endCommit() {
+    _;
+    if (numVoteSecrets == administrated.numAdmins()) {
+      approvalState = ApprovalStates.Reveal;
+    }
+  }
+
+  // Doesn't require all votes to be revealed only enough.
+  modifier endReveal() {
+    _;
+    // number of reveals required to pass the vote
+    uint numAdmins = administrated.numAdmins();
+    uint required = numAdmins / 2 + numAdmins % 2;
+
+    if (numApprovals >= required) {
+      approvalState = ApprovalStates.Approved;
+      onApproval();
+    } 
+    if (numRejections >= required) {
+      approvalState = ApprovalStates.Rejected;
+      onRejection();
+    }
+  }
+
+  /**
+    INTERFACE
+   */
+
+  // ABSTRACT FUNCTIONS
+  function onApproval() internal;
+  function onRejection() internal;
+
+  // INTERFACE
+ function vote(bytes32 secretVote) public 
+    stoppedInEmergency
+    onlyAdmin
+    onlyDuringApprovalState(ApprovalStates.Commit) 
+    endCommit {
+      voteSecrets[msg.sender] = secretVote;
+      if (hasVoted[msg.sender] == false) {
+        numVoteSecrets++;
+        hasVoted[msg.sender] = true;
+    }
+  }
+
+  function reveal(bool voteOption, uint salt) public 
+    stoppedInEmergency
+    onlyVotedAdmin 
+    onlyNotRevealedAdmin
+    onlyDuringApprovalState(ApprovalStates.Reveal) 
+    endReveal {
+      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
+
+      if (voteOption) {
+        numApprovals++;
+      } else {
+        numRejections++;
+      }
+
+      numVoteReveals++;
+      hasRevealed[msg.sender] = true;
+  }
+
+}
+
+contract Campaign is Approvable, ReentrancyGuard {
   
   enum CampaignStates {
     Pending,
@@ -42,16 +170,12 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     uint timestamp;
   }
 
-
-  ApprovalStates public approvalState = ApprovalStates.Commit;
-  CampaignStates public campaignState = CampaignStates.Pending;
-
-
   /**
     STATE VARIABLES
    */
 
-  EthFundMe public efm;
+  CampaignStates public campaignState = CampaignStates.Pending;
+
 
   uint public funds = address(this).balance;
   uint public endDate;
@@ -69,16 +193,6 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
   mapping (address => bool) public hasContributed;
   mapping (address => bool) public hasWithdrawn;
 
-  uint public numApprovals;
-  uint public numRejections;
-
-  uint public numVoteSecrets;
-  uint public numVoteReveals;
-
-  mapping(address => bytes32) public voteSecrets;
-  mapping(address => bool) public hasVoted;
-  mapping(address => bool) public hasRevealed;
-
   /**
     CONSTRUCTOR
    */
@@ -92,7 +206,7 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     string _image,
     address _manager,
     address efmAddress
-  ) public {
+  ) Approvable(efmAddress) public {
     id = _id;
     title = _title;
     goal = _goal;
@@ -100,7 +214,6 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     description = _description;
     image = _image;
     manager = _manager;
-    efm = EthFundMe(efmAddress);
   }
 
   /**
@@ -108,34 +221,19 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
    */
 
   // ACCESS RESTRICTION
-  modifier onlyAdmin() {
-    require(efm.isAdmin(msg.sender));
-    _;
-  }
-
-  modifier onlyVotedAdmin() {
-    require(hasVoted[msg.sender] == true);
-    _;
-  }
-
-  modifier onlyNotRevealedAdmin() {
-    require(hasRevealed[msg.sender] == false);
-    _;
-  }
-
-    modifier onlyNotManager() {
-    require(msg.sender != manager);
-    _;
-  }
-
   modifier onlyManager() {
     require(msg.sender == manager);
     _;
   }
 
+  modifier onlyNotManager() {
+    require(msg.sender != manager);
+    _;
+  }
+
   modifier onlyManagerOrAdmin() {
     // FIXME: Is this modifier still used/required? 
-    require(msg.sender == manager || efm.isAdmin(msg.sender));
+    require(msg.sender == manager || administrated.isAdmin(msg.sender));
     _;
   }
 
@@ -181,30 +279,7 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     _;
   }
 
-  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
-    require(approvalState == _approvalState);
-    _;
-  }
 
-  modifier endCommit() {
-    _;
-    if (numVoteSecrets == 3) {
-      approvalState = ApprovalStates.Reveal;
-    }
-  }
-
-  // Doesn't require all votes to be revealed only enough.
-  modifier endReveal() {
-    _;
-    if (numApprovals >= 2) {
-      approvalState = ApprovalStates.Approved;
-      onApproval();
-    } 
-    if (numRejections >= 2) {
-      approvalState = ApprovalStates.Rejected;
-      onRejection();
-    }
-  }
 
   // INPUT VALIDATION
 
@@ -219,18 +294,18 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
 
   // PRIVATE FUNCTIONS
 
-  function onApproval() 
-    private 
+  function onApproval() internal 
   {
-    endDate = now + duration;
+    endDate = block.timestamp + duration;
     campaignState = CampaignStates.Active;
   }
 
-  function onRejection() private {
+  function onRejection() internal
+  {
     campaignState = CampaignStates.Unsuccessful;
   }
 
-  function managerWithdrawl() private 
+  function managerWithdrawl() internal 
     onlyManager
   {
       hasWithdrawn[msg.sender] = true;
@@ -250,58 +325,30 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     INTERFACE
    */
 
-  function vote(bytes32 secretVote) public 
-    stoppedInEmergency
-    onlyAdmin
-    onlyDuringApprovalState(ApprovalStates.Commit) 
-    endCommit {
-      voteSecrets[msg.sender] = secretVote;
-      if (hasVoted[msg.sender] == false) {
-        numVoteSecrets++;
-        hasVoted[msg.sender] = true;
-    }
-  }
 
-  function reveal(bool voteOption, uint salt) public 
-    stoppedInEmergency
-    onlyVotedAdmin 
-    onlyNotRevealedAdmin
-    onlyDuringApprovalState(ApprovalStates.Reveal) 
-    endReveal {
-      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
-
-      if (voteOption) {
-        numApprovals++;
-      } else {
-        numRejections++;
-      }
-
-      numVoteReveals++;
-      hasRevealed[msg.sender] = true;
-  }
 
   function contribute() public payable 
     stoppedInEmergency
     onlyNotManager 
     transitionState
     onlyDuringCampaignState(CampaignStates.Active)
-    validateContribution {
-      hasContributed[msg.sender] = true;
-      contributions.push(Contribution(msg.sender, msg.value, now));
-      totalContributed[msg.sender] += msg.value;
-      funds += msg.value;
-    }
+    validateContribution 
+  {
+    hasContributed[msg.sender] = true;
+    contributions.push(Contribution(msg.sender, msg.value, now));
+    totalContributed[msg.sender] += msg.value;
+    funds += msg.value;
+  }
   
-  // TODO: Might restrict this to only Managers
   function cancelCampaign() public
     stoppedInEmergency
     onlyManager
     transitionState
     onlyBeforeCampaignEnd
-    {
-      approvalState = ApprovalStates.Cancelled;
-      campaignState = CampaignStates.Cancelled;
-    }
+  {
+    approvalState = ApprovalStates.Cancelled;
+    campaignState = CampaignStates.Cancelled;
+  }
 
   // FIXME: Consider removing this function. It's essentially unnecessary since withdraw will end the campaign
   // but it exists as a formal way of ending the campaign.
@@ -310,8 +357,8 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     onlyManagerOrAdmin
     transitionState
     onlyAfterCampaignEnd
-    {
-    }
+  {
+  }
 
   // Wrapper to private function doing the actual work as described in ReentrancyGuard.sol
   function withdraw() external
@@ -319,23 +366,24 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     nonReentrant // TODO: How do we test, need a reentrancy contract to call this function.
     onlyHasNotWithdrawn
     transitionState 
-    onlyAfterCampaignEnd {
-      if (campaignState == CampaignStates.Successful) {
-        managerWithdrawl();
-      }
+    onlyAfterCampaignEnd 
+  {
+    if (campaignState == CampaignStates.Successful) {
+      managerWithdrawl();
+    }
 
-      if(campaignState == CampaignStates.Unsuccessful || campaignState == CampaignStates.Cancelled) {
-        contributorWithdrawl();
-      }
+    if(campaignState == CampaignStates.Unsuccessful || campaignState == CampaignStates.Cancelled) {
+      contributorWithdrawl();
+    }
   }
 
   function emergencyWithdraw() external
     onlyInEmergency
     nonReentrant
     onlyHasNotWithdrawn
-    {
-      contributorWithdrawl();
-    }
+  {
+    contributorWithdrawl();
+  }
 
   // GETTERS
 
@@ -343,7 +391,15 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     return contributions.length;
   }
 
-  // HELPERS
+    function getTotalContributedFunds() public view returns(uint) {
+    uint result = 0;
+    for (uint i = 0; i < contributions.length; i++) {
+      result += contributions[i].amount;
+    }
+    return result;
+  }
+
+  // UI HELPERS
 
   function isActive() public view returns(bool) {
     return (block.timestamp < endDate);
@@ -358,14 +414,6 @@ contract Campaign is ReentrancyGuard, EmergencyStoppable {
     transitionState 
   {
     
-  }
-
-  function getTotalContributedFunds() public view returns(uint) {
-    uint result = 0;
-    for (uint i = 0; i < contributions.length; i++) {
-      result += contributions[i].amount;
-    }
-    return result;
   }
 
 }

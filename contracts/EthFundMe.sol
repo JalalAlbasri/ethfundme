@@ -6,29 +6,32 @@
 
 // Contract Developement 2
 // DONE: Implement Circuit Breaker Pattern!
-// TASK: Use a Library
-  // -- Change tests to use new admin style (they must add admins)
-  // -- setup script must add admins
-  // -- reveal logic must check num admins and take majority
-  // -- UI for stopping efm
-  // -- UI for adding admins
-  // -- Make Administerable/Administrated a super class of efm and campaign and put rbac stuff in it
+// DONE: Use a Library
+  // DONE: -- Change tests to use new admin style (they must add admins)
+  // DONE:L -- setup script must add admins
+  // -- DONE: reveal logic must check num admins and take majority
+  // -- TASK: UI for stopping efm
+  // -- TASK: UI for adding admins
+  // -- DONE: Make Administerable/Administrated a super class of efm and campaign and put rbac stuff in it
+// DONE: Split Contract Files (Campaign/Approvable)
+// TASK: Events
+// TASK: Error messages for require statements
+// TASK: Write Solidity Tests
 // TASK: Comment Contracts and Tests
 // TASK: Review All variable/function etc Names
 // TASK: Review All variable/function etc accessibility
-// TASK: Split Contract Files
-// TASK: Write Solidity Tests
 // TASK: Review uints and restrict size if possible (at least make them uint256)
 // DONE: Use a library/Package to advance time in tests
 // TASK: Review Security Best Practices - writeup
 // TASK: Review Design Patterns - writeup
-// TASK: Error messages for require statements
-// TASK: Campaign Factory Contract
+// TASK: Change ETHFUNDME to CampaignFactory
+// TASK: Make sure tests work on -b 3
+// TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
 
 // Frontend
 // DONE: Set up React Project and React Crash Course
 // DONE: Frontend
-// TASK: Events + Listening for them
+// TASK: Listening for them Events
   // -- Check events in tests too
 
 // Submitable
