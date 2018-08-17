@@ -68,23 +68,23 @@ contract Approvable is EmergencyStoppable {
 
   // ACCESS RESTRICTION
   modifier onlyAdmin() {
-    require(administrated.isAdmin(msg.sender));
+    require(administrated.isAdmin(msg.sender), "only admin authorized");
     _;
   }
 
   modifier onlyVotedAdmin() {
-    require(hasVoted[msg.sender] == true);
+    require(hasVoted[msg.sender] == true, "Admin has not voted");
     _;
   }
 
   modifier onlyNotRevealedAdmin() {
-    require(hasRevealed[msg.sender] == false);
+    require(hasRevealed[msg.sender] == false, "Admin has already revealed");
     _;
   }
 
   // STATE MANAGEMENT
   modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
-    require(approvalState == _approvalState);
+    require(approvalState == _approvalState, "Invalid approval state");
     _;
   }
 
@@ -92,7 +92,7 @@ contract Approvable is EmergencyStoppable {
     _;
     if (numVoteSecrets == administrated.numAdmins()) {
       approvalState = ApprovalStates.Reveal;
-      allVotesComitted();
+      emit allVotesComitted();
     }
   }
 
@@ -143,7 +143,7 @@ contract Approvable is EmergencyStoppable {
     onlyNotRevealedAdmin
     onlyDuringApprovalState(ApprovalStates.Reveal) 
     endReveal {
-      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender]);
+      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender], "Vote secrets do not match");
 
       if (voteOption) {
         numApprovals++;
@@ -255,7 +255,7 @@ contract Campaign is Approvable, ReentrancyGuard {
 
   // ACCESS RESTRICTION
   modifier onlyManager() {
-    require(msg.sender == manager);
+    require(msg.sender == manager, "Only campaign manager authorized");
     _;
   }
 
@@ -266,34 +266,34 @@ contract Campaign is Approvable, ReentrancyGuard {
 
   modifier onlyManagerOrAdmin() {
     // FIXME: Is this modifier still used/required? 
-    require(msg.sender == manager || administrated.isAdmin(msg.sender));
+    require(msg.sender == manager || administrated.isAdmin(msg.sender), "Only campaign manager or admin authorized");
     _;
   }
 
   modifier onlyHasNotWithdrawn() {
-    require(hasWithdrawn[msg.sender] == false);
+    require(hasWithdrawn[msg.sender] == false, "User has already withdrawn");
     _;
   }
 
   modifier onlyHasContributed() {
-    require(hasContributed[msg.sender] == true);
+    require(hasContributed[msg.sender] == true, "User has not contributed");
     _;
   }
 
   // STATE MANAGEMENT
 
   modifier onlyDuringCampaignState(CampaignStates _campaignState) {
-    require(campaignState == _campaignState);
+    require(campaignState == _campaignState, "Incorrect campaignState for function");
     _;
   }
 
   modifier onlyBeforeCampaignEnd() {
-    require(campaignState <= CampaignStates.Active);
+    require(campaignState <= CampaignStates.Active, "Campaign must be active");
     _;
   }
 
   modifier onlyAfterCampaignEnd() {
-    require(campaignState > CampaignStates.Active);
+    require(campaignState > CampaignStates.Active, "Campaign must have ended");
     _;
   }
 
@@ -318,10 +318,10 @@ contract Campaign is Approvable, ReentrancyGuard {
 
   modifier validateContribution() {
     //No Zero Contributions
-    require(msg.value > 0); 
+    require(msg.value > 0, "No zero contributions"); 
      //Integer Overflow Protection
-    require(funds + msg.value > funds);
-    require(totalContributed[msg.sender] + msg.value > totalContributed[msg.sender]);
+    require(funds + msg.value > funds, "Integer overflow check failed");
+    require(totalContributed[msg.sender] + msg.value > totalContributed[msg.sender], "Integer overflow check failed");
     _;
   }
 

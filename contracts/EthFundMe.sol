@@ -14,8 +14,8 @@
   // -- TASK: UI for adding admins
   // -- DONE: Make Administerable/Administrated a super class of efm and campaign and put rbac stuff in it
 // DONE: Split Contract Files (Campaign/Approvable)
-// TASK: Events
-// TASK: Error messages for require statements
+// DONE: Events
+// DONE: Error messages for require statements
 // TASK: Write Solidity Tests
 // TASK: Comment Contracts and Tests
 // TASK: Review All variable/function etc Names

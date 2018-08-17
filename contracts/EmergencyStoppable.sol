@@ -4,17 +4,17 @@ contract EmergencyStoppable {
   bool public isStopped = false;
 
   modifier onlyAuthorized() {
-    require(isAuthorized());
+    require(isAuthorized(), "only authorized to stop allowed");
     _;
   }
 
   modifier stoppedInEmergency {
-      require(!isStopped);
+      require(!isStopped, "Contract must not be stopped");
       _;
   }
 
   modifier onlyInEmergency {
-      require(isStopped);
+      require(isStopped, "Contract must be stopped");
       _;
   }
 
