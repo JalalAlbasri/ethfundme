@@ -18,13 +18,12 @@ contract Approvable is EmergencyStoppable {
   /**
     Events
   */
-  event voteCommited (
-    address indexed voteCommiter
-  );
+  event voteCommitted (address indexed voteCommiter);
+  event voteRevealed (address indexed voteRevealer);
+  event allVotesComitted();
+  event votePassed (bool isApproved);
 
-  event voteRevealed (
-    address indexed voteRevealer
-  );
+
 
   /**
     DATA STRUCTURES
@@ -93,6 +92,7 @@ contract Approvable is EmergencyStoppable {
     _;
     if (numVoteSecrets == administrated.numAdmins()) {
       approvalState = ApprovalStates.Reveal;
+      allVotesComitted();
     }
   }
 
@@ -106,10 +106,12 @@ contract Approvable is EmergencyStoppable {
     if (numApprovals >= required) {
       approvalState = ApprovalStates.Approved;
       onApproval();
-    } 
+      emit votePassed(true);
+    }
     if (numRejections >= required) {
       approvalState = ApprovalStates.Rejected;
       onRejection();
+      emit votePassed(false);
     }
   }
 
@@ -131,6 +133,7 @@ contract Approvable is EmergencyStoppable {
       if (hasVoted[msg.sender] == false) {
         numVoteSecrets++;
         hasVoted[msg.sender] = true;
+        emit voteCommitted(msg.sender);
     }
   }
 
@@ -150,12 +153,42 @@ contract Approvable is EmergencyStoppable {
 
       numVoteReveals++;
       hasRevealed[msg.sender] = true;
+      emit voteRevealed(msg.sender);
   }
 
 }
 
 contract Campaign is Approvable, ReentrancyGuard {
   
+  /**
+    EVENTS
+   */
+  event campaignStarted (
+    uint startDate
+  );
+  
+  event campaignEnded (
+    uint endDate
+  );
+
+  event campaignCancelled (
+    uint cancelledDate
+  );
+
+  event contributionMade (
+    address contributor,
+    uint amount
+  );
+
+  event withdrawlMade (
+    address beneficiary,
+    uint amount 
+  );
+
+  /**
+    DATA STRUCTURES
+   */
+
   enum CampaignStates {
     Pending,
     Active,
@@ -298,6 +331,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   {
     endDate = block.timestamp + duration;
     campaignState = CampaignStates.Active;
+    emit campaignStarted(block.timestamp);
   }
 
   function onRejection() internal
@@ -310,6 +344,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   {
       hasWithdrawn[msg.sender] = true;
       funds = 0;
+      emit withdrawlMade(msg.sender, address(this).balance);
       msg.sender.transfer(address(this).balance);
   }
 
@@ -318,6 +353,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   {
     hasWithdrawn[msg.sender] = true;
     funds -= totalContributed[msg.sender];
+    emit withdrawlMade(msg.sender, totalContributed[msg.sender]);
     msg.sender.transfer(totalContributed[msg.sender]);
   }
 
@@ -338,6 +374,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     contributions.push(Contribution(msg.sender, msg.value, now));
     totalContributed[msg.sender] += msg.value;
     funds += msg.value;
+    emit contributionMade(msg.sender, msg.value);
   }
   
   function cancelCampaign() public
@@ -348,6 +385,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   {
     approvalState = ApprovalStates.Cancelled;
     campaignState = CampaignStates.Cancelled;
+    emit campaignCancelled(block.timestamp);
   }
 
   // FIXME: Consider removing this function. It's essentially unnecessary since withdraw will end the campaign
@@ -358,6 +396,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     transitionState
     onlyAfterCampaignEnd
   {
+    emit campaignEnded(block.timestamp);
   }
 
   // Wrapper to private function doing the actual work as described in ReentrancyGuard.sol
