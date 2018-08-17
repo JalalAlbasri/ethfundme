@@ -42,5 +42,4 @@ contract TestEthFundMe {
     Assert.equal(campaign.getCampaignState(), 4, "Campaign State should be 4 (Cancelled)");
   }
 
-
 }

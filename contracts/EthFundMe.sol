@@ -16,24 +16,25 @@
 // DONE: Split Contract Files (Campaign/Approvable)
 // DONE: Events
 // DONE: Error messages for require statements
-// TASK: Write Solidity Tests
+// DONE: Write Solidity Tests
+// TASK: Make sure tests work on -b 3
 // TASK: Comment Contracts and Tests
 // TASK: Review All variable/function etc Names
 // TASK: Review All variable/function etc accessibility
 // TASK: Review uints and restrict size if possible (at least make them uint256)
 // DONE: Use a library/Package to advance time in tests
-// TASK: Review Security Best Practices - writeup
-// TASK: Review Design Patterns - writeup
 // TASK: Change ETHFUNDME to CampaignFactory
-// TASK: Make sure tests work on -b 3
 // TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
 // TASK: Use OpenZeppelin Safemath
 // TASK: Approvable in its own file?
 
+// TASK: Review Security Best Practices - writeup
+// TASK: Review Design Patterns - writeup
+
 // Frontend
 // DONE: Set up React Project and React Crash Course
 // DONE: Frontend
-// TASK: Listening for them Events
+// TASK: Listening for Events
   // -- Check events in tests too
 
 // Submitable
