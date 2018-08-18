@@ -98,12 +98,6 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
     })
   })
 
-  it('should attempt to make a contribution from manager account and fail', function (done) {
-    assertRevert(CampaignInstance.contribute({ from: accounts[3], value: 1 })).then(() => {
-      done()
-    })
-  })
-
   it('should attempt to make a contribution to stopped campaign and fail', function (done) {
     assertRevert(CampaignInstance.contribute({ from: accounts[7], value: 1 })).then(() => {
       done()
