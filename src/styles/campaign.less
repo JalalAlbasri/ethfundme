@@ -1,0 +1,65 @@
+.Campaign {
+  font-size: 16px;
+  img {
+    // width: 200px;
+    // height: 200px;
+  }
+
+  .card {
+    .card-header-icon {
+      margin: 0 5px;
+    }
+
+    .status-icon {
+      margin: 0 5px;
+    }
+
+    &.Pending {
+      border-color: @md-amber-500;
+      .card-header {
+        background-color: @md-amber-100 !important;
+        color: @md-amber-700;
+      }
+    }
+
+    &.Active {
+      border-color: @md-blue-500;
+      .card-header {
+        background-color: @md-blue-100 !important;
+        color: @md-blue-700;
+      }
+    }
+
+    &.Successful {
+      border-color: @md-green-500;
+      .card-header {
+        background-color: @md-green-100 !important;
+        color: @md-green-700;
+      }
+    }
+
+    &.Unsuccessful {
+      border-color: @md-red-500;
+      .card-header {
+        background-color: @md-red-100 !important;
+        color: @md-red-700;
+      }
+    }
+
+    &.Cancelled {
+      border-color: @md-grey-500;
+      .card-header {
+        background-color: @md-grey-100 !important;
+        color: @md-grey-700;
+      }
+    }
+
+    .progress {
+      height: 30px;
+    }
+
+    .details {
+      text-align: right;
+    }
+  }
+}

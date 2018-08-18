@@ -1,0 +1,51 @@
+.Account {
+  // position: fixed;
+  // top: 12px;
+  // right: 12px;
+  // z-index: 100000;
+
+  // @media(min-width: 601px) {
+    // }
+    
+  .badge {
+    text-align: center;
+    line-height: 18px;
+    color: #fff;
+    width: 166px;
+    min-width: 166px;
+  }
+  
+  .account-badge {
+    display: table-cell;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    background-color: @md-blue-100;
+    color: @md-blue-800;
+    &.admin {
+      background-color: @md-red-100;
+      color: @md-red-800;
+    }
+  }
+  
+  .address-badge {
+    word-wrap: break-word;
+    white-space: normal;
+    background-color: @md-grey-600; 
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  
+  img {
+    width: 24px;
+    height: 24px;
+    padding: 0 4px;
+  }
+    
+}
+  
+.sidebar-right {
+  .Account {
+  text-align: right;
+  text-align: -webkit-right;
+  }
+}

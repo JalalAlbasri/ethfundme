@@ -1,55 +1,59 @@
-let EthFundMe = artifacts.require('EthFundMe')
+const EthFundMe = artifacts.require('EthFundMe')
+const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 
-contract('Initialization', accounts => {
+contract('#1 Initialization', (accounts) => {
   let EthFundMeInstance
 
-  before('set up contract instances', done => {
-    EthFundMe.deployed().then(instance => {
+  before('set up contract instances', (done) => {
+    EthFundMe.deployed().then((instance) => {
       EthFundMeInstance = instance
       done()
     })
   })
 
-  it('should initialize with 3 admins', done => {
-    EthFundMeInstance.getNumAdmins.call().then(numAdmins => {
-      assert.equal(numAdmins, 3, 'there should be 3 admins')
+  it('accounts 0 should be an admin', (done) => {
+    EthFundMeInstance.isAdmin.call(accounts[0]).then((isAdmin) => {
+      assert.equal(isAdmin, true, 'isAdmin should be true')
       done()
     })
   })
 
-  it('should initialize first admin', done => {
-    EthFundMeInstance.admins.call(0).then(admin => {
-      assert.equal(admin, accounts[0], 'the first admin should be accounts[0]')
+  it('should try to add an admin from non admin account and fail', (done) => {
+    assertRevert(EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[1] })).then(() => {
       done()
     })
   })
 
-  it('should initialize second admin', done => {
-    EthFundMeInstance.admins.call(1).then(admin => {
-      assert.equal(admin, accounts[1], 'the second admin should be accounts[1]')
+  it('should not have made accounts 1 an admin', (done) => {
+    EthFundMeInstance.isAdmin.call(accounts[1], { from: accounts[1] }).then((isAdmin) => {
+      assert.equal(isAdmin, false, 'accounts 1 should not be an admin')
       done()
     })
   })
 
-  it('should initialize third admin', done => {
-    EthFundMeInstance.admins.call(2).then(admin => {
-      assert.equal(admin, accounts[2], 'the third admin should be accounts[2]')
+  it('should add an admin from an admin account', (done) => {
+    EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] }).then(() => {
       done()
     })
   })
 
-  it('should detect valid admin', done => {
-    EthFundMeInstance.isAdmin.call(accounts[0]).then(isAdmin => {
-      assert.equal(isAdmin, true, 'accounts[0] is an admin')
+  it('should have made accounts[1] an admin', (done) => {
+    EthFundMeInstance.isAdmin(accounts[1], { from: accounts[1] }).then((isAdmin) => {
+      assert.equal(isAdmin, true, 'accounts 1 should be an admin')
       done()
     })
   })
 
-  it('should detect invalid admin', done => {
-    EthFundMeInstance.isAdmin.call(accounts[3]).then(isAdmin => {
-      assert.equal(isAdmin, false, 'accounts[3] is not an admin')
+  it('should add a third admin from the second admin account', (done) => {
+    EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[1] }).then(() => {
+      done()
+    })
+  })
+
+  it('should have made accounts[2] an admin', (done) => {
+    EthFundMeInstance.isAdmin(accounts[2], { from: accounts[2] }).then((isAdmin) => {
+      assert.equal(isAdmin, true, 'accounts 2 should be an admin')
       done()
     })
   })
 })
-

@@ -1,8 +1,3 @@
-pragma solidity ^0.4.24;
-
-// import "./Approvable.sol";
-import "./Campaign.sol";
-
 // Contract Development 1
 // DONE: Timing campaigns
 // DONE: Ending Campaign and Payouts
@@ -10,21 +5,44 @@ import "./Campaign.sol";
 // DONE: Rewrite state transition according to solidy state machine pattern
 
 // Contract Developement 2
-// TASK: Comment Contracts and Tests
+// DONE: Implement Circuit Breaker Pattern!
+// DONE: Use a Library
+  // DONE: -- Change tests to use new admin style (they must add admins)
+  // DONE:L -- setup script must add admins
+  // -- DONE: reveal logic must check num admins and take majority
+  // -- TASK: UI for stopping efm + tests (stop camapaign creation then resume)
+  // -- TASK: UI for adding admins
+  // -- DONE: Make Administerable/Administrated a super class of efm and campaign and put rbac stuff in it
+// DONE: Split Contract Files (Campaign/Approvable)
+// DONE: Events
+// DONE: Error messages for require statements
+// DONE: Write Solidity Tests
+// TASK: Comment Contracts
 // TASK: Review All variable/function etc Names
 // TASK: Review All variable/function etc accessibility
-// TASK: Split Contract Files
-// TASK: Write Solidity Tests
-// TASK: Review uints and restrict size if possible
-// TASK: Use a library/Package to advance time in tests
-// TASK: Review Security Best Practices
-// TASK: Review Design Patterns
-// TASK: Error messages for require statements
+// TASK: Review uints and restrict size if possible (at least make them uint256)
+// DONE: Use a library/Package to advance time in tests
+// TASK: Change ETHFUNDME to CampaignFactory
+// TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
+// TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
+// TASK: Approvable in its own file?
 
+// TESTS:
+// DONE: Make sure tests work on -b 3
+// DONE: use increaseTime from openzeppelin! Test 
+// DONE: Put All Transactions into their own it statement
+// TASK: Comment Tests
+// DONE: Homogenize import statements
+// DONE: Number in test name
+
+// TASK: Review Security Best Practices - writeup
+// TASK: Review Design Patterns - writeup
+// TASK: use increaseTime from openzeppelin! Setup
 // Frontend
-// TASK: Set up React Project and React Crash Course
-// TASK: Frontend
-// TASK: Events + Listening for them
+// DONE: Set up React Project and React Crash Course
+// DONE: Frontend
+// TASK: Listening for Events
+  // -- Check events in tests too
 
 // Submitable
 // TASK: Packaging and Other Documentation
@@ -32,44 +50,32 @@ import "./Campaign.sol";
 // TASK: Review Grading Rubric
 // TASK: Release on testnet
 
-// EXTRAS
-// TASK: Adding Admin
-// TASK: Approval Quorum Support Adding Admin
-// TASK: Timing Approvals
+pragma solidity ^0.4.24;
 
-// STRETCH GOALS
-// TASK: Upgradable Contract
-// TASK: Check out the SafeMath library
-// TASK: Full PLCR Approval
-// TASK: Other Stretch Goals
-// TASK: ERC20 Token Acceptance
-// TASK: Multisig Contract Management for Admins
+import "./Administrated.sol";
+import "./EmergencyStoppable.sol";
+import "./Campaign.sol";
 
-contract EthFundMe {
+contract EthFundMe is Administrated, EmergencyStoppable {
 
   /**
-    ADMINS
+    Implement EmergencyStoppable Interface
    */
-  address[] public admins;
-  mapping (address=> bool) public isAdmin;
+  function isAuthorized() internal 
+    returns(bool)
+  {
+    return isAdmin(msg.sender);
+  }
+  
+  constructor() public {
+  }
 
-  // TODO: Adding an
   /**
-    Allows initialization of the contract with up to 3 admins
+    EVENTS
    */
-  constructor(address[] _admins) public {
-    //FIXME: Can I put a require statement in a contructor? What happens if it fails?
-    require(_admins.length <= 3);
-    
-    admins = _admins;
-    for (uint i = 0; i < admins.length; i++) {
-      isAdmin[admins[i]] = true;
-    }
-  }
-
-  function getNumAdmins() public view returns (uint) {
-    return admins.length;
-  }
+  event CampaignCreated (
+    address indexed campaignAddress
+  );
 
   /**
     CAMPAIGNS
@@ -79,13 +85,17 @@ contract EthFundMe {
   function getNumCampaigns() public view returns (uint) {
     return campaigns.length;
   }
-
-  function createCampaign(string title, uint goal, uint duration) public returns(address) {
-    Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, msg.sender, address(this));
+  
+  function createCampaign(string title, uint goal, uint duration, string description, string image) public 
+    stoppedInEmergency
+    notAdmin
+    returns(address)
+  {
+    Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, description, image, msg.sender, address(this));
     campaigns.push(address(newCampaign));
+    emit CampaignCreated(address(newCampaign));
     return address(newCampaign);
   }
-
 
 }
 

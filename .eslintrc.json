@@ -1,5 +1,8 @@
 {
-  "extends": "airbnb-base/legacy",
+  "extends": [
+    "airbnb-base/legacy",
+    "plugin:react/recommended"
+  ],
   "env": {
     "browser": true,
     "commonjs": true,
@@ -16,6 +19,10 @@
     }
   },
   "rules": {
+    "react/prop-types": "ignore",
+    "arrow-parens": "error",
+    "class-methods-use-this": "off",
+    "object-curly-spacing": "warn",
     "no-const-assign": "warn",
     "no-this-before-super": "warn",
     "no-undef": "warn",
@@ -33,7 +40,8 @@
     }],
     "no-shadow": ["error", {
       "allow": ["done", "data", "err", "resolve", "reject"]
-    }]
+    }],
+    "linebreak-style":"off"
   },
   "globals": {
     "contract" : true,
