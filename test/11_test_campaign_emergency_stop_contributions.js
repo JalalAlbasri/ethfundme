@@ -82,7 +82,7 @@ contract('Campaign Emergency Stop Contributions', (accounts) => {
   })
 
   it('should stop the campaign', (done) => {
-    CampaignInstance.stopContract({ from: accounts[1] })
+    CampaignInstance.stopContract({ from: accounts[0] })
       .then(() => {
         return CampaignInstance.isStopped.call()
       })
@@ -147,10 +147,14 @@ contract('Campaign Emergency Stop Contributions', (accounts) => {
 
   it('should accept new contributions once resumed', (done) => {
     CampaignInstance.contribute({ from: accounts[7], value: 1 }).then(() => {
-      return CampaignInstance.hasContributed.call(accounts[7]).then((hasContributed) => {
-        assert.equal(hasContributed, true, 'accounts[4] should have contributed')
-        done()
-      })
+      done()
+    })
+  })
+
+  it('should have created a contribution', (done) => {
+    CampaignInstance.hasContributed.call(accounts[7]).then((hasContributed) => {
+      assert.equal(hasContributed, true, 'accounts[4] should have contributed')
+      done()
     })
   })
 })

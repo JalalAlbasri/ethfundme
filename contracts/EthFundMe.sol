@@ -10,7 +10,7 @@
   // DONE: -- Change tests to use new admin style (they must add admins)
   // DONE:L -- setup script must add admins
   // -- DONE: reveal logic must check num admins and take majority
-  // -- TASK: UI for stopping efm
+  // -- TASK: UI for stopping efm + tests (stop camapaign creation then resume)
   // -- TASK: UI for adding admins
   // -- DONE: Make Administerable/Administrated a super class of efm and campaign and put rbac stuff in it
 // DONE: Split Contract Files (Campaign/Approvable)
@@ -25,7 +25,7 @@
 // DONE: Use a library/Package to advance time in tests
 // TASK: Change ETHFUNDME to CampaignFactory
 // TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
-// TASK: Use OpenZeppelin Safemath
+// TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
 // TASK: Approvable in its own file?
 
 // TASK: Review Security Best Practices - writeup

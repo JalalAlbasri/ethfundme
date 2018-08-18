@@ -50,7 +50,7 @@ contract('EthFundMe Emregency Stop', (accounts) => {
   })
 
   it('should stop the EthFundMe contract', (done) => {
-    EthFundMeInstance.stopContract({ from: accounts[1] })
+    EthFundMeInstance.stopContract({ from: accounts[0] })
       .then(() => {
         return EthFundMeInstance.isStopped.call()
       })
