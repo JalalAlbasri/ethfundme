@@ -17,8 +17,7 @@
 // DONE: Events
 // DONE: Error messages for require statements
 // DONE: Write Solidity Tests
-// TASK: Make sure tests work on -b 3
-// TASK: Comment Contracts and Tests
+// TASK: Comment Contracts
 // TASK: Review All variable/function etc Names
 // TASK: Review All variable/function etc accessibility
 // TASK: Review uints and restrict size if possible (at least make them uint256)
@@ -28,9 +27,18 @@
 // TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
 // TASK: Approvable in its own file?
 
+// TESTS:
+// DONE: Make sure tests work on -b 3
+// DONE: use increaseTime from openzeppelin! Test 
+// TASK: Prettier Then/catch on new line always
+// DONE: Put All Transactions into their own it statement
+// TASK: Comment Tests
+// DONE: Homogenize import statements
+// DONE: Number in test name
+
 // TASK: Review Security Best Practices - writeup
 // TASK: Review Design Patterns - writeup
-
+// TASK: use increaseTime from openzeppelin! Setup
 // Frontend
 // DONE: Set up React Project and React Crash Course
 // DONE: Frontend

@@ -1,9 +1,9 @@
-let EthFundMe = artifacts.require('EthFundMe')
-let Campaign = artifacts.require('Campaign')
+const EthFundMe = artifacts.require('EthFundMe')
+const Campaign = artifacts.require('Campaign')
+const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
+const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 
-let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
-
-contract('Campaign Cancellation Before Approval', (accounts) => {
+contract('#9 Campaign Cancellation Before Approval', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 
@@ -49,14 +49,16 @@ contract('Campaign Cancellation Before Approval', (accounts) => {
   })
 
   it('should cancel the campaign and state should be set to Cancelled', (done) => {
-    CampaignInstance.cancelCampaign({ from: accounts[3] })
-      .then(() => {
-        return CampaignInstance.campaignState.call()
-      })
-      .then((campaignState) => {
-        assert.equal(campaignState, 4, 'campaignState should be 4 (Cancelled)')
-        done()
-      })
+    CampaignInstance.cancelCampaign({ from: accounts[3] }).then(() => {
+      done()
+    })
+  })
+
+  it('should set campaign state to Cancelled', (done) => {
+    CampaignInstance.campaignState.call().then((campaignState) => {
+      assert.equal(campaignState, 4, 'campaignState should be 4 (Cancelled)')
+      done()
+    })
   })
 
   it('should should have set the approval state to Cancelled', (done) => {
@@ -67,13 +69,15 @@ contract('Campaign Cancellation Before Approval', (accounts) => {
   })
 
   it('should not allow Admin to vote on cancelled campaign', (done) => {
-    CampaignInstance.vote(voteSecret1, { from: accounts[1] })
-      .catch((e) => {
-        return CampaignInstance.numVoteSecrets.call()
-      })
-      .then((numVoteSecrets) => {
-        assert.equal(numVoteSecrets, 1, 'numVotes should be 1')
-        done()
-      })
+    assertRevert(CampaignInstance.vote(voteSecret1, { from: accounts[1] })).then(() => {
+      done()
+    })
+  })
+
+  it('should not have placed a vote', (done) => {
+    CampaignInstance.numVoteSecrets.call().then((numVoteSecrets) => {
+      assert.equal(numVoteSecrets, 1, 'numVotes should be 1')
+      done()
+    })
   })
 })

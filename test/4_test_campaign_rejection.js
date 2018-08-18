@@ -1,9 +1,8 @@
-let EthFundMe = artifacts.require('EthFundMe')
-let Campaign = artifacts.require('Campaign')
+const EthFundMe = artifacts.require('EthFundMe')
+const Campaign = artifacts.require('Campaign')
+const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
-let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
-
-contract('Campaign Rejection', (accounts) => {
+contract('#4 Campaign Rejection', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 

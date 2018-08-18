@@ -1,9 +1,9 @@
-let EthFundMe = artifacts.require('EthFundMe')
-let Campaign = artifacts.require('Campaign')
+const EthFundMe = artifacts.require('EthFundMe')
+const Campaign = artifacts.require('Campaign')
+const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
+const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 
-let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
-
-contract('Campaign Cancellation', (accounts) => {
+contract('#6 Campaign Cancellation', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 
@@ -63,26 +63,30 @@ contract('Campaign Cancellation', (accounts) => {
       })
   })
 
-  it('should attempt to cancel the campaign from an invalid account and fail', (done) => {
-    CampaignInstance.cancelCampaign({ from: accounts[4] })
-      .catch((e) => {
-        return CampaignInstance.campaignState.call()
-      })
-      .then((campaignState) => {
-        assert.equal(campaignState, 1, 'campaignState should be 1 (Active)')
-        done()
-      })
+  it('should attempt to cancel the campaign from a non admin and fail', (done) => {
+    assertRevert(CampaignInstance.cancelCampaign({ from: accounts[4] })).then(() => {
+      done()
+    })
+  })
+
+  it('should not have cancelled the campaign', (done) => {
+    CampaignInstance.campaignState.call().then((campaignState) => {
+      assert.equal(campaignState, 1, 'campaignState should be 1 (Active)')
+      done()
+    })
   })
 
   it('should cancel the campaign and campaign state should be set to Cancelled', (done) => {
-    CampaignInstance.cancelCampaign({ from: accounts[3] })
-      .then(() => {
-        return CampaignInstance.campaignState.call()
-      })
-      .then((campaignState) => {
-        assert.equal(campaignState, 4, 'campaignState should be 4 (Cancelled)')
-        done()
-      })
+    CampaignInstance.cancelCampaign({ from: accounts[3] }).then(() => {
+      done()
+    })
+  })
+
+  it('should have set the campaign state to Cancelled', (done) => {
+    CampaignInstance.campaignState.call().then((campaignState) => {
+      assert.equal(campaignState, 4, 'campaignState should be 4 (Cancelled)')
+      done()
+    })
   })
 
   it('should should have set the approval state to Cancelled', (done) => {
@@ -93,24 +97,28 @@ contract('Campaign Cancellation', (accounts) => {
   })
 
   it('should not allow the Campaign manager to withdraw funds', (done) => {
-    CampaignInstance.withdraw({ fron: accounts[3] })
-      .catch((e) => {
-        return CampaignInstance.funds.call()
-      })
-      .then((funds) => {
-        assert.equal(funds, 1, 'funds should be 1')
-        done()
-      })
+    assertRevert(CampaignInstance.withdraw({ from: accounts[3] })).then(() => {
+      done()
+    })
+  })
+
+  it('should not have withdrawn any funds', (done) => {
+    CampaignInstance.funds.call().then((funds) => {
+      assert.equal(funds, 1, 'funds should be 1')
+      done()
+    })
   })
 
   it('should allow contributors to withdraw contributed funds', (done) => {
-    CampaignInstance.withdraw({ from: accounts[4] })
-      .then(() => {
-        return CampaignInstance.funds.call()
-      })
-      .then((funds) => {
-        assert.equal(funds, 0, 'funds should be 0')
-        done()
-      })
+    CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
+      done()
+    })
+  })
+
+  it('should have debited funds correctly', (done) => {
+    CampaignInstance.funds.call().then((funds) => {
+      assert.equal(funds, 0, 'funds should be 0')
+      done()
+    })
   })
 })

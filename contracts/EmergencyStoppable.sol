@@ -9,12 +9,12 @@ contract EmergencyStoppable {
   }
 
   modifier stoppedInEmergency {
-      require(!isStopped, "Contract must not be stopped");
+      require(!isStopped, "function is stopped in emergency");
       _;
   }
 
   modifier onlyInEmergency {
-      require(isStopped, "Contract must be stopped");
+      require(isStopped, "function only available in emergency");
       _;
   }
 

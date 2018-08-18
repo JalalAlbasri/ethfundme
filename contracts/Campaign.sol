@@ -360,9 +360,6 @@ contract Campaign is Approvable, ReentrancyGuard {
   /**
     INTERFACE
    */
-
-
-
   function contribute() public payable 
     stoppedInEmergency
     onlyNotManager 

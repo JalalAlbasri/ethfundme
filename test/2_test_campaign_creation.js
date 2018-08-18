@@ -1,7 +1,8 @@
-let EthFundMe = artifacts.require('EthFundMe')
-let Campaign = artifacts.require('Campaign')
+const EthFundMe = artifacts.require('EthFundMe')
+const Campaign = artifacts.require('Campaign')
+const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 
-contract('Campaign Creation', (accounts) => {
+contract('#2 Campaign Creation', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 
@@ -115,11 +116,17 @@ contract('Campaign Creation', (accounts) => {
   })
 
   it('should attempt to create a campaign from an admin account and fail', (done) => {
-    EthFundMeInstance.createCampaign('admin campaign', 10, 1, 'description', 'image').catch((e) => {
-      EthFundMeInstance.getNumCampaigns.call().then((numCampaigns) => {
-        assert.equal(numCampaigns, 1, 'there should be just one campaign')
-        done()
-      })
+    assertRevert(
+      EthFundMeInstance.createCampaign('admin campaign', 10, 1, 'description', 'image')
+    ).then(() => {
+      done()
+    })
+  })
+
+  it('should not have created a new campaign', (done) => {
+    EthFundMeInstance.getNumCampaigns.call().then((numCampaigns) => {
+      assert.equal(numCampaigns, 1, 'there should be just one campaign')
+      done()
     })
   })
 })

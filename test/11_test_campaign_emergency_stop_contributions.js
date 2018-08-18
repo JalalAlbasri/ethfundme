@@ -1,9 +1,9 @@
-let EthFundMe = artifacts.require('EthFundMe')
-let Campaign = artifacts.require('Campaign')
+const EthFundMe = artifacts.require('EthFundMe')
+const Campaign = artifacts.require('Campaign')
+const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
+const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 
-let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
-
-contract('Campaign Emergency Stop Contributions', (accounts) => {
+contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 
@@ -82,67 +82,80 @@ contract('Campaign Emergency Stop Contributions', (accounts) => {
   })
 
   it('should stop the campaign', (done) => {
-    CampaignInstance.stopContract({ from: accounts[0] })
-      .then(() => {
-        return CampaignInstance.isStopped.call()
-      })
-      .then((isStopped) => {
-        assert.equal(isStopped, true, 'campaign should be stopped')
-        done()
-      })
+    CampaignInstance.stopContract({ from: accounts[0] }).then(() => {
+      done()
+    })
   })
 
-  it('should attempt to make a contribution to stopped campaign and fail', (done) => {
-    CampaignInstance.contribute({ from: accounts[7], value: 1 })
-      .catch((e) => {
-        return CampaignInstance.hasContributed.call(accounts[7])
-      })
-      .then((hasContributed) => {
-        assert.equal(hasContributed, false, 'accounts[7] should not have contributed')
-        done()
-      })
+  it('should be in a stopped state', (done) => {
+    CampaignInstance.isStopped.call().then((isStopped) => {
+      assert.equal(isStopped, true, 'campaign should be stopped')
+      done()
+    })
+  })
+
+  it('should attempt to make a contribution from manager account and fail', function (done) {
+    assertRevert(CampaignInstance.contribute({ from: accounts[3], value: 1 })).then(() => {
+      done()
+    })
+  })
+
+  it('should attempt to make a contribution to stopped campaign and fail', function (done) {
+    assertRevert(CampaignInstance.contribute({ from: accounts[7], value: 1 })).then(() => {
+      done()
+    })
   })
 
   it('should not allow the campaign manager to withdraw funds from stopped campaign', (done) => {
-    CampaignInstance.withdraw({ fron: accounts[3] })
-      .catch((e) => {
-        return CampaignInstance.funds.call()
-      })
-      .then((funds) => {
-        assert.equal(funds, 4, 'funds should be 4')
-        done()
-      })
+    assertRevert(CampaignInstance.emergencyWithdraw({ fron: accounts[3] })).then(() => {
+      done()
+    })
+  })
+
+  it('should not have changed funds in campaign', (done) => {
+    CampaignInstance.funds.call().then((funds) => {
+      assert.equal(funds, 4, 'funds should be 4')
+      done()
+    })
   })
 
   it('should allow contributors to withdraw contributed funds from stopped campaign', (done) => {
-    CampaignInstance.emergencyWithdraw({ from: accounts[4] })
-      .then(() => {
-        return CampaignInstance.funds.call()
-      })
-      .then((funds) => {
-        assert.equal(funds, 3, 'funds should be 3')
-        done()
-      })
+    CampaignInstance.emergencyWithdraw({ from: accounts[4] }).then(() => {
+      done()
+    })
+  })
+
+  it('should have debited funds correctly', (done) => {
+    CampaignInstance.funds.call().then((funds) => {
+      assert.equal(funds, 3, 'funds should be 3')
+      done()
+    })
   })
 
   it('should try to resume the contract from a non admin account and fail', (done) => {
-    CampaignInstance.resumeContract({ from: accounts[3] }).catch((e) => {
-      CampaignInstance.isStopped.call().then((isStopped) => {
-        assert.equal(isStopped, true, 'campaign should be stopped')
-        done()
-      })
+    assertRevert(CampaignInstance.resumeContract({ from: accounts[3] })).then(() => {
+      done()
+    })
+  })
+
+  it('should still be in stopped state', (done) => {
+    CampaignInstance.isStopped.call().then((isStopped) => {
+      assert.equal(isStopped, true, 'campaign should be stopped')
+      done()
     })
   })
 
   it('should resume the campaign', (done) => {
-    CampaignInstance.resumeContract({ from: accounts[1] })
-      .then(() => {
-        return CampaignInstance.isStopped.call()
-      })
-      .then((isStopped) => {
-        assert.equal(isStopped, false, 'campaign should be resumed')
-        done()
-      })
+    CampaignInstance.resumeContract({ from: accounts[1] }).then(() => {
+      done()
+    })
+  })
+
+  it('should no longer be in stopped state', (done) => {
+    CampaignInstance.isStopped.call().then((isStopped) => {
+      assert.equal(isStopped, false, 'campaign should not be stopped')
+      done()
+    })
   })
 
   it('should accept new contributions once resumed', (done) => {

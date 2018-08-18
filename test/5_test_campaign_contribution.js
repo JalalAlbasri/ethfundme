@@ -1,9 +1,9 @@
-let EthFundMe = artifacts.require('EthFundMe')
-let Campaign = artifacts.require('Campaign')
+const EthFundMe = artifacts.require('EthFundMe')
+const Campaign = artifacts.require('Campaign')
+const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
+const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 
-let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
-
-contract('Campaign Contribution', (accounts) => {
+contract('#5 Campaign Contribution', (accounts) => {
   let EthFundMeInstance
   let CampaignInstance
 
@@ -75,14 +75,16 @@ contract('Campaign Contribution', (accounts) => {
   })
 
   it('should try to make a contribution of 0 and fail', (done) => {
-    CampaignInstance.contribute({ from: accounts[4], value: 0 })
-      .catch((e) => {
-        return CampaignInstance.hasContributed.call(accounts[4])
-      })
-      .then((hasContributed) => {
-        assert.equal(hasContributed, false, 'accounts[4] should not have contributed')
-        done()
-      })
+    assertRevert(CampaignInstance.contribute({ from: accounts[4], value: 0 })).then(() => {
+      done()
+    })
+  })
+
+  it('should not have made a contribution from accounts[4]', (done) => {
+    CampaignInstance.hasContributed.call(accounts[4]).then((hasContributed) => {
+      assert.equal(hasContributed, false, 'accounts[4] should not have contributed')
+      done()
+    })
   })
 
   it('should make a single contribution of 1 ether from accounts[4]', (done) => {
@@ -132,10 +134,14 @@ contract('Campaign Contribution', (accounts) => {
 
   it('should make a single contribution of 2 ether from accounts[5]', (done) => {
     CampaignInstance.contribute({ from: accounts[5], value: 2 }).then(() => {
-      return CampaignInstance.hasContributed.call(accounts[5]).then((hasContributed) => {
-        assert.equal(hasContributed, true, 'accounts[5] should have contributed')
-        done()
-      })
+      done()
+    })
+  })
+
+  it('should have set hasContributed correctly', (done) => {
+    CampaignInstance.hasContributed.call(accounts[5]).then((hasContributed) => {
+      assert.equal(hasContributed, true, 'accounts[5] should have contributed')
+      done()
     })
   })
 
@@ -170,10 +176,14 @@ contract('Campaign Contribution', (accounts) => {
 
   it('should make a second contribution of 3 ether from accounts[4]', (done) => {
     CampaignInstance.contribute({ from: accounts[4], value: 3 }).then(() => {
-      CampaignInstance.getNumContributions.call().then((numContributions) => {
-        assert.equal(numContributions, 3, 'numContributions should be 3')
-        done()
-      })
+      done()
+    })
+  })
+
+  it('should have set numContributions correctly', (done) => {
+    CampaignInstance.getNumContributions.call().then((numContributions) => {
+      assert.equal(numContributions, 3, 'numContributions should be 3')
+      done()
     })
   })
 
