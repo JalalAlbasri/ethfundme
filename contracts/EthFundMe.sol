@@ -30,7 +30,6 @@
 // TESTS:
 // DONE: Make sure tests work on -b 3
 // DONE: use increaseTime from openzeppelin! Test 
-// TASK: Prettier Then/catch on new line always
 // DONE: Put All Transactions into their own it statement
 // TASK: Comment Tests
 // DONE: Homogenize import statements

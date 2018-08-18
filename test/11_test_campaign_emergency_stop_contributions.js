@@ -73,11 +73,15 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
   })
 
   it('should try to stop the contract from a non admin account and fail', (done) => {
-    CampaignInstance.stopContract({ from: accounts[3] }).catch((e) => {
-      CampaignInstance.isStopped.call().then((isStopped) => {
-        assert.equal(isStopped, false, 'campaign should not be stopped')
-        done()
-      })
+    assertRevert(CampaignInstance.stopContract({ from: accounts[3] })).then(() => {
+      done()
+    })
+  })
+
+  it('should not be in stopped state', (done) => {
+    CampaignInstance.isStopped.call().then((isStopped) => {
+      assert.equal(isStopped, false, 'campaign should not be stopped')
+      done()
     })
   })
 
