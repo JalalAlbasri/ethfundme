@@ -1,6 +1,8 @@
-let EthFundMe = artifacts.require('EthFundMe')
+let CampaignFactory = artifacts.require('CampaignFactory')
 let Campaign = artifacts.require('Campaign')
-const DURATION = 5 * 24 * 60 * 60
+// let { increaseTime } = require('zeppelin-solidity/test/helpers/increaseTime')
+
+const FIVE_DAYS = 5 * 24 * 60 * 60
 
 function increaseTime(duration) {
   const id = Date.now()
@@ -11,10 +13,9 @@ function increaseTime(duration) {
         jsonrpc: '2.0',
         method: 'evm_increaseTime',
         params: [duration],
-        id: 0
+        id: id
       },
       (err1) => {
-        console.log(`timestamp 2: ${web3.eth.getBlock(web3.eth.blockNumber).timestamp}`)
         if (err1) return reject(err1)
 
         web3.currentProvider.sendAsync(
@@ -24,7 +25,6 @@ function increaseTime(duration) {
             id: id + 1
           },
           (err2, res) => {
-            console.log(`timestamp 3: ${web3.eth.getBlock(web3.eth.blockNumber).timestamp}`)
             return err2 ? reject(err2) : resolve(res)
           }
         )
@@ -36,30 +36,31 @@ function increaseTime(duration) {
 module.exports = function (callback) {
   const accounts = web3.eth.accounts
 
-  let EthFundMeInstance
-  let CampaignInstances = []
+  let CampaignFactoryInstance
 
-  console.log(`timestamp 1: ${web3.eth.getBlock(web3.eth.blockNumber).timestamp}`)
-
-  increaseTime(DURATION)
+  increaseTime(FIVE_DAYS)
     .then(() => {
-      console.log(`timestamp 4: ${web3.eth.getBlock(web3.eth.blockNumber).timestamp}`)
-      return EthFundMe.deployed()
+      return CampaignFactory.deployed()
     })
     .then((instance) => {
-      EthFundMeInstance = instance
-      return EthFundMeInstance.getNumCampaigns.call({ from: accounts[0] })
+      CampaignFactoryInstance = instance
+      return CampaignFactoryInstance.getNumCampaigns.call({ from: accounts[0] })
     })
     .then((numCampaigns) => {
       let transitionCampaignPromises = []
+
       for (let i = 0; i < numCampaigns; i++) {
-        let transitionCampaignPromise = EthFundMeInstance.campaigns
+        let transitionCampaignPromise = CampaignFactoryInstance.campaigns
           .call(i, { from: accounts[0] })
           .then((campaignAddress) => {
-            Campaign.at(campaignAddress).transitionCampaign({ from: accounts[0] })
+            console.log(`transitionCampaign ${i}`)
+            return Campaign.at(campaignAddress)
+          }).then((campaignInstance) => {
+            campaignInstance.transitionCampaign({ from: accounts[0] })
           })
         transitionCampaignPromises.push(transitionCampaignPromise)
       }
+
       return Promise.all(transitionCampaignPromises)
     })
     .then(() => {

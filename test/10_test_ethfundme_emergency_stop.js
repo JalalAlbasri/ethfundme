@@ -1,22 +1,22 @@
-const EthFundMe = artifacts.require('EthFundMe')
+const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 
-contract('#10 EthFundMe Emregency Stop', (accounts) => {
-  let EthFundMeInstance
+contract('#10 CampaignFactory Emregency Stop', (accounts) => {
+  let CampaignFactoryInstance
   let CampaignInstance
 
   before('set up contract instances', (done) => {
-    EthFundMe.deployed()
+    CampaignFactory.deployed()
       .then((instance) => {
-        EthFundMeInstance = instance
-        return EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        CampaignFactoryInstance = instance
+        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
       })
       .then(() => {
-        return EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
       })
       .then(() => {
-        return EthFundMeInstance.createCampaign(
+        return CampaignFactoryInstance.createCampaign(
           'test campaign',
           10,
           1,
@@ -26,7 +26,7 @@ contract('#10 EthFundMe Emregency Stop', (accounts) => {
         )
       })
       .then(() => {
-        return EthFundMeInstance.campaigns.call(0)
+        return CampaignFactoryInstance.campaigns.call(0)
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
@@ -35,41 +35,41 @@ contract('#10 EthFundMe Emregency Stop', (accounts) => {
   })
 
   it('should set numCampaigns correctly', (done) => {
-    EthFundMeInstance.getNumCampaigns.call().then((numCampaigns) => {
+    CampaignFactoryInstance.getNumCampaigns.call().then((numCampaigns) => {
       assert.equal(numCampaigns, 1, 'numCampaigns should be 1')
       done()
     })
   })
 
   it('should try to stop the contract from a non admin account and fail', (done) => {
-    assertRevert(EthFundMeInstance.stopContract({ from: accounts[3] })).then(() => {
+    assertRevert(CampaignFactoryInstance.stopContract({ from: accounts[3] })).then(() => {
       done()
     })
   })
 
   it('should not have stopped the contract', (done) => {
-    EthFundMeInstance.isStopped.call().then((isStopped) => {
-      assert.equal(isStopped, false, 'EthFundME contract should not be stopped')
+    CampaignFactoryInstance.isStopped.call().then((isStopped) => {
+      assert.equal(isStopped, false, 'CampaignFactory contract should not be stopped')
       done()
     })
   })
 
-  it('should stop the EthFundMe contract', (done) => {
-    EthFundMeInstance.stopContract({ from: accounts[0] }).then(() => {
+  it('should stop the CampaignFactory contract', (done) => {
+    CampaignFactoryInstance.stopContract({ from: accounts[0] }).then(() => {
       done()
     })
   })
 
   it('should have stopped the contract', (done) => {
-    EthFundMeInstance.isStopped.call().then((isStopped) => {
-      assert.equal(isStopped, true, 'EthFundMe contract should be stopped')
+    CampaignFactoryInstance.isStopped.call().then((isStopped) => {
+      assert.equal(isStopped, true, 'CampaignFactory contract should be stopped')
       done()
     })
   })
 
   it('should attempt to create a campaign on stopped contract and fail', (done) => {
     assertRevert(
-      EthFundMeInstance.createCampaign(
+      CampaignFactoryInstance.createCampaign(
         'test campaign 2',
         10,
         1,
@@ -83,27 +83,27 @@ contract('#10 EthFundMe Emregency Stop', (accounts) => {
   })
 
   it('should not have created a new campaign', (done) => {
-    EthFundMeInstance.getNumCampaigns.call().then((numCampaigns) => {
+    CampaignFactoryInstance.getNumCampaigns.call().then((numCampaigns) => {
       assert.equal(numCampaigns, 1, 'numCampaigns should still be 1')
       done()
     })
   })
 
-  it('should resume ethfundme contract successfully', (done) => {
-    EthFundMeInstance.resumeContract({ from: accounts[1] }).then(() => {
+  it('should resume CampaignFactory contract successfully', (done) => {
+    CampaignFactoryInstance.resumeContract({ from: accounts[1] }).then(() => {
       done()
     })
   })
 
   it('should have resumed the contract', (done) => {
-    EthFundMeInstance.isStopped.call().then((isStopped) => {
-      assert.equal(isStopped, false, 'EthFundMe contract should be resumed')
+    CampaignFactoryInstance.isStopped.call().then((isStopped) => {
+      assert.equal(isStopped, false, 'CampaignFactory contract should be resumed')
       done()
     })
   })
 
   it('should should create a campaign on resumed contract successfully', (done) => {
-    EthFundMeInstance.createCampaign(
+    CampaignFactoryInstance.createCampaign(
       'test campaign 2',
       10,
       1,
@@ -116,7 +116,7 @@ contract('#10 EthFundMe Emregency Stop', (accounts) => {
   })
 
   it('should set numCampaigns correctly', (done) => {
-    EthFundMeInstance.getNumCampaigns.call().then((numCampaigns) => {
+    CampaignFactoryInstance.getNumCampaigns.call().then((numCampaigns) => {
       assert.equal(numCampaigns, 2, 'numCampaigns should be 2')
       done()
     })

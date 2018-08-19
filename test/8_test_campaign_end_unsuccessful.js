@@ -1,4 +1,4 @@
-const EthFundMe = artifacts.require('EthFundMe')
+const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
@@ -7,7 +7,7 @@ const { increaseTime } = require('zeppelin-solidity/test/helpers/increaseTime')
 const TWO_DAYS = 2 * 24 * 60 * 60
 
 contract('8 Campaign End Unsuccessfully', (accounts) => {
-  let EthFundMeInstance
+  let CampaignFactoryInstance
   let CampaignInstance
 
   let salt = 123456789
@@ -21,16 +21,16 @@ contract('8 Campaign End Unsuccessfully', (accounts) => {
   let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
 
   before('setup and reject campaign', (done) => {
-    EthFundMe.deployed()
+    CampaignFactory.deployed()
       .then((instance) => {
-        EthFundMeInstance = instance
-        return EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        CampaignFactoryInstance = instance
+        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
       })
       .then(() => {
-        return EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
       })
       .then(() => {
-        return EthFundMeInstance.createCampaign(
+        return CampaignFactoryInstance.createCampaign(
           'test campaign',
           10,
           1,
@@ -40,7 +40,7 @@ contract('8 Campaign End Unsuccessfully', (accounts) => {
         )
       })
       .then(() => {
-        return EthFundMeInstance.campaigns.call(0)
+        return CampaignFactoryInstance.campaigns.call(0)
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)

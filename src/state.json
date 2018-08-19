@@ -5,7 +5,7 @@
     "accounts": {},
     "accountBalances": {},
     "contracts": {
-        "EthFundMe": {
+        "CampaignFactory": {
             "initialized": false,
             "synced": false,
             "campaigns": {},

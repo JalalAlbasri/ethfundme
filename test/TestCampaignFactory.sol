@@ -2,29 +2,29 @@ pragma solidity ^0.4.24;
 
 import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
-import "../contracts/EthFundMe.sol";
+import "../contracts/CampaignFactory.sol";
 import "../contracts/Administrated.sol";
 import "../contracts/Campaign.sol";
 
-contract TestEthFundMe {
-  EthFundMe ethFundMe = EthFundMe(DeployedAddresses.EthFundMe());
+contract TestCampaignFactory {
+  CampaignFactory campaignFactory = CampaignFactory(DeployedAddresses.CampaignFactory());
   address campaignAddress;
 
   function testInitialNumAdmins() public {
-    Assert.equal(ethFundMe.numAdmins(), 1, "There should be one admin");
+    Assert.equal(campaignFactory.numAdmins(), 1, "There should be one admin");
   }
 
   function testIsAdmin() public {
-    Assert.equal(ethFundMe.isAdmin(msg.sender), true, "Account should be an admin");
+    Assert.equal(campaignFactory.isAdmin(msg.sender), true, "Account should be an admin");
   }
 
   function testIsNotAdmin() public {
-    Assert.equal(ethFundMe.isAdmin(address(this)), false, "Test Contract should not be an admin");
+    Assert.equal(campaignFactory.isAdmin(address(this)), false, "Test Contract should not be an admin");
   }
 
   function testCampaignCreation() public {
-    campaignAddress = ethFundMe.createCampaign('test', 10, 1, 'test description', 'test image');
-    Assert.equal(ethFundMe.getNumCampaigns(), 1, "There should be one campaign created by the test contract");
+    campaignAddress = campaignFactory.createCampaign('test', 10, 1, 'test description', 'test image');
+    Assert.equal(campaignFactory.getNumCampaigns(), 1, "There should be one campaign created by the test contract");
   }
 
   /**

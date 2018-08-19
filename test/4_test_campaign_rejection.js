@@ -1,9 +1,9 @@
-const EthFundMe = artifacts.require('EthFundMe')
+const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
 contract('#4 Campaign Rejection', (accounts) => {
-  let EthFundMeInstance
+  let CampaignFactoryInstance
   let CampaignInstance
 
   let salt = 123456789
@@ -21,22 +21,22 @@ contract('#4 Campaign Rejection', (accounts) => {
   let voteSecret4 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption4, salt]).toString('hex')
 
   before('setup and reject campaign', (done) => {
-    EthFundMe.deployed()
+    CampaignFactory.deployed()
       .then((instance) => {
-        EthFundMeInstance = instance
-        return EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        CampaignFactoryInstance = instance
+        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
       })
       .then(() => {
-        return EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[0] })
+        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] })
       })
       .then(() => {
-        return EthFundMeInstance.addAdminRole(accounts[3], { from: accounts[0] })
+        return CampaignFactoryInstance.addAdminRole(accounts[3], { from: accounts[0] })
       })
       .then(() => {
-        return EthFundMeInstance.addAdminRole(accounts[4], { from: accounts[0] })
+        return CampaignFactoryInstance.addAdminRole(accounts[4], { from: accounts[0] })
       })
       .then(() => {
-        return EthFundMeInstance.createCampaign(
+        return CampaignFactoryInstance.createCampaign(
           'test campaign',
           10,
           1,
@@ -46,10 +46,10 @@ contract('#4 Campaign Rejection', (accounts) => {
         )
       })
       .then(() => {
-        return EthFundMeInstance.numAdmins.call()
+        return CampaignFactoryInstance.numAdmins.call()
       })
       .then((numAdmins) => {
-        return EthFundMeInstance.campaigns.call(0)
+        return CampaignFactoryInstance.campaigns.call(0)
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)

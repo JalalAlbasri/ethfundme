@@ -1,4 +1,4 @@
-let EthFundMe = artifacts.require('EthFundMe')
+let CampaignFactory = artifacts.require('CampaignFactory')
 let Campaign = artifacts.require('Campaign')
 
 let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
@@ -30,20 +30,20 @@ function getRandomInt(min, max) {
 module.exports = function (callback) {
   const accounts = web3.eth.accounts
 
-  let EthFundMeInstance
+  let CampaignFactoryInstance
   let CampaignInstances = []
 
   let images = coolImages.many(200, 200, NUM_CAMPAIGNS)
 
-  EthFundMe.deployed()
+  CampaignFactory.deployed()
     .then((instance) => {
-      EthFundMeInstance = instance
+      CampaignFactoryInstance = instance
 
       let adminPromises = []
 
       for (let i = 1; i < NUM_ADMINS; i++) {
         console.log(`granting account ${i} admin priviledges...`)
-        let adminPromise = EthFundMeInstance.addAdminRole(accounts[i], { from: accounts[0] })
+        let adminPromise = CampaignFactoryInstance.addAdminRole(accounts[i], { from: accounts[0] })
         adminPromises.push(adminPromise)
       }
 
@@ -71,7 +71,7 @@ module.exports = function (callback) {
         let goal = web3.toWei(getRandomInt(GOAL_MIN, GOAL_MAX))
         let duration = getRandomInt(DURATION_MIN, DURATION_MAX)
 
-        let createCampaignPromise = EthFundMeInstance.createCampaign(
+        let createCampaignPromise = CampaignFactoryInstance.createCampaign(
           title,
           goal,
           duration,

@@ -510,7 +510,7 @@ contract Campaign is Approvable, ReentrancyGuard {
 
   /**
     @dev Returns uint256 representation of campaignState
-    Only used in TestEthFundMe Solidity Test since we can't check enum returns
+    Only used in TestCampaignFactory Solidity Test since we can't check enum returns
  */
   function getCampaignState() public view returns(uint256) {
     return uint256(campaignState);

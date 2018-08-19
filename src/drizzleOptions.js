@@ -1,4 +1,4 @@
-import EthFundMe from './../build/contracts/EthFundMe.json'
+import CampaignFactory from './../build/contracts/CampaignFactory.json'
 
 const drizzleOptions = {
   web3: {
@@ -9,10 +9,10 @@ const drizzleOptions = {
     }
   },
   contracts: [
-    EthFundMe
+    CampaignFactory
   ],
   events: {
-    EthFundMe: [
+    CampaignFactory: [
       'CampaignCreated'
     //   {
     //   eventName: 'CampaignCreated',

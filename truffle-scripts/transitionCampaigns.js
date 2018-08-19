@@ -1,21 +1,21 @@
-let EthFundMe = artifacts.require('EthFundMe')
+let CampaignFactory = artifacts.require('CampaignFactory')
 let Campaign = artifacts.require('Campaign')
 
 module.exports = function (callback) {
   const accounts = web3.eth.accounts
 
-  let EthFundMeInstance
+  let CampaignFactoryInstance
   let CampaignInstances = []
 
-  EthFundMe.deployed()
+  CampaignFactory.deployed()
     .then((instance) => {
-      EthFundMeInstance = instance
-      return EthFundMeInstance.getNumCampaigns.call({ from: accounts[0] })
+      CampaignFactoryInstance = instance
+      return CampaignFactoryInstance.getNumCampaigns.call({ from: accounts[0] })
     })
     .then((numCampaigns) => {
       let transitionCampaignPromises = []
       for (let i = 0; i < numCampaigns; i++) {
-        let transitionCampaignPromise = EthFundMeInstance.campaigns
+        let transitionCampaignPromise = CampaignFactoryInstance.campaigns
           .call(i, { from: accounts[0] })
           .then((campaignAddress) => {
             Campaign.at(campaignAddress).transitionCampaign({ from: accounts[0] })

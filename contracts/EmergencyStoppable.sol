@@ -23,6 +23,8 @@ pragma solidity ^0.4.24;
 
 contract EmergencyStoppable {
   
+  // TODO: Events
+
   // STATE VARIABLES
   bool public isStopped = false;
 

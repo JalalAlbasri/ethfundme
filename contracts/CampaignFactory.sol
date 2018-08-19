@@ -22,7 +22,7 @@
 // DONE: Review All variable/function etc accessibility
 // DONE: Review uint256s and restrict size if possible (at least make them uint256)
 // DONE: Use a library/Package to advance time in tests
-// TASK: Change ETHFUNDME to CampaignFactory
+// TASK: Change CampaignFactory to CampaignFactory
 // TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
 // TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
 // DONE: Approvable in its own file?
@@ -58,23 +58,23 @@ import "./EmergencyStoppable.sol";
 import "./Campaign.sol";
 
 /**
-  @title EthFundMe
+  @title CampaignFactory
   @dev The Initial Contract deployed by this project.
   
-  EthFundMe has a single function in it's interface, createCampaign that is intended
+  CampaignFactory has a single function in it's interface, createCampaign that is intended
   to be used by Users creating a new Crowd Funding Campaign.
   
   Create Campaign is the Campaign Factory function that will deploy a new instance of
   the Campaign Contract.
 
-  EthFundMe extends the Administrated and EmergencyStoppable Contracts. Allowing it to access
+  CampaignFactory extends the Administrated and EmergencyStoppable Contracts. Allowing it to access
   Admin verification and management functions and EmergencyStoppable behaviour.
 
   It passes it's own address to the Campaign Contract constructor so that Campaigns can 
-  access Administrated Admin verification functions through EthFundMe.
+  access Administrated Admin verification functions through CampaignFactory.
  */
 
-contract EthFundMe is Administrated, EmergencyStoppable {
+contract CampaignFactory is Administrated, EmergencyStoppable {
 
   /**
     Implement EmergencyStoppable Interface

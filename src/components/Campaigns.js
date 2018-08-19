@@ -110,7 +110,7 @@ const mapStateToProps = (state) => {
   return {
     account: state.account,
     campaigns: state.campaigns,
-    EthFundMe: state.contracts.EthFundMe,
+    CampaignFactory: state.contracts.CampaignFactory,
     filters: state.filters
   }
 }

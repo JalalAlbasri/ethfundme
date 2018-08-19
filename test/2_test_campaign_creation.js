@@ -1,22 +1,22 @@
-const EthFundMe = artifacts.require('EthFundMe')
+const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 
 contract('#2 Campaign Creation', (accounts) => {
-  let EthFundMeInstance
+  let CampaignFactoryInstance
   let CampaignInstance
 
   before('set up contract instances', (done) => {
-    EthFundMe.deployed()
+    CampaignFactory.deployed()
       .then((instance) => {
-        EthFundMeInstance = instance
-        return EthFundMeInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        CampaignFactoryInstance = instance
+        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
       })
       .then(() => {
-        return EthFundMeInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
       })
       .then(() => {
-        return EthFundMeInstance.createCampaign(
+        return CampaignFactoryInstance.createCampaign(
           'test campaign',
           10,
           1,
@@ -26,7 +26,7 @@ contract('#2 Campaign Creation', (accounts) => {
         )
       })
       .then(() => {
-        return EthFundMeInstance.campaigns.call(0)
+        return CampaignFactoryInstance.campaigns.call(0)
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
@@ -88,7 +88,7 @@ contract('#2 Campaign Creation', (accounts) => {
   })
 
   it('should set numCampaigns correctly', (done) => {
-    EthFundMeInstance.getNumCampaigns.call().then((numCampaigns) => {
+    CampaignFactoryInstance.getNumCampaigns.call().then((numCampaigns) => {
       assert.equal(numCampaigns, 1, 'numCampaigns should be 1')
       done()
     })
@@ -117,14 +117,14 @@ contract('#2 Campaign Creation', (accounts) => {
 
   it('should attempt to create a campaign from an admin account and fail', (done) => {
     assertRevert(
-      EthFundMeInstance.createCampaign('admin campaign', 10, 1, 'description', 'image')
+      CampaignFactoryInstance.createCampaign('admin campaign', 10, 1, 'description', 'image')
     ).then(() => {
       done()
     })
   })
 
   it('should not have created a new campaign', (done) => {
-    EthFundMeInstance.getNumCampaigns.call().then((numCampaigns) => {
+    CampaignFactoryInstance.getNumCampaigns.call().then((numCampaigns) => {
       assert.equal(numCampaigns, 1, 'there should be just one campaign')
       done()
     })

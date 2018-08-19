@@ -3,7 +3,7 @@ export const UPDATE_CAMPAIGN = 'UPDATE_CAMPAIGN'
 
 const contract = require('truffle-contract')
 import CampaignContract from '../../build/contracts/Campaign.json'
-import EthFundMeContract from '../../build/contracts/EthFundMe.json'
+import CampaignFactoryContract from '../../build/contracts/CampaignFactory.json'
 
 import { getAccountDetails } from './AccountActions'
 
@@ -54,6 +54,7 @@ function getCampaignDetails(address) {
           return CampaignInstance.isStopped.call({ from: coinbase })
         })
         .then((isStopped) => {
+          console.log(`isStopped: ${isStopped}`)
           campaign.isStopped = isStopped
           return CampaignInstance.title.call({ from: coinbase })
         })
@@ -185,24 +186,24 @@ export function updateCampaign(campaignAddress) {
 export function addCampaigns() {
   // console.log('addCampaigns()')
   return function (dispatch) {
-    const web3EthFundMe = contract(EthFundMeContract)
-    web3EthFundMe.setProvider(web3.currentProvider)
+    const web3CampaignFactory = contract(CampaignFactoryContract)
+    web3CampaignFactory.setProvider(web3.currentProvider)
 
-    let EthFundMeInstance
+    let CampaignFactoryInstance
 
     web3.eth.getCoinbase((err, coinbase) => {
       if (err) {
         console.log(err)
       }
-      web3EthFundMe
+      web3CampaignFactory
         .deployed()
         .then((instance) => {
-          EthFundMeInstance = instance
-          return EthFundMeInstance.getNumCampaigns.call({ from: coinbase })
+          CampaignFactoryInstance = instance
+          return CampaignFactoryInstance.getNumCampaigns.call({ from: coinbase })
         })
         .then((numCampaigns) => {
           for (let i = 0; i < numCampaigns; i++) {
-            EthFundMeInstance.campaigns.call(i, { from: coinbase }).then((campaignAddress) => {
+            CampaignFactoryInstance.campaigns.call(i, { from: coinbase }).then((campaignAddress) => {
               dispatch(addCampaign(campaignAddress))
             })
           }
@@ -229,21 +230,21 @@ function updateCampaigns() {
 export function createCampaign(title, goal, duration, description, image) {
   // console.log('createCampaign')
   return function (dispatch) {
-    const web3EthFundMe = contract(EthFundMeContract)
-    web3EthFundMe.setProvider(web3.currentProvider)
+    const web3CampaignFactory = contract(CampaignFactoryContract)
+    web3CampaignFactory.setProvider(web3.currentProvider)
 
-    let EthFundMeInstance
+    let CampaignFactoryInstance
     let campaignAddress
 
     web3.eth.getCoinbase((err, coinbase) => {
       if (err) {
         console.log(err)
       }
-      web3EthFundMe
+      web3CampaignFactory
         .deployed()
         .then((instance) => {
-          EthFundMeInstance = instance
-          return EthFundMeInstance.createCampaign(
+          CampaignFactoryInstance = instance
+          return CampaignFactoryInstance.createCampaign(
             title,
             web3.toWei(goal, 'ether'),
             duration,
@@ -429,6 +430,8 @@ export function emergencyStop(campaign) {
     web3Campaign.setProvider(web3.currentProvider)
     let CampaignInstance
 
+    console.log(`campaign: ${JSON.stringify(campaign)}`)
+
     web3.eth.getCoinbase((err, coinbase) => {
       if (err) {
         console.log(err)
@@ -437,6 +440,7 @@ export function emergencyStop(campaign) {
         .at(campaign.address)
         .then((instance) => {
           CampaignInstance = instance
+          console.log(`campaign.isStopped: ${campaign.isStopped}`)
           if (campaign.isStopped) return CampaignInstance.resumeContract({ from: coinbase })
           return CampaignInstance.stopContract({ from: coinbase })
         })

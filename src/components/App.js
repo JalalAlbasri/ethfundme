@@ -17,19 +17,19 @@ class App extends Component {
   constructor(props, context) {
     super(props)
     this.contracts = context.drizzle.contracts
-    this.dataKey = this.contracts.EthFundMe.methods.getNumCampaigns.cacheCall()
+    this.dataKey = this.contracts.CampaignFactory.methods.getNumCampaigns.cacheCall()
   }
 
   render() {
     const drizzleStatus = this.props.drizzleStatus
-    const EthFundMe = this.props.EthFundMe
+    const CampaignFactory = this.props.CampaignFactory
 
     // if (drizzleStatus.initialized) {
-    if (!(this.dataKey in EthFundMe.getNumCampaigns)) {
+    if (!(this.dataKey in CampaignFactory.getNumCampaigns)) {
       return <span> Loading </span>
     }
 
-    let numCampaigns = EthFundMe.getNumCampaigns[this.dataKey].value
+    let numCampaigns = CampaignFactory.getNumCampaigns[this.dataKey].value
 
     return (
       <div className="App">
@@ -98,7 +98,7 @@ App.contextTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    EthFundMe: state.contracts.EthFundMe
+    CampaignFactory: state.contracts.CampaignFactory
   }
 }
 
