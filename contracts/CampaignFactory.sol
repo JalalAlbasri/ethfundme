@@ -10,8 +10,6 @@
   // DONE: -- Change tests to use new admin style (they must add admins)
   // DONE:L -- setup script must add admins
   // -- DONE: reveal logic must check num admins and take majority
-  // -- TASK: UI for stopping efm + tests (stop camapaign creation then resume)
-  // -- TASK: UI for adding admins
   // -- DONE: Make Administerable/Administrated a super class of efm and campaign and put rbac stuff in it
 // DONE: Split Contract Files (Campaign/Approvable)
 // DONE: Events
@@ -22,10 +20,11 @@
 // DONE: Review All variable/function etc accessibility
 // DONE: Review uint256s and restrict size if possible (at least make them uint256)
 // DONE: Use a library/Package to advance time in tests
-// TASK: Change CampaignFactory to CampaignFactory
-// TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
+// DONE: Change CampaignFactory to CampaignFactory
 // TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
 // DONE: Approvable in its own file?
+// TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
+// TASK: use increaseTime from openzeppelin! Setup
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
@@ -34,16 +33,19 @@
 // TASK: Comment Tests
 // DONE: Homogenize import statements
 // DONE: Number in test name
-// TASK: Reenable solidity test
+// DONE: Reenable solidity test
 
 // TASK: Review Security Best Practices - writeup
 // TASK: Review Design Patterns - writeup
-// TASK: use increaseTime from openzeppelin! Setup
+
 // Frontend
+// TASK: Fix Contribute
 // DONE: Set up React Project and React Crash Course
 // DONE: Frontend
-// TASK: Listening for Events
-  // -- Check events in tests too
+// DONE: Listening for Events
+  // -- TASK: UI for stopping efm + tests (stop camapaign creation then resume)
+  // -- TASK: UI for adding admins
+  // -- TASK: Check events in tests too
 
 // Submitable
 // TASK: Packaging and Other Documentation
