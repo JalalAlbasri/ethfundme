@@ -17,15 +17,15 @@
 // DONE: Events
 // DONE: Error messages for require statements
 // DONE: Write Solidity Tests
-// TASK: Comment Contracts
-// TASK: Review All variable/function etc Names
-// TASK: Review All variable/function etc accessibility
-// TASK: Review uints and restrict size if possible (at least make them uint256)
+// DONE: Comment Contracts
+// DONE: Review All variable/function etc Names
+// DONE: Review All variable/function etc accessibility
+// DONE: Review uint256s and restrict size if possible (at least make them uint256)
 // DONE: Use a library/Package to advance time in tests
 // TASK: Change ETHFUNDME to CampaignFactory
 // TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
 // TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
-// TASK: Approvable in its own file?
+// DONE: Approvable in its own file?
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
@@ -128,7 +128,7 @@ contract EthFundMe is Administrated, EmergencyStoppable {
     It passes msg.sender as the campaign manager and the address of this contract so that Camapaign
     Contracts can access Administrated functionality (verifying admins)
    */
-  function createCampaign(string title, uint goal, uint duration, string description, string image) public 
+  function createCampaign(string title, uint256 goal, uint256 duration, string description, string image) public 
     stoppedInEmergency
     notAdmin
     returns(address)
@@ -149,7 +149,7 @@ contract EthFundMe is Administrated, EmergencyStoppable {
     like if we had used a mapping but we need a getter function if we want to get the 
     length of the array
    */
-  function getNumCampaigns() public view returns (uint) {
+  function getNumCampaigns() public view returns (uint256) {
     return campaigns.length;
   }
 

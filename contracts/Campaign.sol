@@ -41,7 +41,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     payload is the startDate of the campaign
    */   
   event campaignStarted (
-    uint startDate
+    uint256 startDate
   );
 
   /**
@@ -51,7 +51,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     denoting the campaign's success or failure
    */     
   event campaignEnded (
-    uint endDate,
+    uint256 endDate,
     bool isSuccessful
   );
 
@@ -61,7 +61,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     payload is the date the campaign was cancelled
    */     
   event campaignCancelled (
-    uint cancelledDate
+    uint256 cancelledDate
   );
 
   /**
@@ -71,7 +71,7 @@ contract Campaign is Approvable, ReentrancyGuard {
    */     
   event contributionMade (
     address contributor,
-    uint amount
+    uint256 amount
   );
 
   /**
@@ -81,7 +81,7 @@ contract Campaign is Approvable, ReentrancyGuard {
    */     
   event withdrawlMade (
     address beneficiary,
-    uint amount 
+    uint256 amount 
   );
 
   /**
@@ -109,8 +109,8 @@ contract Campaign is Approvable, ReentrancyGuard {
    */
   struct Contribution {
     address addr;
-    uint amount;
-    uint timestamp;
+    uint256 amount;
+    uint256 timestamp;
   }
 
   // Initial Campaign State set to Pending
@@ -126,17 +126,17 @@ contract Campaign is Approvable, ReentrancyGuard {
   // The current funds in the Campaign
   // Initialized to Contract's balance in case the Contract is 
   // created with eth in the balance
-  uint public funds = address(this).balance;
+  uint256 public funds = address(this).balance;
   
   // The Campaign EndDate.
   // Will be set once the Campaign is Approved.
-  uint public endDate;
+  uint256 public endDate;
 
   // Campaign Details
-  uint public id;
+  uint256 public id;
   string public title;
-  uint public goal;
-  uint public duration;
+  uint256 public goal;
+  uint256 public duration;
   string public description;
   string public image; // url to an associated image
   address public manager;
@@ -151,7 +151,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   // withdrawl amount for each contributor
 
   // Keep track of the total Contributed for each contributor since a single contributor
-  mapping (address => uint) public totalContributed;
+  mapping (address => uint256) public totalContributed;
   // Keeps track of whether an address has contributed
   mapping (address => bool) public hasContributed;
   // Keeps track of whether an address has withdrawn
@@ -171,10 +171,10 @@ contract Campaign is Approvable, ReentrancyGuard {
    */
 
   constructor(
-    uint _id, 
+    uint256 _id, 
     string _title, 
-    uint _goal,  
-    uint _duration, 
+    uint256 _goal,  
+    uint256 _duration, 
     string _description,
     string _image,
     address _manager,
@@ -313,7 +313,7 @@ contract Campaign is Approvable, ReentrancyGuard {
    */
    function numVoters()
     internal
-    returns(uint)
+    returns(uint256)
   {
     return administrated.numAdmins();
   }
@@ -459,7 +459,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   /**
     @dev returns the number of contributions (length on contributions array)
    */
-  function getNumContributions() public view returns(uint numContributions) {
+  function getNumContributions() public view returns(uint256 numContributions) {
     return contributions.length;
   }
 
@@ -470,9 +470,9 @@ contract Campaign is Approvable, ReentrancyGuard {
     Could be replaced by another state variable 'totalContributedFunds' that is incremented
     with funds but not decremented during withdrawls
    */
-  function getTotalContributedFunds() public view returns(uint) {
-    uint result = 0;
-    for (uint i = 0; i < contributions.length; i++) {
+  function getTotalContributedFunds() public view returns(uint256) {
+    uint256 result = 0;
+    for (uint256 i = 0; i < contributions.length; i++) {
       result += contributions[i].amount;
     }
     return result;
@@ -494,7 +494,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     @dev returns the current block timestamp
     Used in testing.
    */
-  function getBlockTimestamp() public view returns(uint) {
+  function getBlockTimestamp() public view returns(uint256) {
     return block.timestamp;
   }
 
@@ -509,11 +509,11 @@ contract Campaign is Approvable, ReentrancyGuard {
   }
 
   /**
-    @dev Returns uint representation of campaignState
+    @dev Returns uint256 representation of campaignState
     Only used in TestEthFundMe Solidity Test since we can't check enum returns
  */
-  function getCampaignState() public view returns(uint) {
-    return uint(campaignState);
+  function getCampaignState() public view returns(uint256) {
+    return uint256(campaignState);
   }
 
 }

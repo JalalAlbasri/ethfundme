@@ -84,15 +84,15 @@ contract Approvable is EmergencyStoppable {
 
   // Tracks the number of Votes committed and revealed.
   // Required becuase secrets are stored in a mapping
-  uint public numVoteSecrets;
-  uint public numVoteReveals;
+  uint256 public numVoteSecrets;
+  uint256 public numVoteReveals;
 
   // Initial Approval State
   ApprovalStates public approvalState = ApprovalStates.Commit;
   
   // Tallies the number of approvals and rejections
-  uint public numApprovals;
-  uint public numRejections;
+  uint256 public numApprovals;
+  uint256 public numRejections;
 
   /**
     @dev constructor
@@ -154,8 +154,8 @@ contract Approvable is EmergencyStoppable {
   modifier endReveal() {
     _;
     // number of reveals required to pass the vote
-    uint numAdmins = numVoters();
-    uint required = numAdmins / 2 + numAdmins % 2;
+    uint256 numAdmins = numVoters();
+    uint256 required = numAdmins / 2 + numAdmins % 2;
 
     if (numApprovals >= required) {
       approvalState = ApprovalStates.Approved;
@@ -194,7 +194,7 @@ contract Approvable is EmergencyStoppable {
     @dev Must be implemented by Contracts that extend this as a way to determine 
     the total number of voters
    */
-   function numVoters() internal returns(uint);
+   function numVoters() internal returns(uint256);
 
   // INTERFACE
   /**
@@ -221,7 +221,7 @@ contract Approvable is EmergencyStoppable {
     @param salt salt used in encryption of vote secret
     // reverts if keccak256 encryption of params does not match previsouly comitted voteSecret
    */
-  function reveal(bool voteOption, uint salt) public 
+  function reveal(bool voteOption, uint256 salt) public 
     stoppedInEmergency
     onlyVoted
     onlyNotRevealed

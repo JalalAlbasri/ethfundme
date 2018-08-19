@@ -13,7 +13,7 @@ contract Administrated is RBAC {
    * A constant role name for indicating admins.
    */
   string public constant ROLE_ADMIN = "admin";
-  uint public numAdmins; //tracks the numbder of valid admins
+  uint256 public numAdmins; //tracks the numbder of valid admins
 
   /**
    * @dev modifier to scope access to admins
