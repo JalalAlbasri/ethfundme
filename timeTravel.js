@@ -53,10 +53,9 @@ module.exports = function (callback) {
         let transitionCampaignPromise = CampaignFactoryInstance.campaigns
           .call(i, { from: accounts[0] })
           .then((campaignAddress) => {
-            console.log(`transitionCampaign ${i}`)
-            return Campaign.at(campaignAddress)
-          }).then((campaignInstance) => {
-            campaignInstance.transitionCampaign({ from: accounts[0] })
+            return Campaign.at(campaignAddress).endCampaign({ from: accounts[0] })
+          }).catch((err) => {
+            console.log(`${err}`)
           })
         transitionCampaignPromises.push(transitionCampaignPromise)
       }

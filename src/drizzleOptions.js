@@ -14,12 +14,6 @@ const drizzleOptions = {
   events: {
     CampaignFactory: [
       'CampaignCreated'
-    //   {
-    //   eventName: 'CampaignCreated',
-    //   eventOptions: {
-
-    //   }
-    // }
     ]
 
   },

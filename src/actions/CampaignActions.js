@@ -135,7 +135,6 @@ function getCampaignDetails(address) {
 
           let contributionPromises = []
 
-          // FIXME: dispatch occurs before promises in loop resolve
           if (campaign.numContributions > 0) {
             for (let i = 0; i < campaign.numContributions; i++) {
               let contributionPromise = CampaignInstance.contributions
@@ -166,7 +165,6 @@ function getCampaignDetails(address) {
 }
 
 function addCampaign(campaignAddress, isNew) {
-  // console.log(`addCampaign(), campaignAddress: ${campaignAddress}`)
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
       dispatch(campaignAdded({ ...campaign, isNew }))
@@ -175,7 +173,6 @@ function addCampaign(campaignAddress, isNew) {
 }
 
 export function updateCampaign(campaignAddress) {
-  // console.log(`updateCampaign(), campaignAddress: ${campaignAddress}`)
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
       dispatch(campaignUpdated(campaign))
@@ -184,7 +181,6 @@ export function updateCampaign(campaignAddress) {
 }
 
 export function addCampaigns() {
-  // console.log('addCampaigns()')
   return function (dispatch) {
     const web3CampaignFactory = contract(CampaignFactoryContract)
     web3CampaignFactory.setProvider(web3.currentProvider)
@@ -213,7 +209,6 @@ export function addCampaigns() {
 }
 
 function updateCampaigns() {
-  // console.log('updateCampaigns()')
   return function (dispatch, getState) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -228,7 +223,6 @@ function updateCampaigns() {
 }
 
 export function createCampaign(title, goal, duration, description, image) {
-  // console.log('createCampaign')
   return function (dispatch) {
     const web3CampaignFactory = contract(CampaignFactoryContract)
     web3CampaignFactory.setProvider(web3.currentProvider)
@@ -264,7 +258,6 @@ export function createCampaign(title, goal, duration, description, image) {
 }
 
 export function contribute(campaign, contribution) {
-  // console.log(`contribute, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -291,7 +284,6 @@ export function contribute(campaign, contribution) {
 }
 
 export function placeVote(campaign, voteSecret) {
-  // console.log(`placeVote, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
@@ -318,7 +310,6 @@ export function placeVote(campaign, voteSecret) {
 }
 
 export function revealVote(campaign, voteOption, salt) {
-  // console.log(`reveal, campaign.address: ${campaign.address}`)
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
