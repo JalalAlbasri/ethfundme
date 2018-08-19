@@ -271,7 +271,7 @@ export function contribute(campaign, contribution) {
         .at(campaign.address)
         .then((instance) => {
           CampaignInstance = instance
-          return CampaignInstance.contribute({ from: coinbase, value: contribution })
+          return CampaignInstance.contribute({ from: coinbase, value: web3.toWei(contribution, 'ether') })
         })
         .then((result) => {
           dispatch(updateCampaign(campaign.address))

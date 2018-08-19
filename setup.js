@@ -154,7 +154,7 @@ module.exports = function (callback) {
 
       for (let i = 0; i < NUM_APPROVALS; i++) {
         for (let j = 4; j < accounts.length; j++) {
-          let contribution = web3.toWei(getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX)) // TODO: Fix Contributions in CampaignActions
+          let contribution = web3.toWei(getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX))
           if (contribution > 0) {
             console.log(
               `contributing ${web3.fromWei(contribution)} eth from account ${j} to campaign ${i}...`

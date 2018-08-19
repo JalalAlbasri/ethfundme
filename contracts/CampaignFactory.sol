@@ -39,13 +39,14 @@
 // TASK: Review Design Patterns - writeup
 
 // Frontend
-// TASK: Fix Contribute
+// DONE: Fix Contribute
 // DONE: Set up React Project and React Crash Course
 // DONE: Frontend
 // DONE: Listening for Events
   // -- TASK: UI for stopping efm + tests (stop camapaign creation then resume)
   // -- TASK: UI for adding admins
   // -- TASK: Check events in tests too
+  // TASK: Something wrong with goal progress calculation
 
 // Submitable
 // TASK: Packaging and Other Documentation
