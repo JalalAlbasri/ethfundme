@@ -39,19 +39,7 @@ class Campaigns extends Component {
 
           return this.props.filters[campaign.campaignState].isActive
         })
-        // .sort((a, b) => {
-        //   // if (!Object.prototype.hasOwnProperty.call(a, 'campaignIndex')) {
-        //   //   return 1
-        //   // }
-        //   if (a.campaignIndex > b.campaignIndex) {
-        //     return 1
-        //   }
-        //   if (a.campaignIndex < b.campaignIndex) {
-        //     return -1
-        //   }
-        //   return 0
-        // })
-        .sort((a, b) => a.campaignIndex > b.campaignIndex) // FIXME: This sint doing anything because we sort again
+        // .sort((a, b) => a.campaignIndex > b.campaignIndex)
         .sort((a, b) => {
           if (
             CAMPAIGN_STATE_ORDER.indexOf(a.campaignState)

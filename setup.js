@@ -48,8 +48,8 @@ module.exports = function (callback) {
       }
 
       return Promise.all(adminPromises)
-    }).then(() => {
-
+    })
+    .then(() => {
       let createCampaignPromises = []
 
       for (let i = 0; i < NUM_CAMPAIGNS; i++) {
@@ -154,7 +154,7 @@ module.exports = function (callback) {
 
       for (let i = 0; i < NUM_APPROVALS; i++) {
         for (let j = 4; j < accounts.length; j++) {
-          let contribution = web3.toWei(getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX))
+          let contribution = web3.toWei(getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX)) // TODO: Fix Contributions in CampaignActions
           if (contribution > 0) {
             console.log(
               `contributing ${web3.fromWei(contribution)} eth from account ${j} to campaign ${i}...`
