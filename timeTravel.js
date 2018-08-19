@@ -48,13 +48,25 @@ module.exports = function (callback) {
     })
     .then((numCampaigns) => {
       let transitionCampaignPromises = []
+      let campaignAddress
+      let blockTime
 
       for (let i = 0; i < numCampaigns; i++) {
         let transitionCampaignPromise = CampaignFactoryInstance.campaigns
           .call(i, { from: accounts[0] })
-          .then((campaignAddress) => {
-            // TODO: Check block time and end date before calling endCampaign
-            return Campaign.at(campaignAddress).endCampaign({ from: accounts[0] })
+          .then((_campaignAddress) => {
+            campaignAddress = _campaignAddress
+            return web3.getBlock('latest').blockTime
+          })
+          .then((_blockTime) => {
+            blockTime = _blockTime
+            console.log(`blockTime: ${blockTime}`)
+            return Campaign.at(campaignAddress).endDate.call()
+          }).then((endDate) => {
+            console.log(`endDate: ${endDate}`)
+            if (endDate >= blockTime) {
+              return Campaign.at(campaignAddress).endCampaign({ from: accounts[0] })
+            }
           }).catch((err) => {
             console.log(`${err}`)
           })
