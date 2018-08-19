@@ -51,8 +51,8 @@ contract EmergencyStoppable {
   }
 
   /**
-    @dev Abstract function.
-    Must be implemented by subclasses to provide a way to determine if accounts
+    Abstract function.
+    @dev Must be implemented by subclasses to provide a way to determine if accounts
     Are authorized to start/stop the Contract
    */
   function isAuthorized() internal returns (bool);

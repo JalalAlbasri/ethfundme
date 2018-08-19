@@ -99,7 +99,7 @@ contract EthFundMe is Administrated, EmergencyStoppable {
    */
 
   /**
-    @dev Event emitted when a Campaign is create from the Campaign Factory
+    @dev Event emitted when a Campaign is created from the Campaign Factory
     The payload is the newly created Campaign's address
    */
   event CampaignCreated (
