@@ -34,6 +34,7 @@
 // TASK: Comment Tests
 // DONE: Homogenize import statements
 // DONE: Number in test name
+// TASK: Reenable solidity test
 
 // TASK: Review Security Best Practices - writeup
 // TASK: Review Design Patterns - writeup
