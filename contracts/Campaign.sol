@@ -1,266 +1,9 @@
 pragma solidity ^0.4.24;
 
-import "./EthFundMe.sol";
+import "./Administrated.sol";
+import "./Approvable.sol";
 import "./EmergencyStoppable.sol";
 import "../node_modules/zeppelin-solidity/contracts/ReentrancyGuard.sol";
-
-/**
-  @title Approvable
-  @dev Abstract Contract
-  
-  Provides the ability for a Contracts Approval State to be managed by a group of Administrators
-  via a Commit/Reveal Voting Pattern.
-
-  keccak256 encrypted vote options + salts are comitted during the commit phase as vote secrets.
-  vote secrets are revealed during the reveal phase and the votes are tallied.
-
-  Tally will stop early if enough votes to come to a decision are found.
-  A strict majority is not require (if there are an even number of voters 50% is enough)
-  (See modifier endReveal() for details)
-
-  Requires a contract that implements the Administrated Interface to be supplied in the contructor
-  to restrict access to only authorized voters.
-  
-  Contracts that extend this contract must implement the onApproval(); and onRejection(); abstract functions.
-
-  Extends the EmergencyStoppable Contract allowing it to suspend voting during Stopped State.
-  
- */
-
-contract Approvable is EmergencyStoppable {
-  /**
-    Implement EmergencyStoppable Interface
-   */
-  
-  /**
-    @dev returns true if msg.sender has the admin role
-    This funstion is required to be implemented by the EmergencyStoppable Interface.
-    It is used to determine if the calling user (msg.sender) has the authority to stop/start
-    the contract.
-  */
-  function isAuthorized() 
-    internal 
-    returns(bool)
-  {
-    return administrated.isAdmin(msg.sender);
-  }
-
-  /**
-    Events
-  */
-
-  /**
-    @dev Event emitted when a Vote is Committed
-    The payload is address of the vote committer
-   */
-  event voteCommitted (address indexed voteCommiter);
-  
-  /**
-    @dev Event emitted when a Vote is Reveal
-    The payload is address of the vote revealer
-   */
-  event voteRevealed (address indexed voteRevealer);
-  
-  /**
-    @dev Event emitted when all votes have been Comitted
-   */  
-  event allVotesComitted();
-  
-  /**
-    @dev Event emitted when enough votes have been revealed to
-    conclude arrive at a decision on the vote.
-    payload is the outcome of the vote.
-   */
-  event votePassed (bool isApproved);
-
-
-
-  
-  /**
-    STATE VARIABLES
-   */
-
-  // DATA STRUCTURES
-
-  /**
-    @dev State Management Pattern
-    The states of the Commit/Reveal Voting process
-   */
-  enum ApprovalStates {
-    Commit,
-    Reveal,
-    Approved,
-    Rejected,
-    Cancelled
-  }
-  
-  
-  // Stores the committed voteSecrets
-  // stored in a mappign to make retrieval by account easy
-  mapping(address => bytes32) public voteSecrets;
-  
-  // Keeps track of what accnounts have voted
-  mapping(address => bool) public hasVoted;
-  // keeps track of what accounts have revealed
-  mapping(address => bool) public hasRevealed;
-
-  // Tracks the number of Votes committed and revealed.
-  // Required becuase secrets are stored in a mapping
-  uint public numVoteSecrets;
-  uint public numVoteReveals;
-
-
-  /**
-    Address of the Administrated Contract that will be used to determine 
-    admin status of accounts.
-   */
-  Administrated public administrated;
-
-  // Initial Approval State
-  ApprovalStates public approvalState = ApprovalStates.Commit;
-  
-  // Tallies the number of approvals and rejections
-  uint public numApprovals;
-  uint public numRejections;
-
-  /**
-    @dev constructor
-    @param administratedAddress the address of currently deployed adminstrated Contract
-    with current admin management information/functionality
-  */
-  constructor (address administratedAddress) public
-  {
-    administrated = Administrated(administratedAddress);
-  }
-
-  /**
-    MODIFIERS
-   */
-
-  // ACCESS RESTRICTION
-  /**
-    @dev modifier to restrict access to only admins
-   */
-  modifier onlyAdmin() {
-    require(administrated.isAdmin(msg.sender), "only admin authorized");
-    _;
-  }
-
-  /**
-    @dev modifier to restrict access to only accounts that have voted
-   */
-  modifier onlyVotedAdmin() {
-    require(hasVoted[msg.sender] == true, "Admin has not voted");
-    _;
-  }
-
-  /**
-    @dev modifier to restrict access to only accounts that have not revealed yet
-   */
-  modifier onlyNotRevealedAdmin() {
-    require(hasRevealed[msg.sender] == false, "Admin has already revealed");
-    _;
-  }
-
-  // STATE MANAGEMENT
-  /**
-    @dev modifier to restrict function execution based on approval state
-   */
-  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {
-    require(approvalState == _approvalState, "Invalid approval state");
-    _;
-  }
-
-  /**
-    @dev transition state from commit to reveal
-   */
-  modifier endCommit() {
-    _;
-    if (numVoteSecrets == administrated.numAdmins()) { //requires that all admins have voted
-      approvalState = ApprovalStates.Reveal;
-      emit allVotesComitted();
-    }
-  }
-
-  // Doesn't require all votes to be revealed only enough.
-  modifier endReveal() {
-    _;
-    // number of reveals required to pass the vote
-    uint numAdmins = administrated.numAdmins();
-    uint required = numAdmins / 2 + numAdmins % 2;
-
-    if (numApprovals >= required) {
-      approvalState = ApprovalStates.Approved;
-      onApproval();
-      emit votePassed(true);
-    }
-    if (numRejections >= required) {
-      approvalState = ApprovalStates.Rejected;
-      onRejection();
-      emit votePassed(false);
-    }
-  }
-
-  /**
-    INTERFACE
-   */
-
-  // ABSTRACT FUNCTIONS
-  /**
-    @dev called on approval. Must be implemented by Contracts that extend this
-   */
-  function onApproval() internal;
-  /**
-    @dev called on rejecting. Must be implemented by Contracts that extend this
-   */
-  function onRejection() internal;
-
-  // INTERFACE
-  /**
-    @dev Allows authroized accounts to place a vote
-    @param secretVote keccak256 encrypted voteOption and Salt
-    The encrypted voteSecrets are collected during the commit phase
-   */
- function vote(bytes32 secretVote) public 
-    stoppedInEmergency
-    onlyAdmin
-    onlyDuringApprovalState(ApprovalStates.Commit) 
-    endCommit {
-      voteSecrets[msg.sender] = secretVote;
-      if (hasVoted[msg.sender] == false) {
-        numVoteSecrets++;
-        hasVoted[msg.sender] = true;
-        emit voteCommitted(msg.sender);
-    }
-  }
-
-  /**
-    @dev Allows authorized accounts to reveal votes
-    @param voteOption a boolean vote option true to approve and false to reject
-    @param salt salt used in encryption of vote secret
-    // reverts if keccak256 encryption of params does not match previsouly comitted voteSecret
-   */
-  function reveal(bool voteOption, uint salt) public 
-    stoppedInEmergency
-    onlyVotedAdmin 
-    onlyNotRevealedAdmin
-    onlyDuringApprovalState(ApprovalStates.Reveal) 
-    endReveal {
-      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender], "Vote secrets do not match");
-
-      if (voteOption) {
-        numApprovals++;
-      } else {
-        numRejections++;
-      }
-
-      numVoteReveals++;
-      hasRevealed[msg.sender] = true;
-      emit voteRevealed(msg.sender);
-  }
-
-}
-
 
 /**
   @dev The Campaign Contract
@@ -374,6 +117,12 @@ contract Campaign is Approvable, ReentrancyGuard {
   // This means it is Pending Approval from admins before going active
   CampaignStates public campaignState = CampaignStates.Pending;
 
+  /**
+    Address of the Administrated Contract that will be used to determine 
+    admin status of accounts.
+   */
+  Administrated public administrated;
+
   // The current funds in the Campaign
   // Initialized to Contract's balance in case the Contract is 
   // created with eth in the balance
@@ -417,7 +166,8 @@ contract Campaign is Approvable, ReentrancyGuard {
     @param _description A description of the Campaign purposes
     @param _image The url of an image for the campaign
     @param _manager The Campaign Manager
-    @param efmAddress Address of Administrated Contract that holds details of admin accounts 
+    @param administratedAddress the address of currently deployed adminstrated Contract with current 
+    // admin management information/functionality
    */
 
   constructor(
@@ -428,8 +178,8 @@ contract Campaign is Approvable, ReentrancyGuard {
     string _description,
     string _image,
     address _manager,
-    address efmAddress
-  ) Approvable(efmAddress) public {
+    address administratedAddress
+  ) public {
     id = _id;
     title = _title;
     goal = _goal;
@@ -437,6 +187,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     description = _description;
     image = _image;
     manager = _manager;
+    administrated = Administrated(administratedAddress);
   }
 
   /**
@@ -464,7 +215,6 @@ contract Campaign is Approvable, ReentrancyGuard {
     @dev modifier restricts access to only the Campaign Manager of an Admin
    */
   modifier onlyManagerOrAdmin() {
-    // FIXME: Is this modifier still used/required? 
     require(msg.sender == manager || administrated.isAdmin(msg.sender), "Only campaign manager or admin authorized");
     _;
   }
@@ -529,8 +279,6 @@ contract Campaign is Approvable, ReentrancyGuard {
     _;
   }
 
-
-
   // INPUT VALIDATION
   /**
     @dev modifier validates contributions for interger overflow errors 
@@ -544,7 +292,31 @@ contract Campaign is Approvable, ReentrancyGuard {
     _;
   }
 
-  // PRIVATE FUNCTIONS
+  // FUNCTIONS
+
+  /**
+    @dev returns true if msg.sender has the admin role
+    This funstion is required to be implemented by the EmergencyStoppable and Approvable Interfaces.
+    It is used to determine if the calling user (msg.sender) has the authority to stop/start
+    the contract.
+  */
+  function isAuthorized() 
+    internal 
+    returns(bool)
+  {
+    return administrated.isAdmin(msg.sender);
+  }
+
+  /**
+    @dev returns the number of admins
+    This function is required by the Approvable interface to determine the number of voters
+   */
+   function numVoters()
+    internal
+    returns(uint)
+  {
+    return administrated.numAdmins();
+  }
 
   /**
     @dev implements the onApproval function from the Approvable Contract
