@@ -7,9 +7,9 @@ let coolImages = require('cool-images')
 // let increaseTime = require('zeppelin-solidity/test/helpers/increaseTime')
 
 const NUM_ADMINS = 3
-const NUM_CAMPAIGNS = 10
-const NUM_APPROVALS = 5
-const NUM_REJECTIONS = 2
+const NUM_CAMPAIGNS = 20
+const NUM_APPROVALS = 15
+const NUM_REJECTIONS = 3
 
 const SALT = 12345
 const APPROVE_VOTE_OPTION = true
@@ -18,11 +18,11 @@ const APPROVE_VOTE_SECRET = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [APPR
 const REJECT_VOTE_SECRET = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [REJECT_VOTE_OPTION, SALT]).toString('hex')
 
 const GOAL_MIN = 20
-const GOAL_MAX = 30
+const GOAL_MAX = 50
 const DURATION_MIN = 1
 const DURATION_MAX = 7
 const CONTRIBUTION_MIN = 1
-const CONTRIBUTION_MAX = 8
+const CONTRIBUTION_MAX = 10
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
@@ -30,6 +30,8 @@ function increaseTime(duration) {
   const id = Date.now()
 
   return new Promise((resolve, reject) => {
+    console.log(`timestamp (before): ${new Date(web3.eth.getBlock('latest').timestamp * 1000)}`)
+    console.log('increasing time...')
     web3.currentProvider.sendAsync(
       {
         jsonrpc: '2.0',
@@ -47,6 +49,9 @@ function increaseTime(duration) {
             id: id + 1
           },
           (err2, res) => {
+            console.log(
+              `timestamp (after): ${new Date(web3.eth.getBlock('latest').timestamp * 1000)}`
+            )
             return err2 ? reject(err2) : resolve(res)
           }
         )
@@ -60,10 +65,12 @@ function getRandomInt(min, max) {
 }
 
 module.exports = function (callback) {
+  console.log('setup script starting...')
   const accounts = web3.eth.accounts
 
   let CampaignFactoryInstance
   let CampaignInstances = []
+  let CampaignEndDates = []
 
   let images = coolImages.many(200, 200, NUM_CAMPAIGNS)
 
@@ -121,7 +128,6 @@ module.exports = function (callback) {
     })
     .then(() => {
       // VOTE APPROVALS
-      console.log(`${CampaignInstances.length} campaigns created`)
       let votePromises = []
 
       for (let i = 0; i < NUM_APPROVALS; i++) {
@@ -184,7 +190,7 @@ module.exports = function (callback) {
       let contributePromises = []
 
       for (let i = 0; i < NUM_APPROVALS; i++) {
-        for (let j = 4; j < accounts.length; j++) {
+        for (let j = 4; j < accounts.length - 1; j++) {
           let contribution = web3.toWei(getRandomInt(CONTRIBUTION_MIN, CONTRIBUTION_MAX))
           if (contribution > 0) {
             console.log(
@@ -201,42 +207,43 @@ module.exports = function (callback) {
       return Promise.all(contributePromises)
     })
 
-    .then(increaseTime(FIVE_DAYS))
+    .then(() => increaseTime(FIVE_DAYS))
     .then(() => {
-      let transitionCampaignPromises = []
-      let campaignAddress
-      let timestamp
+      console.log('get camapign end dates...')
+      let endDatePromises = []
 
       for (let i = 0; i < NUM_CAMPAIGNS; i++) {
-        let transitionCampaignPromise = CampaignFactoryInstance.campaigns
-          .call(i, { from: accounts[0] })
-          .then((_campaignAddress) => {
-            campaignAddress = _campaignAddress
-            return web3.eth.getBlock('latest').timestamp
-          })
-          .then((_timestamp) => {
-            timestamp = _timestamp
-            // console.log(`timestamp: ${timestamp}`)
-            return Campaign.at(campaignAddress).endDate.call()
-          }).then((endDate) => {
-            // console.log(`endDate: ${endDate}`)
-            console.log(`campaign ${i}: timestamp: ${timestamp}, endDate: ${endDate}`)
-            if (timestamp >= endDate) {
-              console.log(`traansitioning campaign ${i}`)
-              return Campaign.at(campaignAddress).endCampaign({ from: accounts[0] })
-            }
-          }).catch((err) => {
-            console.log(`${err}`)
-          })
-        transitionCampaignPromises.push(transitionCampaignPromise)
+        let endDatePromise = CampaignInstances[i].endDate.call().then((endDate) => {
+          CampaignEndDates.push(Number(endDate))
+        })
+        endDatePromises.push(endDatePromise)
+      }
+
+      return Promise.all(endDatePromises)
+    })
+    .then(() => {
+      console.log('transition campaigns...')
+      let transitionCampaignPromises = []
+
+      for (let i = 0; i < NUM_CAMPAIGNS; i++) {
+        if (
+          CampaignEndDates[i] !== 0
+          && Number(web3.eth.getBlock('latest').timestamp) >= CampaignEndDates[i]
+        ) {
+          console.log(`ending campaign ${i}`)
+          let transitionCampaignPromise = CampaignInstances[i].endCampaign()
+          transitionCampaignPromises.push(transitionCampaignPromise)
+        }
       }
 
       return Promise.all(transitionCampaignPromises)
     })
 
-
     .then(() => {
       console.log('done')
       callback()
+    })
+    .catch((err) => {
+      console.log(`${err}}`)
     })
 }
