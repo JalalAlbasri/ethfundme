@@ -6,7 +6,7 @@ const { increaseTime } = require('zeppelin-solidity/test/helpers/increaseTime')
 
 const TWO_DAYS = 2 * 24 * 60 * 60
 
-contract('8 Campaign End Unsuccessfully', (accounts) => {
+contract('#8 Campaign End Unsuccessfully', (accounts) => {
   let CampaignFactoryInstance
   let CampaignInstance
 
