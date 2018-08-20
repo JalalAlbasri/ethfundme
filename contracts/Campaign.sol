@@ -523,6 +523,10 @@ contract Campaign is Approvable, ReentrancyGuard {
     return uint256(campaignState);
   }
 
+  /**
+    @dev Returns the total eth contributed by given user.
+    Useful for UI purposes.
+   */
   function getTotalContributed() 
     public
     view
