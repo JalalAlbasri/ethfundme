@@ -76,7 +76,7 @@ contract('#6 Campaign Cancellation', (accounts) => {
     })
   })
 
-  it('should cancel the campaign and campaign state should be set to Cancelled', (done) => {
+  it('should cancel the campaign and campaign state', (done) => {
     CampaignInstance.cancelCampaign({ from: accounts[3] }).then(() => {
       done()
     })
