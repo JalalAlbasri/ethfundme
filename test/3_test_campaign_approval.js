@@ -134,7 +134,7 @@ contract('#3 Campaign Approval', (accounts) => {
   })
 
   it('should place a vote from accounts[2]', (done) => {
-    CampaignInstance.vote(voteSecret1, { from: accounts[2] }).then(() => {
+    CampaignInstance.vote(voteSecret2, { from: accounts[2] }).then(() => {
       done()
     })
   })
