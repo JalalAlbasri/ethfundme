@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 import { updateCampaign } from '../actions/CampaignActions'
 
-import GoalProgress from './GoalProgress'
+import Progress from './Progress'
 import Vote from './Vote'
 import Contributions from './Contributions'
 import Contribute from './Contribute'
@@ -88,7 +88,7 @@ class Campaign extends Component {
             </div>
 
             {this.props.campaign.funds >= 0 ? (
-              <GoalProgress funds={this.props.campaign.totalContributedFunds} goal={this.props.campaign.goal} />
+              <Progress campaign={this.props.campaign} />
             ) : (
               ''
             )}
@@ -96,8 +96,6 @@ class Campaign extends Component {
             {(this.props.campaign.contributions || {}).length > 0 && (
               <Contributions campaign={this.props.campaign} />
             )}
-
-            {/* TODO: Don't show the footer unless there's content in it */}
 
             <Contribute campaign={this.props.campaign} />
             <Withdraw campaign={this.props.campaign} />

@@ -31,7 +31,7 @@ class Withdraw extends Component {
     ) {
       return (
         <div className="Withdraw container mt-3">
-          <div class={'alert ' + (isManager ? 'alert-success' : 'alert-warning')}>
+          <div className={'alert ' + (isManager ? 'alert-success' : 'alert-warning')}>
             {isManager
               ? 'Congratulations your campaign was successful. You may withdraw the campaign funds'
               : 'The campaign was unsuccessful. You may withdraw your contributed funds'}
@@ -43,7 +43,7 @@ class Withdraw extends Component {
           >
             <FontAwesomeIcon className="button-icon" icon="arrow-circle-down" />
             Withdraw
-            {/* {isManager ? ' ' + this.props.campaign.funds + ' eth' : ' ' + this.props.campaign.totalContributed + ' eth'} */}
+            {isManager ? ' ' + this.props.campaign.funds + ' eth' : ' ' + this.props.campaign.totalContributed + ' eth'}
           </button>
         </div>
       )

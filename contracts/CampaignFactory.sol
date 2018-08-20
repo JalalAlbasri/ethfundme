@@ -23,7 +23,7 @@
 // DONE: Change CampaignFactory to CampaignFactory
 // TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
 // DONE: Approvable in its own file?
-// TASK: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
+// DONE: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
 // TASK: use increaseTime from openzeppelin! Setup
 
 // TESTS:
@@ -46,7 +46,11 @@
   // -- TASK: UI for stopping efm + tests (stop camapaign creation then resume)
   // -- TASK: UI for adding admins
   // -- TASK: Check events in tests too
-  // TASK: Something wrong with goal progress calculation
+  // TASK: Progress Calculator, use funds when active, use totalRaised when Successful/Unsuccessful
+  // TASK: Fix Withdrawn in ui, show when active
+  // TASK: Rename getTotalContributed to getTotalRaisedFunds
+  // TASK: Always show current funds in Campaign
+  // TASK: Don't show goalProgress on Pending Campaign
 
 // Submitable
 // TASK: Packaging and Other Documentation

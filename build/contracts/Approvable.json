@@ -246,9 +246,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.4.24;\r\n\r\nimport \"./EmergencyStoppable.sol\";\r\n\r\n/**\r\n  @title Approvable\r\n  @dev Abstract Contract\r\n  \r\n  Provides the ability for a Contracts Approval State to be managed by a group of Administrators\r\n  via a Commit/Reveal Voting Pattern.\r\n\r\n  keccak256 encrypted vote options + salts are comitted during the commit phase as vote secrets.\r\n  vote secrets are revealed during the reveal phase and the votes are tallied.\r\n\r\n  Tally will stop early if enough votes to come to a decision are found.\r\n  A strict majority is not require (if there are an even number of voters 50% is enough)\r\n  (See modifier endReveal() for details)\r\n\r\n  Requires a contract that implements the Administrated Interface to be supplied in the contructor\r\n  to restrict access to only authorized voters.\r\n  \r\n  Contracts that extend this contract must implement the onApproval(); and onRejection(); abstract functions.\r\n\r\n  Extends the EmergencyStoppable Contract allowing it to suspend voting during Stopped State.\r\n  \r\n */\r\n\r\ncontract Approvable is EmergencyStoppable {\r\n  /**\r\n    Events\r\n  */\r\n\r\n  /**\r\n    @dev Event emitted when a Vote is Committed\r\n    The payload is address of the vote committer\r\n   */\r\n  event voteCommitted (address indexed voteCommiter);\r\n  \r\n  /**\r\n    @dev Event emitted when a Vote is Reveal\r\n    The payload is address of the vote revealer\r\n   */\r\n  event voteRevealed (address indexed voteRevealer);\r\n  \r\n  /**\r\n    @dev Event emitted when all votes have been Comitted\r\n   */  \r\n  event allVotesComitted();\r\n  \r\n  /**\r\n    @dev Event emitted when enough votes have been revealed to\r\n    conclude arrive at a decision on the vote.\r\n    payload is the outcome of the vote.\r\n   */\r\n  event votePassed (bool isApproved);\r\n  \r\n  /**\r\n    STATE VARIABLES\r\n   */\r\n\r\n  // DATA STRUCTURES\r\n\r\n  /**\r\n    @dev State Management Pattern\r\n    The states of the Commit/Reveal Voting process\r\n   */\r\n  enum ApprovalStates {\r\n    Commit,\r\n    Reveal,\r\n    Approved,\r\n    Rejected,\r\n    Cancelled\r\n  }\r\n  \r\n  \r\n  // Stores the committed voteSecrets\r\n  // stored in a mappign to make retrieval by account easy\r\n  mapping(address => bytes32) public voteSecrets;\r\n  \r\n  // Keeps track of what accnounts have voted\r\n  mapping(address => bool) public hasVoted;\r\n  // keeps track of what accounts have revealed\r\n  mapping(address => bool) public hasRevealed;\r\n\r\n  // Tracks the number of Votes committed and revealed.\r\n  // Required becuase secrets are stored in a mapping\r\n  uint256 public numVoteSecrets;\r\n  uint256 public numVoteReveals;\r\n\r\n  // Initial Approval State\r\n  ApprovalStates public approvalState = ApprovalStates.Commit;\r\n  \r\n  // Tallies the number of approvals and rejections\r\n  uint256 public numApprovals;\r\n  uint256 public numRejections;\r\n\r\n  /**\r\n    @dev constructor\r\n  */\r\n  constructor () public\r\n  {\r\n  }\r\n\r\n  /**\r\n    MODIFIERS\r\n   */\r\n\r\n  // ACCESS RESTRICTION\r\n  /**\r\n    @dev modifier to restrict access to only admins\r\n   */\r\n  modifier onlyAuthorized() {\r\n    require(isAuthorized(), \"Only authorized\");\r\n    _;\r\n  }\r\n\r\n  /**\r\n    @dev modifier to restrict access to only accounts that have voted\r\n   */\r\n  modifier onlyVoted() {\r\n    require(hasVoted[msg.sender] == true, \"Account has not voted\");\r\n    _;\r\n  }\r\n\r\n  /**\r\n    @dev modifier to restrict access to only accounts that have not revealed yet\r\n   */\r\n  modifier onlyNotRevealed() {\r\n    require(hasRevealed[msg.sender] == false, \"Account has already revealed\");\r\n    _;\r\n  }\r\n\r\n  // STATE MANAGEMENT\r\n  /**\r\n    @dev modifier to restrict function execution based on approval state\r\n   */\r\n  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {\r\n    require(approvalState == _approvalState, \"Invalid approval state\");\r\n    _;\r\n  }\r\n\r\n  /**\r\n    @dev transition state from commit to reveal\r\n   */\r\n  modifier endCommit() {\r\n    _;\r\n    if (numVoteSecrets == numVoters()) { //requires that all admins have voted\r\n      approvalState = ApprovalStates.Reveal;\r\n      emit allVotesComitted();\r\n    }\r\n  }\r\n\r\n  // Doesn't require all votes to be revealed only enough.\r\n  modifier endReveal() {\r\n    _;\r\n    // number of reveals required to pass the vote\r\n    uint256 numAdmins = numVoters();\r\n    uint256 required = numAdmins / 2 + numAdmins % 2;\r\n\r\n    if (numApprovals >= required) {\r\n      approvalState = ApprovalStates.Approved;\r\n      onApproval();\r\n      emit votePassed(true);\r\n    }\r\n    if (numRejections >= required) {\r\n      approvalState = ApprovalStates.Rejected;\r\n      onRejection();\r\n      emit votePassed(false);\r\n    }\r\n  }\r\n\r\n  /**\r\n    INTERFACE\r\n   */\r\n\r\n  // ABSTRACT FUNCTIONS\r\n  /**\r\n    @dev called on approval. Must be implemented by Contracts that extend this\r\n   */\r\n  function onApproval() internal;\r\n  /**\r\n    @dev called on rejecting. Must be implemented by Contracts that extend this\r\n   */\r\n  function onRejection() internal;\r\n\r\n  /**\r\n    @dev Must be implemented by Contracts that extend this as a way to determine \r\n    if an account is authorized to place a vote\r\n    Also implements EmergencyStoppable Interface\r\n   */\r\n   function isAuthorized() internal returns(bool);\r\n\r\n  /**\r\n    @dev Must be implemented by Contracts that extend this as a way to determine \r\n    the total number of voters\r\n   */\r\n   function numVoters() internal returns(uint256);\r\n\r\n  // INTERFACE\r\n  /**\r\n    @dev Allows authroized accounts to place a vote\r\n    @param secretVote keccak256 encrypted voteOption and Salt\r\n    The encrypted voteSecrets are collected during the commit phase\r\n   */\r\n function vote(bytes32 secretVote) public \r\n    stoppedInEmergency\r\n    onlyAuthorized\r\n    onlyDuringApprovalState(ApprovalStates.Commit) \r\n    endCommit {\r\n      voteSecrets[msg.sender] = secretVote;\r\n      if (hasVoted[msg.sender] == false) {\r\n        numVoteSecrets++;\r\n        hasVoted[msg.sender] = true;\r\n        emit voteCommitted(msg.sender);\r\n    }\r\n  }\r\n\r\n  /**\r\n    @dev Allows authorized accounts to reveal votes\r\n    @param voteOption a boolean vote option true to approve and false to reject\r\n    @param salt salt used in encryption of vote secret\r\n    // reverts if keccak256 encryption of params does not match previsouly comitted voteSecret\r\n   */\r\n  function reveal(bool voteOption, uint256 salt) public \r\n    stoppedInEmergency\r\n    onlyVoted\r\n    onlyNotRevealed\r\n    onlyDuringApprovalState(ApprovalStates.Reveal) \r\n    endReveal {\r\n      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender], \"Vote secrets do not match\");\r\n\r\n      if (voteOption) {\r\n        numApprovals++;\r\n      } else {\r\n        numRejections++;\r\n      }\r\n\r\n      numVoteReveals++;\r\n      hasRevealed[msg.sender] = true;\r\n      emit voteRevealed(msg.sender);\r\n  }\r\n\r\n}",
-  "sourcePath": "C:\\Users\\jalal\\GitHub\\EthFundMe\\contracts\\Approvable.sol",
+  "sourcePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/Approvable.sol",
   "ast": {
-    "absolutePath": "/C/Users/jalal/GitHub/EthFundMe/contracts/Approvable.sol",
+    "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/Approvable.sol",
     "exportedSymbols": {
       "Approvable": [
         391
@@ -269,12 +269,12 @@
         "src": "0:24:1"
       },
       {
-        "absolutePath": "/C/Users/jalal/GitHub/EthFundMe/contracts/EmergencyStoppable.sol",
+        "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/EmergencyStoppable.sol",
         "file": "./EmergencyStoppable.sol",
         "id": 95,
         "nodeType": "ImportDirective",
         "scope": 392,
-        "sourceUnit": 1240,
+        "sourceUnit": 1289,
         "src": "28:34:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -288,10 +288,10 @@
               "id": 96,
               "name": "EmergencyStoppable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1239,
+              "referencedDeclaration": 1288,
               "src": "1044:18:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_EmergencyStoppable_$1239",
+                "typeIdentifier": "t_contract$_EmergencyStoppable_$1288",
                 "typeString": "contract EmergencyStoppable"
               }
             },
@@ -301,7 +301,7 @@
           }
         ],
         "contractDependencies": [
-          1239
+          1288
         ],
         "contractKind": "contract",
         "documentation": "@title Approvable\r\n@dev Abstract Contract\r\nProvides the ability for a Contracts Approval State to be managed by a group of Administrators\r\nvia a Commit/Reveal Voting Pattern.\r\nkeccak256 encrypted vote options + salts are comitted during the commit phase as vote secrets.\r\nvote secrets are revealed during the reveal phase and the votes are tallied.\r\nTally will stop early if enough votes to come to a decision are found.\r\nA strict majority is not require (if there are an even number of voters 50% is enough)\r\n(See modifier endReveal() for details)\r\nRequires a contract that implements the Administrated Interface to be supplied in the contructor\r\nto restrict access to only authorized voters.\r\nContracts that extend this contract must implement the onApproval(); and onRejection(); abstract functions.\r\nExtends the EmergencyStoppable Contract allowing it to suspend voting during Stopped State.\r",
@@ -309,7 +309,7 @@
         "id": 391,
         "linearizedBaseContracts": [
           391,
-          1239
+          1288
         ],
         "name": "Approvable",
         "nodeType": "ContractDefinition",
@@ -898,10 +898,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "2994:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -991,7 +991,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1461,
+                              "referencedDeclaration": 1510,
                               "src": "3186:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1083,10 +1083,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "3169:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1176,7 +1176,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1461,
+                              "referencedDeclaration": 1510,
                               "src": "3401:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -1268,10 +1268,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "3381:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -1405,10 +1405,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "3656:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -2466,7 +2466,7 @@
             "scope": 391,
             "src": "5063:47:1",
             "stateMutability": "nonpayable",
-            "superFunction": 1218,
+            "superFunction": 1267,
             "visibility": "internal"
           },
           {
@@ -2563,7 +2563,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1461,
+                          "referencedDeclaration": 1510,
                           "src": "5688:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2656,7 +2656,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1461,
+                          "referencedDeclaration": 1510,
                           "src": "5734:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -2789,7 +2789,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1461,
+                                "referencedDeclaration": 1510,
                                 "src": "5803:3:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -2863,7 +2863,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1461,
+                                "referencedDeclaration": 1510,
                                 "src": "5851:3:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -2941,7 +2941,7 @@
                   "name": "stoppedInEmergency",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1204,
+                  "referencedDeclaration": 1253,
                   "src": "5560:18:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3158,7 +3158,7 @@
                                   "name": "abi",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 1448,
+                                  "referencedDeclaration": 1497,
                                   "src": "6391:3:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_abi",
@@ -3205,7 +3205,7 @@
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1455,
+                            "referencedDeclaration": 1504,
                             "src": "6381:9:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
@@ -3252,7 +3252,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1461,
+                              "referencedDeclaration": 1510,
                               "src": "6442:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -3324,10 +3324,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "6373:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -3518,7 +3518,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1461,
+                          "referencedDeclaration": 1510,
                           "src": "6634:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -3592,7 +3592,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1461,
+                          "referencedDeclaration": 1510,
                           "src": "6679:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -3667,7 +3667,7 @@
                   "name": "stoppedInEmergency",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1204,
+                  "referencedDeclaration": 1253,
                   "src": "6241:18:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -3866,7 +3866,7 @@
     "src": "0:6701:1"
   },
   "legacyAST": {
-    "absolutePath": "/C/Users/jalal/GitHub/EthFundMe/contracts/Approvable.sol",
+    "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/Approvable.sol",
     "exportedSymbols": {
       "Approvable": [
         391
@@ -3887,12 +3887,12 @@
         "src": "0:24:1"
       },
       {
-        "absolutePath": "/C/Users/jalal/GitHub/EthFundMe/contracts/EmergencyStoppable.sol",
+        "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/EmergencyStoppable.sol",
         "file": "./EmergencyStoppable.sol",
         "id": 95,
         "nodeType": "ImportDirective",
         "scope": 392,
-        "sourceUnit": 1240,
+        "sourceUnit": 1289,
         "src": "28:34:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -3906,10 +3906,10 @@
               "id": 96,
               "name": "EmergencyStoppable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 1239,
+              "referencedDeclaration": 1288,
               "src": "1044:18:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_EmergencyStoppable_$1239",
+                "typeIdentifier": "t_contract$_EmergencyStoppable_$1288",
                 "typeString": "contract EmergencyStoppable"
               }
             },
@@ -3919,7 +3919,7 @@
           }
         ],
         "contractDependencies": [
-          1239
+          1288
         ],
         "contractKind": "contract",
         "documentation": "@title Approvable\r\n@dev Abstract Contract\r\nProvides the ability for a Contracts Approval State to be managed by a group of Administrators\r\nvia a Commit/Reveal Voting Pattern.\r\nkeccak256 encrypted vote options + salts are comitted during the commit phase as vote secrets.\r\nvote secrets are revealed during the reveal phase and the votes are tallied.\r\nTally will stop early if enough votes to come to a decision are found.\r\nA strict majority is not require (if there are an even number of voters 50% is enough)\r\n(See modifier endReveal() for details)\r\nRequires a contract that implements the Administrated Interface to be supplied in the contructor\r\nto restrict access to only authorized voters.\r\nContracts that extend this contract must implement the onApproval(); and onRejection(); abstract functions.\r\nExtends the EmergencyStoppable Contract allowing it to suspend voting during Stopped State.\r",
@@ -3927,7 +3927,7 @@
         "id": 391,
         "linearizedBaseContracts": [
           391,
-          1239
+          1288
         ],
         "name": "Approvable",
         "nodeType": "ContractDefinition",
@@ -4516,10 +4516,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "2994:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -4609,7 +4609,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1461,
+                              "referencedDeclaration": 1510,
                               "src": "3186:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -4701,10 +4701,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "3169:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -4794,7 +4794,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1461,
+                              "referencedDeclaration": 1510,
                               "src": "3401:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -4886,10 +4886,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "3381:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -5023,10 +5023,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "3656:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -6084,7 +6084,7 @@
             "scope": 391,
             "src": "5063:47:1",
             "stateMutability": "nonpayable",
-            "superFunction": 1218,
+            "superFunction": 1267,
             "visibility": "internal"
           },
           {
@@ -6181,7 +6181,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1461,
+                          "referencedDeclaration": 1510,
                           "src": "5688:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -6274,7 +6274,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1461,
+                          "referencedDeclaration": 1510,
                           "src": "5734:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -6407,7 +6407,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1461,
+                                "referencedDeclaration": 1510,
                                 "src": "5803:3:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -6481,7 +6481,7 @@
                                 "name": "msg",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 1461,
+                                "referencedDeclaration": 1510,
                                 "src": "5851:3:1",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_magic_message",
@@ -6559,7 +6559,7 @@
                   "name": "stoppedInEmergency",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1204,
+                  "referencedDeclaration": 1253,
                   "src": "5560:18:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -6776,7 +6776,7 @@
                                   "name": "abi",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 1448,
+                                  "referencedDeclaration": 1497,
                                   "src": "6391:3:1",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_magic_abi",
@@ -6823,7 +6823,7 @@
                             "name": "keccak256",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 1455,
+                            "referencedDeclaration": 1504,
                             "src": "6381:9:1",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_sha3_pure$__$returns$_t_bytes32_$",
@@ -6870,7 +6870,7 @@
                               "name": "msg",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 1461,
+                              "referencedDeclaration": 1510,
                               "src": "6442:3:1",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_magic_message",
@@ -6942,10 +6942,10 @@
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
-                        1464,
-                        1465
+                        1513,
+                        1514
                       ],
-                      "referencedDeclaration": 1465,
+                      "referencedDeclaration": 1514,
                       "src": "6373:7:1",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
@@ -7136,7 +7136,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1461,
+                          "referencedDeclaration": 1510,
                           "src": "6634:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -7210,7 +7210,7 @@
                           "name": "msg",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 1461,
+                          "referencedDeclaration": 1510,
                           "src": "6679:3:1",
                           "typeDescriptions": {
                             "typeIdentifier": "t_magic_message",
@@ -7285,7 +7285,7 @@
                   "name": "stoppedInEmergency",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 1204,
+                  "referencedDeclaration": 1253,
                   "src": "6241:18:1",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -7489,5 +7489,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-19T12:32:40.571Z"
+  "updatedAt": "2018-08-20T17:49:10.587Z"
 }

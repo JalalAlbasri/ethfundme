@@ -120,14 +120,14 @@ function getCampaignDetails(address) {
         })
         .then((hasWithdrawn) => {
           campaign.hasWithdrawn = hasWithdrawn
-        //   return CampaignInstance.totalContributed.call(coinbase, { from: coinbase })
-        // })
-        // .then((totalContributed) => {
-        //   campaign.totalContributed = web3.fromWei(Number(totalContributed))
-          return CampaignInstance.getTotalContributedFunds.call({ from: coinbase })
+          return CampaignInstance.totalRaised.call({ from: coinbase })
         })
-        .then((totalContributedFunds) => {
-          campaign.totalContributedFunds = web3.fromWei(Number(totalContributedFunds))
+        .then((totalRaised) => {
+          campaign.totalRaised = web3.fromWei(Number(totalRaised))
+          return CampaignInstance.getTotalContributed.call({ from: coinbase })
+        })
+        .then((totalContributed) => {
+          campaign.totalContributed = web3.fromWei(Number(totalContributed))
           return CampaignInstance.getNumContributions.call({ from: coinbase })
         })
         .then((numContributions) => {
@@ -271,7 +271,10 @@ export function contribute(campaign, contribution) {
         .at(campaign.address)
         .then((instance) => {
           CampaignInstance = instance
-          return CampaignInstance.contribute({ from: coinbase, value: web3.toWei(contribution, 'ether') })
+          return CampaignInstance.contribute({
+            from: coinbase,
+            value: web3.toWei(contribution, 'ether')
+          })
         })
         .then((result) => {
           dispatch(updateCampaign(campaign.address))

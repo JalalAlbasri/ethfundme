@@ -128,6 +128,10 @@ contract Campaign is Approvable, ReentrancyGuard {
   // Initialized to Contract's balance in case the Contract is 
   // created with eth in the balance
   uint256 public funds = address(this).balance;
+
+  // Tracks the total raised funds, since funds will be decremented
+  // when withdrawls are made
+  uint256 public totalRaised = funds;
   
   // The Campaign EndDate.
   // Will be set once the Campaign is Approved.
@@ -206,7 +210,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     @dev modifier restricts access to only not the Campaign Manager
    */
   modifier onlyNotManager() {
-    require(msg.sender != manager);
+    require(msg.sender != manager, "Campaign manager not authorized");
     _;
   }
 
@@ -371,6 +375,11 @@ contract Campaign is Approvable, ReentrancyGuard {
     }
 
     funds -= totalContributed;
+    // If the campaign is still active withdrawl is an emergency withdrawl
+    // In that case decrement the withdrawl amount from totalRaised
+    if (campaignState == CampaignStates.Active) {
+      totalRaised -= totalContributed;
+    }
     emit withdrawlMade(msg.sender, totalContributed);
     msg.sender.transfer(totalContributed);
   }
@@ -396,6 +405,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     hasWithdrawn[msg.sender] = false;
     contributions.push(Contribution(msg.sender, msg.value, block.timestamp, false));
     funds += msg.value;
+    totalRaised += msg.value;
     emit contributionMade(msg.sender, msg.value);
   }
 
@@ -471,22 +481,6 @@ contract Campaign is Approvable, ReentrancyGuard {
     return contributions.length;
   }
 
-  /**
-    @dev calculates and returns the total contributed funds
-    Useful because funds state variable tracks current funds and can change when a 
-    withdrawl is made
-    Could be replaced by another state variable 'totalContributedFunds' that is incremented
-    with funds but not decremented during withdrawls
-    // TODO: rename to totalRaised
-  */
-  function getTotalContributedFunds() public view returns(uint256) {
-    uint256 result = 0;
-    for (uint256 i = 0; i < contributions.length; i++) {
-      result += contributions[i].amount;
-    }
-    return result;
-  }
-
   // TESTING/UI HELPERS
   // These functions are not crucial to contract functionality but useful for 
   // testing and UI 
@@ -527,6 +521,20 @@ contract Campaign is Approvable, ReentrancyGuard {
     returns(uint256) 
   {
     return uint256(campaignState);
+  }
+
+  function getTotalContributed() 
+    public
+    view
+    returns (uint)
+  {
+    uint256 totalContributed = 0;
+    for (uint256 i = 0; i < contributions.length; i++) {
+      if (contributions[i].addr == msg.sender) {
+        totalContributed += contributions[i].amount;
+      }
+    }
+    return totalContributed;
   }
 
 }
