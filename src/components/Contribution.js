@@ -30,15 +30,13 @@ class Contribution extends Component {
         <td className="center">
           <Moment from={this.state.timestamp} date={time} />
         </td>
-        {this.props.campaignState === 'Unsuccessful' || this.props.campaignState === 'Cancelled' ? (
-          <td className="center">
-            {this.props.hasWithdrawn ? (
-              <FontAwesomeIcon className="button-icon green" icon="check-circle" />
-            ) : (
-              <FontAwesomeIcon className="button-icon red" icon="times-circle" />
-            )}
-          </td>
-        ) : null}
+        <td className="center">
+          {this.props.contribution.withdrawn ? (
+            <FontAwesomeIcon className="button-icon green" icon="check-circle" />
+          ) : (
+            <FontAwesomeIcon className="button-icon grey" icon="circle" />
+          )}
+        </td>
       </tr>
     )
   }

@@ -39,6 +39,8 @@ class App extends Component {
           <div className="row">
             <div className="jumbotron">
             {/* <div className="jumbotron mb-0"> */}
+              <img className="triangles triangles-top" src="../../public/triangles-top.svg"/>
+              <img className="triangles triangles-bottom" src="../../public/triangles-bottom.svg"/>
               <img src="../../public/logo.svg"/>
               <p className="display-4">
                 <span className="eth">eth</span>
@@ -49,8 +51,8 @@ class App extends Component {
               {/* <p className="lead">Fund Your Future</p> */}
               {/* <p className="lead">Ethereum Smart Contract Based Crowd Funding</p> */}
               <hr className="my-4" />
-              <p className="lead">Intelligently, Securely and Trustlessly Manage Campaigns with Smart Contracts</p>
-              <CreateCampaignButton text="Get Started"/>
+              <p className="lead mx-auto">Intelligently, Securely and Trustlessly Manage Crowd Funding Campaigns with Smart Contracts</p>
+              {/* <CreateCampaignButton text="Get Started"/> */}
               {/* <a className="btn btn-outline-success btn-lg" href="#" role="button">Learn more</a> */}
             </div>
           </div>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1028 969" style="enable-background:new 0 0 1028 969;" xml:space="preserve">
+<style type="text/css">
+	.st0{clip-path:url(#SVGID_2_);}
+	.st1{fill:#F7C841;}
+	.st2{fill:#64B5F6;}
+	.st3{fill:#EA2143;}
+	.st4{fill:#90CAF9;}
+	.st5{fill:#FF5065;}
+	.st6{opacity:0.21;fill:#072535;enable-background:new    ;}
+	.st7{fill:#FF9A15;}
+	.st8{fill:#2196F3;}
+	.st9{fill:#1976D2;}
+	.st10{fill:#42A5F5;}
+	.st11{fill:none;}
+	.st12{fill:url(#SVGID_3_);}
+	.st13{opacity:0.42;fill:#C90D36;enable-background:new    ;}
+	.st14{opacity:0.25;fill:#FF7517;enable-background:new    ;}
+	.st15{opacity:0.15;fill:#FFFFFF;}
+</style>
+<title>triangles-bottom</title>
+<g>
+	<g id="Layer_1_1_">
+		<g>
+			<defs>
+				<rect id="SVGID_1_" width="1028" height="969"/>
+			</defs>
+			<clipPath id="SVGID_2_">
+				<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+			</clipPath>
+			<g class="st0">
+				<polygon class="st1" points="302.1,601.8 247.9,568.6 266.7,617.3 				"/>
+				<polygon class="st2" points="408.4,461.4 332.1,470.5 386.7,514.9 				"/>
+				<polygon class="st1" points="158.1,743.9 182.5,699.6 209.1,724 				"/>
+				<polygon class="st3" points="589.5,266.8 545.3,262.7 553.4,313.1 				"/>
+				<polygon class="st4" points="64.7,730 0.1,714.2 19.6,750.7 				"/>
+				<polygon class="st5" points="157.7,790.5 125.4,782.6 135.2,800.9 				"/>
+				<path class="st6" d="M1028,9.8L724.3,203l158.7,316l-297.6-56.8l42,273L477,715.5l-27.9,131.6l-191.2-89L104,969h840
+					c46.4,0,84-37.6,84-84V9.8z"/>
+				<path class="st1" d="M1030.3,765.5l-528.4-13.9l-73.1,221.3h517.6c46.4,0,84-37.6,84-84L1030.3,765.5z"/>
+				<path class="st7" d="M1070,560.1l-447.2-57.7l48.4,506.6h306.6c50.9,0,92.2-40.5,92.2-90.4V560.1z"/>
+				<path class="st1" d="M1030.3,888.9V556l-407.5-53.6c0,0,219.2,240,408.2,470.6C1031,973,1030.3,912.5,1030.3,888.9z"/>
+				<polygon class="st8" points="1030.3,781 767,218.6 1030.3,51.1 				"/>
+				<polygon class="st9" points="767,218.6 1030.3,51.1 1030.3,203.3 				"/>
+				<polygon class="st10" points="1030.3,454.6 767,218.6 1030.3,203.3 				"/>
+				<polygon class="st7" points="501.9,751.6 428.8,972.9 635.8,972.9 				"/>
+				<polygon class="st5" points="735.8,972.9 271.6,800 145.4,972.9 				"/>
+				<polygon class="st3" points="735.8,972.9 271.6,800 341.4,972.9 				"/>
+				<line class="st11" x1="678.9" y1="951.7" x2="664.4" y2="946.3"/>
+				
+					<linearGradient id="SVGID_3_" gradientUnits="userSpaceOnUse" x1="622.82" y1="328.225" x2="1030.35" y2="328.225" gradientTransform="matrix(1 0 0 -1 0 970)">
+					<stop  offset="0" style="stop-color:#FFFFFF;stop-opacity:0"/>
+					<stop  offset="1" style="stop-color:#FFFFFF"/>
+				</linearGradient>
+				<polygon class="st12" points="1030.3,781.1 622.8,502.5 911.8,540.4 				"/>
+				<polygon class="st13" points="271.6,800 145.4,972.9 340.2,825.5 				"/>
+				<path class="st14" d="M811.1,718.3L678.9,951.7l-14.5-5.4l-41.6-443.9C622.8,502.5,703.2,592.5,811.1,718.3z"/>
+				<path class="st14" d="M767,218.6l151,322.6l-6.2-0.8l0,0l-142.5-18.7l-146.5-19.3l4.3,45.9l19.4,207l-144.6-3.8l-39.5,119.5
+					L271.6,800L145.4,972.9h801c22.8,0,84.7,0,84.6,0.1s-0.7-81.2-0.7-84.1V51.1L767,218.6z"/>
+			</g>
+		</g>
+	</g>
+</g>
+<rect y="1" class="st15" width="1030.9" height="969"/>
+</svg>

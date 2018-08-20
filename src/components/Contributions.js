@@ -23,12 +23,9 @@ class Contributions extends Component {
               <th scope="col" className="center">
                 Date
               </th>
-              {this.props.campaign.campaignState === 'Unsuccessful'
-              || this.props.campaign.campaignState === 'Cancelled' ? (
-                <th scope="col" className="center">
-                  Withdrawn
-                </th>
-                ) : null}
+              <th scope="col" className="center">
+                Withdrawn
+              </th>
             </tr>
           </thead>
           <tbody>

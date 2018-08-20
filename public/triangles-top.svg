@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 22.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1139 1139" style="enable-background:new 0 0 1139 1139;" xml:space="preserve">
+<style type="text/css">
+	.st0{clip-path:url(#SVGID_2_);}
+	.st1{opacity:0.21;fill:#072535;enable-background:new    ;}
+	.st2{fill:#64B5F6;}
+	.st3{fill:#FF9A15;}
+	.st4{fill:#90CAF9;}
+	.st5{fill:#EA2143;}
+	.st6{fill:#FF5065;}
+	.st7{fill:#AA0428;}
+	.st8{fill:#F9D640;}
+	.st9{fill:#F7C841;}
+	.st10{fill:#1E88E5;}
+	.st11{opacity:0.2;fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}
+</style>
+<title>triangles-top</title>
+<g>
+	<g id="Layer_1_1_">
+		<g>
+			<defs>
+				<rect id="SVGID_1_" width="1139" height="1139"/>
+			</defs>
+			<clipPath id="SVGID_2_">
+				<use xlink:href="#SVGID_1_"  style="overflow:visible;"/>
+			</clipPath>
+			<g class="st0">
+				<path class="st1" d="M73.2-7.3C28.8-7.3-7.1,28.7-7.1,73c0,0,0,0,0,0v905.2l175.9-216.8L76.3,659.6l184.3-211.5l210.2,84.6
+					l26.6-438.3l200.8,118.3L1056-7.3H73.2z"/>
+				<polygon class="st2" points="568.8,362.9 621.9,406.1 559.9,407.2 				"/>
+				<polygon class="st3" points="797.2,353.9 831.2,393.6 852.5,336.9 				"/>
+				<polygon class="st4" points="1102.3,268.8 1087.1,301.7 1139,301.7 				"/>
+				<polygon class="st3" points="371.4,618.5 461.1,668.3 381.4,693.2 				"/>
+				<polygon class="st5" points="300.3,902.8 341.4,889.6 337.5,939.1 				"/>
+				<polygon class="st6" points="944.1,291.6 911.8,283.7 921.6,302 				"/>
+				<path class="st6" d="M480.4-39l-32.5,534.9L241.8,413L-37.4,300.7V47.5C-37.4-0.3,1.3-39,49.1-39H480.4z"/>
+				<polygon class="st5" points="480.4,-0.5 450.2,495.9 99.2,-0.5 				"/>
+				<polygon class="st2" points="-0.1,716.2 259,419 -0.1,314.8 				"/>
+				<polygon class="st7" points="480.4,-0.5 450.2,495.9 336.8,-0.5 				"/>
+				<polygon class="st8" points="1005.4,-0.5 704.9,184.3 391.1,-0.5 				"/>
+				<polygon class="st3" points="704.9,184.3 391.1,-0.5 681.8,-0.5 				"/>
+				<polygon class="st9" points="681.8,-0.5 704.9,184.3 844.4,-0.5 				"/>
+				<polygon class="st10" points="-0.1,716.2 259,419 -0.1,479.2 				"/>
+				<polygon class="st3" points="-0.1,937.1 136.1,769.3 -0.1,619.5 				"/>
+				<polygon class="st9" points="-0.1,785.1 -0.1,937.1 136.1,769.3 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+<rect x="0" class="st11" width="1139" height="1139"/>
+</svg>

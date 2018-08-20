@@ -35,7 +35,7 @@ class EmergencyWithdraw extends Component {
           <button type="button" className="btn btn-outline-success" onClick={this.handleClick}>
             <FontAwesomeIcon className="button-icon" icon="exclamation-triangle" />
             Emergency Withdraw
-            {this.props.campaign.totalContributed} eth
+            {' ' + this.props.campaign.totalContributed + ' eth'}
           </button>
         </div>
       )

@@ -143,7 +143,8 @@ function getCampaignDetails(address) {
                   campaign.contributions[i] = {
                     address: contribution[0],
                     amount: web3.fromWei(Number(contribution[1])),
-                    time: Number(contribution[2])
+                    time: Number(contribution[2]),
+                    withdrawn: contribution[3]
                   }
                 })
               contributionPromises.push(contributionPromise)

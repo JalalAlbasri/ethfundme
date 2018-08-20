@@ -2,7 +2,7 @@
   color: @md-blue-500;
 }
 .fund {
-  font-weight: 600;
+  // font-weight: 600;
   color: @md-amber-500;
 }
 .me {
@@ -11,12 +11,16 @@
 
 .jumbotron {
   z-index: 10000;
-  background-image: url('../../public/jumbo.png');
+  // background-image: url('../../public/jumbo.png');
+  background-color: #fff !important;
+  // background-color: @md-grey-100 !important;
   border-radius: 0 !important;
   background-size: 100% 100%;
   width: 100%;
+  height: 50vh;
   text-align: center;
-  color: #fff;
+  color: @md-grey-500;
+  // position: relative;
 
   .title {
     font-size: 2.5rem;
@@ -30,7 +34,7 @@
   }
 
   hr {
-    border-top-color: #fff;
+    border-top-color: @md-grey-500;
     width: 50%;
     // border-top-color: @md-pink-500;
   }
@@ -41,13 +45,30 @@
   }
 
 
-  // p {
-  //   .fund;
-  //   &.lead {
-  //     .eth;
-  //   }
-  // }
-  
+  p {
+    &.lead {
+      font-size: 1.5rem !important;
+      max-width: 600px;
+    }
+  }
+
+  .triangles {
+    width: 10%;
+    height: auto;
+  }
+
+  .triangles-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .triangles-bottom {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+  }
+
 }
 
 .sidebar-left {

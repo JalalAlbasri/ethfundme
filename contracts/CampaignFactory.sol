@@ -46,11 +46,10 @@
   // -- TASK: UI for stopping efm + tests (stop camapaign creation then resume)
   // -- TASK: UI for adding admins
   // -- TASK: Check events in tests too
-  // TASK: Progress Calculator, use funds when active, use totalRaised when Successful/Unsuccessful
+  // DONE: Progress Calculator, use funds when active, use totalRaised when Successful/Unsuccessful
   // TASK: Fix Withdrawn in ui, show when active
-  // TASK: Rename getTotalContributed to getTotalRaisedFunds
-  // TASK: Always show current funds in Campaign
-  // TASK: Don't show goalProgress on Pending Campaign
+  // DONE: Rename getTotalContributed to getTotalRaisedFunds
+  // DONE: Don't show goalProgress on Pending Campaign
 
 // Submitable
 // TASK: Packaging and Other Documentation
