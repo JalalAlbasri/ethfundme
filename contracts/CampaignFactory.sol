@@ -24,7 +24,6 @@
 // TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
 // DONE: Approvable in its own file?
 // DONE: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
-// TASK: use increaseTime from openzeppelin! Setup
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
@@ -47,7 +46,7 @@
   // -- TASK: UI for adding admins
   // -- TASK: Check events in tests too
   // DONE: Progress Calculator, use funds when active, use totalRaised when Successful/Unsuccessful
-  // TASK: Fix Withdrawn in ui, show when active
+  // DONE: Fix Withdrawn in ui, show when active
   // DONE: Rename getTotalContributed to getTotalRaisedFunds
   // DONE: Don't show goalProgress on Pending Campaign
 
