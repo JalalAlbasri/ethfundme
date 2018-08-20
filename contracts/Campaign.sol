@@ -111,6 +111,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     address addr;
     uint256 amount;
     uint256 timestamp;
+    bool withdrawn;
   }
 
   // Initial Campaign State set to Pending
@@ -150,8 +151,6 @@ contract Campaign is Approvable, ReentrancyGuard {
   // These mappins are used in Withdrawl Functions to restrict access and determine
   // withdrawl amount for each contributor
 
-  // Keep track of the total Contributed for each contributor since a single contributor
-  mapping (address => uint256) public totalContributed;
   // Keeps track of whether an address has contributed
   mapping (address => bool) public hasContributed;
   // Keeps track of whether an address has withdrawn
@@ -288,7 +287,6 @@ contract Campaign is Approvable, ReentrancyGuard {
     require(msg.value > 0, "No zero contributions"); 
      //Integer Overflow Protection
     require(funds + msg.value > funds, "Integer overflow check failed");
-    require(totalContributed[msg.sender] + msg.value > totalContributed[msg.sender], "Integer overflow check failed");
     _;
   }
 
@@ -311,7 +309,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     @dev returns the number of admins
     This function is required by the Approvable interface to determine the number of voters
    */
-   function numVoters()
+  function numVoters()
     internal
     returns(uint256)
   {
@@ -348,10 +346,10 @@ contract Campaign is Approvable, ReentrancyGuard {
   function managerWithdrawl() private 
     onlyManager
   {
-      hasWithdrawn[msg.sender] = true;
-      funds = 0;
-      emit withdrawlMade(msg.sender, address(this).balance);
-      msg.sender.transfer(address(this).balance);
+    hasWithdrawn[msg.sender] = true;
+    funds = 0;
+    emit withdrawlMade(msg.sender, address(this).balance);
+    msg.sender.transfer(address(this).balance);
   }
 
   /**
@@ -362,9 +360,19 @@ contract Campaign is Approvable, ReentrancyGuard {
     onlyHasContributed
   {
     hasWithdrawn[msg.sender] = true;
-    funds -= totalContributed[msg.sender];
-    emit withdrawlMade(msg.sender, totalContributed[msg.sender]);
-    msg.sender.transfer(totalContributed[msg.sender]);
+
+    uint totalContributed = 0;
+
+    for (uint i = 0; i < contributions.length; i++) {
+      if (contributions[i].addr == msg.sender && contributions[i].withdrawn == false) {
+        totalContributed += contributions[i].amount;
+        contributions[i].withdrawn = true;
+      }
+    }
+
+    funds -= totalContributed;
+    emit withdrawlMade(msg.sender, totalContributed);
+    msg.sender.transfer(totalContributed);
   }
 
   /**
@@ -385,8 +393,8 @@ contract Campaign is Approvable, ReentrancyGuard {
     validateContribution 
   {
     hasContributed[msg.sender] = true;
-    contributions.push(Contribution(msg.sender, msg.value, now));
-    totalContributed[msg.sender] += msg.value;
+    hasWithdrawn[msg.sender] = false;
+    contributions.push(Contribution(msg.sender, msg.value, block.timestamp, false));
     funds += msg.value;
     emit contributionMade(msg.sender, msg.value);
   }
@@ -469,7 +477,8 @@ contract Campaign is Approvable, ReentrancyGuard {
     withdrawl is made
     Could be replaced by another state variable 'totalContributedFunds' that is incremented
     with funds but not decremented during withdrawls
-   */
+    // TODO: rename to totalRaised
+  */
   function getTotalContributedFunds() public view returns(uint256) {
     uint256 result = 0;
     for (uint256 i = 0; i < contributions.length; i++) {

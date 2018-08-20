@@ -120,10 +120,10 @@ function getCampaignDetails(address) {
         })
         .then((hasWithdrawn) => {
           campaign.hasWithdrawn = hasWithdrawn
-          return CampaignInstance.totalContributed.call(coinbase, { from: coinbase })
-        })
-        .then((totalContributed) => {
-          campaign.totalContributed = web3.fromWei(Number(totalContributed))
+        //   return CampaignInstance.totalContributed.call(coinbase, { from: coinbase })
+        // })
+        // .then((totalContributed) => {
+        //   campaign.totalContributed = web3.fromWei(Number(totalContributed))
           return CampaignInstance.getTotalContributedFunds.call({ from: coinbase })
         })
         .then((totalContributedFunds) => {

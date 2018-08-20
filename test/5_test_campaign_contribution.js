@@ -103,17 +103,11 @@ contract('#5 Campaign Contribution', (accounts) => {
     })
   })
 
-  it('should set totalContributed correctly', (done) => {
-    CampaignInstance.totalContributed.call(accounts[4]).then((totalContributed) => {
-      assert.equal(totalContributed, 1, 'total contribution should be 1')
-      done()
-    })
-  })
-
   it('should set contribution array correctly', (done) => {
     CampaignInstance.contributions.call(0).then((contribution) => {
       assert.equal(contribution[0], accounts[4], 'contribution address should be accounts[4]')
       assert.equal(contribution[1], 1, 'contribution amount should be 1')
+      assert.equal(contribution[3], false, 'withdrawn should be false')
       done()
     })
   })
@@ -152,17 +146,11 @@ contract('#5 Campaign Contribution', (accounts) => {
     })
   })
 
-  it('should set totalContributed correctly', (done) => {
-    CampaignInstance.totalContributed.call(accounts[5]).then((totalContributed) => {
-      assert.equal(totalContributed, 2, 'total contribution should be 2')
-      done()
-    })
-  })
-
   it('should set contribution array correctly', (done) => {
     CampaignInstance.contributions.call(1).then((contribution) => {
       assert.equal(contribution[0], accounts[5], 'contribution address should be accounts[5]')
       assert.equal(contribution[1], 2, 'contribution amount should be 2')
+      assert.equal(contribution[3], false, 'withdrawn should be false')
       done()
     })
   })
@@ -187,17 +175,11 @@ contract('#5 Campaign Contribution', (accounts) => {
     })
   })
 
-  it('should set totalContributed correctly', (done) => {
-    CampaignInstance.totalContributed.call(accounts[4]).then((totalContributed) => {
-      assert.equal(totalContributed, 4, 'total contribution should be 4')
-      done()
-    })
-  })
-
   it('should set contribution array correctly', (done) => {
     CampaignInstance.contributions.call(2).then((contribution) => {
       assert.equal(contribution[0], accounts[4], 'contribution address should be accounts[4]')
       assert.equal(contribution[1], 3, 'contribution amount should be 3')
+      assert.equal(contribution[3], false, 'withdrawn should be false')
       done()
     })
   })

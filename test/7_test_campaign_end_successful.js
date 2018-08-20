@@ -6,7 +6,7 @@ const { increaseTime } = require('zeppelin-solidity/test/helpers/increaseTime')
 
 const TWO_DAYS = 2 * 24 * 60 * 60
 
-contract('7 Campaign End Successfully', (accounts) => {
+contract('#7 Campaign End Successfully', (accounts) => {
   let CampaignFactoryInstance
   let CampaignInstance
 
@@ -95,13 +95,6 @@ contract('7 Campaign End Successfully', (accounts) => {
     })
   })
 
-  it('should have transitioned campaign state', (done) => {
-    CampaignInstance.isActive.call().then((isActive) => {
-      assert.equal(isActive, false, 'isActive should be false')
-      done()
-    })
-  })
-
   it('should attempt to end campaign from invalid account and fail', (done) => {
     assertRevert(CampaignInstance.endCampaign({ from: accounts[4] })).then(() => {
       done()
@@ -115,15 +108,17 @@ contract('7 Campaign End Successfully', (accounts) => {
     })
   })
 
-  it('should end campaign and state should be set to Successful', (done) => {
-    CampaignInstance.endCampaign({ from: accounts[3] })
-      .then(() => {
-        return CampaignInstance.campaignState.call()
-      })
-      .then((campaignState) => {
-        assert.equal(campaignState, 2, 'campaignState should be 2 (Successful)')
-        done()
-      })
+  it('should end campaign', (done) => {
+    CampaignInstance.endCampaign({ from: accounts[3] }).then(() => {
+      done()
+    })
+  })
+
+  it('Camapaign state should be set to Successful', (done) => {
+    CampaignInstance.campaignState.call().then((campaignState) => {
+      assert.equal(campaignState, 2, 'campaignState should be 2 (Successful)')
+      done()
+    })
   })
 
   it('should not allow the contributors to withdraw funds', (done) => {

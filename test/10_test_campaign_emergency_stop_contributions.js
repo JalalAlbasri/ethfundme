@@ -2,6 +2,9 @@ const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
+const { increaseTime } = require('zeppelin-solidity/test/helpers/increaseTime')
+
+const TWO_DAYS = 2 * 24 * 60 * 60
 
 contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
   let CampaignFactoryInstance
@@ -157,14 +160,47 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
   })
 
   it('should accept new contributions once resumed', (done) => {
-    CampaignInstance.contribute({ from: accounts[7], value: 1 }).then(() => {
+    CampaignInstance.contribute({ from: accounts[4], value: 1 }).then(() => {
       done()
     })
   })
 
   it('should have created a contribution', (done) => {
-    CampaignInstance.hasContributed.call(accounts[7]).then((hasContributed) => {
+    CampaignInstance.hasContributed.call(accounts[4]).then((hasContributed) => {
       assert.equal(hasContributed, true, 'accounts[4] should have contributed')
+      done()
+    })
+  })
+
+  // time travel
+  it('should increase evm time past end date', (done) => {
+    increaseTime(TWO_DAYS).then(() => {
+      done()
+    })
+  })
+
+  it('should end campaign', (done) => {
+    CampaignInstance.endCampaign({ from: accounts[3] }).then(() => {
+      done()
+    })
+  })
+
+  it('Camapaign state should be set to Unsuccessful', (done) => {
+    CampaignInstance.campaignState.call().then((campaignState) => {
+      assert.equal(campaignState, 3, 'campaignState should be 3 (Unsuccessful)')
+      done()
+    })
+  })
+
+  it('should allow contributor to withdraw funds contributed after emergency withdrawl', (done) => {
+    CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
+      done()
+    })
+  })
+
+  it('should have debited funds correctly', (done) => {
+    CampaignInstance.funds.call().then((funds) => {
+      assert.equal(funds, 3, 'funds should be 3')
       done()
     })
   })

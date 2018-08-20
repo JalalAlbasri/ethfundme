@@ -43,7 +43,7 @@ class Withdraw extends Component {
           >
             <FontAwesomeIcon className="button-icon" icon="arrow-circle-down" />
             Withdraw
-            {isManager ? ' ' + this.props.campaign.funds + ' eth' : ' ' + this.props.campaign.totalContributed + ' eth'}
+            {/* {isManager ? ' ' + this.props.campaign.funds + ' eth' : ' ' + this.props.campaign.totalContributed + ' eth'} */}
           </button>
         </div>
       )
