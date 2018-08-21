@@ -43,7 +43,7 @@
     }],
     "linebreak-style":"off",
     "newline-per-chained-call": ["error", {
-      "ignoreChainWithDepth": 1
+      "ignoreChainWithDepth": 2
     }]
   },
   "globals": {

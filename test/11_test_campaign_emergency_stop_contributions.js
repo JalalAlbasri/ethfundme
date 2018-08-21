@@ -24,6 +24,13 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
+      })
+      .then(() => {
+        return assertRevert(
+          CampaignFactoryInstance.addAdminRole(accounts[0], { from: accounts[4] })
+        )
+      })
+      .then(() => {
         return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
       })
       .then(() => {
@@ -68,7 +75,7 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
         return CampaignInstance.contribute({ from: accounts[5], value: 1 })
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[6], value: 1 })
+        return CampaignInstance.contribute({ from: accounts[8], value: 1 })
       })
       .then(() => {
         done()

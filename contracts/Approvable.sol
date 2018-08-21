@@ -34,13 +34,13 @@ contract Approvable is EmergencyStoppable {
     @dev Event emitted when a Vote is Committed
     The payload is address of the vote committer
    */
-  event voteCommitted (address indexed voteCommiter);
+  event VoteCommitted (address comittedBy);
   
   /**
     @dev Event emitted when a Vote is Reveal
     The payload is address of the vote revealer
    */
-  event voteRevealed (address indexed voteRevealer);
+  event VoteRevealed (address revealedBy);
   
   /**
     @dev Event emitted when all votes have been Comitted
@@ -206,13 +206,14 @@ contract Approvable is EmergencyStoppable {
     stoppedInEmergency
     onlyAuthorized
     onlyDuringApprovalState(ApprovalStates.Commit) 
-    endCommit {
+    endCommit 
+  {
       voteSecrets[msg.sender] = secretVote;
       if (hasVoted[msg.sender] == false) {
         numVoteSecrets++;
         hasVoted[msg.sender] = true;
-        emit voteCommitted(msg.sender);
     }
+    emit VoteCommitted(msg.sender);
   }
 
   /**
@@ -237,7 +238,7 @@ contract Approvable is EmergencyStoppable {
 
       numVoteReveals++;
       hasRevealed[msg.sender] = true;
-      emit voteRevealed(msg.sender);
+      emit VoteRevealed(msg.sender);
   }
 
 }
