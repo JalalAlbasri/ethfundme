@@ -41,7 +41,10 @@
     "no-shadow": ["error", {
       "allow": ["done", "data", "err", "resolve", "reject"]
     }],
-    "linebreak-style":"off"
+    "linebreak-style":"off",
+    "newline-per-chained-call": ["error", {
+      "ignoreChainWithDepth": 1
+    }]
   },
   "globals": {
     "contract" : true,
