@@ -10,6 +10,20 @@ import "../node_modules/zeppelin-solidity/contracts/access/rbac/RBAC.sol";
 
 contract Administrated is RBAC {
   /**
+    @dev Event emitted when Admin Role is granted
+   */
+  event AdminAdded (
+    address indexed account
+  );
+
+  /**
+    @dev Event emitted when Admin Role is revoked
+   */
+  event AdminRemoved (
+    address indexed account
+  );
+
+  /**
    * A constant role name for indicating admins.
    */
   string public constant ROLE_ADMIN = "admin";
@@ -59,6 +73,7 @@ contract Administrated is RBAC {
   {
     addRole(_account, ROLE_ADMIN);
     numAdmins++;
+    emit AdminAdded(_account);
   }
 
   /**
@@ -71,6 +86,7 @@ contract Administrated is RBAC {
   {
     removeRole(_account, ROLE_ADMIN);
     numAdmins--;
+    emit AdminRemoved(_account);
   }
 
   /**

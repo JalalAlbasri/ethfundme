@@ -33,6 +33,7 @@
 // DONE: Homogenize import statements
 // DONE: Number in test name
 // DONE: Reenable solidity test
+// TASK: Rename VoteSecret/Option to Approve Reject for clarity
 
 // TASK: Review Security Best Practices - writeup
 // TASK: Review Design Patterns - writeup
