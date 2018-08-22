@@ -1,3 +1,5 @@
+![ethfundme](https://imgur.com/a/8mkHuI5)
+
 # EthFundMe
 
 EthFundMe is a smart contract powered crowd funding platform. It allows you to intelligently, securely and trustlessly manage crowd funding campaigns with smart contracts.
