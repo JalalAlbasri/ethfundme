@@ -127,7 +127,7 @@ Copy the 12 word mnemonic (seed phrase) given by ganache-cli in the previous com
 
 In metamask click on "Import using account seed phrase" and paste in the 12 word seed phrase from ganache-cli.
 
-Ensure that metamask is connected to "Localhose 8545"
+Ensure that metamask is connected to *Localhost 8545*
 
 ### Running setup script
 
@@ -181,7 +181,7 @@ It also holds addresses of created Campaigns in an array that is used by the UI 
 
 Please see [CampaignFactory](/contracts/CampaignFactory.sol) for details on the CampaignFactory contract.
 
-### Administrated and Admin Management
+### Administrated (Admin Management)
 [CampaignFactory](/contracts/CampaignFactory.sol) extends the [Administrated](/contracts/Administrated.sol) contract which utilizes the [OpenZeppelin Role Based Access Control Library](https://openzeppelin.org/api/docs/ownership_rbac_RBAC.html)
 to implement access control based on an *admin* role.
 
