@@ -26,12 +26,6 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
         CampaignFactoryInstance = instance
       })
       .then(() => {
-        // FIXME: Remove?
-        return assertRevert(
-          CampaignFactoryInstance.addAdminRole(accounts[0], { from: accounts[4] })
-        )
-      })
-      .then(() => {
         return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
       })
       .then(() => {

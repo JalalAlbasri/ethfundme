@@ -1,3 +1,7 @@
+/**
+ * TEST #2:
+ */
+
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')

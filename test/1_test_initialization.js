@@ -1,3 +1,22 @@
+/**
+ * TEST #1 : Campaign Factory Initialization
+ * In This test we test Initialization of the CampaignFactory and
+ * The functionality of the Administrated Contract.
+ *
+ * The Administrated Contract manages Admins and granting/revoking
+ * admin priviledges.
+ *
+ * We test that the contract CampaignFactory is initialized with a
+ * single admin.
+ *
+ * Then grant admin priviledges to two more accounts before finally
+ * revoking admin priviledges from one of those accounts.
+ *
+ * We also test that non admin accounts are not able to grant admin
+ * privilidges.
+ */
+
+
 const CampaignFactory = artifacts.require('CampaignFactory')
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
