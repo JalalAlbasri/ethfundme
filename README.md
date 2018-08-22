@@ -1,4 +1,4 @@
-![ethfundme](https://imgur.com/a/8mkHuI5)
+![ethfundme](/public/images/logo.png)
 
 # EthFundMe
 
