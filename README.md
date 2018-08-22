@@ -1,4 +1,4 @@
-![ethfundme](/public/images/logo.png)
+![ethfundme](/public/logo.png)
 
 # EthFundMe
 
