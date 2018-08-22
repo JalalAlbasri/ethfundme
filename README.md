@@ -4,6 +4,15 @@ EthFundMe is a smart contract powered crowd funding platform. It allows you to i
 
 EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please use care if you use any code from this repository in your own projects as it has not been thoroughly audited.
 
+## About the project
+
+EthFundMe is an adaptation of the "Online Marketplace" Final Project Idea. Instead of a marketplace with items for sale however we have crowd funding campaigns that users can create and contribute
+to to raise funds similar to popular crowdfunding platforms [kickstarter](http://kickstarter.com), [gofundme](http://gofundme.com) and [indiegogo](http://indigogo).
+
+### Why Crowdfunding?
+
+Crowdfunding is a problem that can benefit greatly from a trustless smart contract based solution. Campaigns in EthFundMe are modelled as smart contracts that Campaign Managers and Contributors enter into. Once the Campaign is active funds contributed can be trustlessly managed by the smart contract and distrubuted instantly and securely through the Ethereum blockchain once the Campaign is concluded.
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
@@ -33,6 +42,8 @@ EthFundMe was tested with truffle version 4.1.14 and ganache-cli version 6.1.8 (
 Please ensure you are using the correct version if you run into difficulties testing/deploying.
 
 ### Testing
+
+Truffle tests are location in the [test](/test) directory.
 
 Start a development blockchain with
 
@@ -89,7 +100,7 @@ metamask account 4 is the Campaign Manager for all Campaigns.
 
 The remaining metamask accounts are regular users that have made contributions.
 
-For more details check out the setup script *setup.js*
+For more details check out the setup script [setup.js](/setup.js)
 
 ### Starting Webpack Server
 
@@ -103,6 +114,115 @@ npm run start
 ```
 
 You can access the frontend from your browser on http://localhost:8080 to interact with the project.
+
+## EthFundMe Contracts in Detail
+
+This section explains the detailed workings of the EthFundMe DApp. Following this sections are User Stories that should cement the logic behind the workings of the EthFundMe Contracts.
+
+### The CampaignFactory
+The Initial Contract deployed is the [CampaignFactory](/contracts/CampaignFactory.sol) Contract. 
+
+The [CampaignFactory](/contracts/CampaignFactory.sol) is a *FactoryContract* that has a single interface function *createCampaign* that allows a user to create a [Campaign](/contracts/Campaign.sol) Contract.
+
+The user creating the campaign will be the *Campaign Manager* once the Campaign is created.
+
+It also holds addresses of created Campaigns in an array that is used by the UI to retrieve Campaign Information.
+
+Please see [CampaignFactory](/contracts/CampaignFactory.sol) for details on the CampaignFactory contract.
+
+### Administrated and Admin Management
+[CampaignFactory](/contracts/CampaignFactory.sol) extends the [Administrated](/contracts/Administrated.sol) contract which utilizes the [OpenZeppelin Role Based Access Control Library](https://openzeppelin.org/api/docs/ownership_rbac_RBAC.html)
+to implement access control based on an *admin* role.
+
+[Administrated](/contracts/Administrated.sol) implements all the logic associated with granting/revoking admins priviledges from accounts and provides modifiers that can be used to *restrict access* based on the admin role.
+
+Initially the deploying account (accounts[0] in metamask/web3) is designated the *admin* role. And is given the ability to grant other accounts the admin role.
+
+Admins are also responsible for approving or rejecting Campaigns created by users in a *Commit/Reveal* voting process.
+
+Plase see [Administrated](/contracts/Administrated.sol) for details on admin management.
+
+### Campaigns (Where the magic happens)
+The [Campaign](/contracts/Campaign.sol) models a crowd funding campaign and is a smart contract entered into by the Campaign Manager and any contributors.
+
+It holds all the Campaign information such as title, funding goal, duration descriptions etc. and has an interface that allows contributors to make Ether contributions.
+
+Campaigns have a *LifeCycle* and begin in a *Pending* state. In This state they are Pending Approval from admins before going *Active* and cannot accept any contributions. *Rejected* Campaigns never begin.
+Campaign Approvals are managed by extending the [Approvable](/contracts/Approvable.sol) contract.
+
+If a Campaign is *Approved* and it is put in the *Active* State, given an *endDate* based on it's specified duration begins accepting *Contributions*.
+
+The Campaign will accept contributions until it reaches its *endDate*.
+
+If the funding goal specified by the Campaign Manager is met by the end of the Campaign the Campaign Manager will be able to withdraw all the raised funds from the Contract via a *PullWithdrawl* patern.
+
+If however the funding goal is not met by the end of the Campaign or the Campaign is , Contributors will be allowed to retrieve their contributed funds from the Contract also via a *PullWithdrawl* Pattern.
+
+Campaign Managers also have the ability to *Cancel* the Campaign at any time before the campaign is over. If the Campaign is cancelled with contributions in it or if it is *EmergencyStopped* (see [EmergencyStoppable](#emergencystoppable) below) by an admin contributors will be allowed to withdraw the funds they have contributed.
+
+### Approvable
+
+The [Approvable](/contracts/Approvable.sol) Contract is an *Abstract Contract* that will give the ability for a contract to be approved/rejected. It provides the logic for *Authorzed* accounts to vote on Approval in a *Commit/Reveal* Pattern.
+
+Voting is managed through *Lifecycles* and the Contract begins in the *Commit* stage.
+
+*Authorized* accounts first place a vote by comitting a *keccak256* encrypted vote secret consisting of a voteOption (true or false) and a salt. All voters are required to vote during the *Commit* phase.
+
+Once all votes are in the contract transitions into the *Reveal* phase where the voters reveal their votes by supplying their vote option and salt. If the comitted voteSecret matches the vote option and salt supplied in reveal the vote is counted.
+
+The cote passes if at least 50% of voters reach a consensus. The campaign does not require all voters to reveal and will transition the state into *Approved* or *Rejected* once enough votes to reach an outcome have been counted.
+
+Contracts extending [Approvable](/contracts/Approvable.sol) must implement the *isAuthorized* and *numVoters* functions that will be used to determine if an account is authorized to vote and how many voter there are.
+
+In EthFundMe these are implemented by the Campaign contract and only *admins* are authorized to vote.
+
+### EmergencyStoppable
+
+The [EmergencyStoppable](#emergencystoppable) Contract implements the *Emergency Stoppable* Pattern sometimes called the *Circuit Breaker* or *Pausible* pattern.
+
+Contracts that extend EmergencyStoppable have the ability to be put in a stopped state. EmergencyStoppable provides mmodifiers that can be used to restrict functions from running in the stopped state or only run in a stopped state.
+
+Contracts extending this must implement the *isAuthorized* adbstract function that will tell EmergencyStoppable is an account is authorized to stop the contract. In EthFundMe *admins* and authorized to stop both the CampaignFactory and Campaign contracts.
+
+EmergencyStoppable is an adaptaion of the [Pausible](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol) Contract from the Open Zeppelin Library but Pausible relies on a single owner with the 
+priviledge to stop a contract. EmergencyStoppable has been upgraded to allow multiple authorized users to stop the contract through the *isAuthorized* abstract function.
+
+Both the [CampaignFactory](/contracts/CampaignFactory.sol) and [Campaign](/contracts/Campaign.sol) contracts extend EmergencyStoppable. 
+
+If the CampaignFactory is stopped it will not allow new Campaigns to be created.
+
+If a Campaign is stopped it will not accept new contributions however Contributors will be allowed to recover any existing Contributions through the *EmergencyWithdraw* function. The *EmergencyWithdraw* function can only be access when a Campaign is in a stopped state.
+
+
+
+
+## User Stories
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
