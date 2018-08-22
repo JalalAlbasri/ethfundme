@@ -1,5 +1,17 @@
 /**
- * TEST #2:
+ * TEST #2: Test Campaign Creation
+ *
+ * In this test we test Campaign Contract Creation from the CampaignFactory.
+ *
+ * We Create a Campaign Contract then check that all Campaign Contract State Variables
+ * are initialized correctly.
+ *
+ * We also check the the campaigns array in the CampaignFactory that keeps track of
+ * Campaign Contract Addresses is initialized correctly and holds the address of the Campaign
+ * we just created.
+ *
+ * Finally we verify that access restriction on createCampaign is working by trying to
+ * create a campaign from an admin account and failing
  */
 
 const CampaignFactory = artifacts.require('CampaignFactory')
@@ -94,6 +106,13 @@ contract('#2 Campaign Creation', (accounts) => {
   it('should set numCampaigns correctly', (done) => {
     CampaignFactoryInstance.getNumCampaigns.call().then((numCampaigns) => {
       assert.equal(numCampaigns, 1, 'numCampaigns should be 1')
+      done()
+    })
+  })
+
+  it('should have stored campaign address correctly in CampaignFactroy', (done) => {
+    CampaignFactoryInstance.campaigns.call(0).then((campaignAddress) => {
+      assert.equal(campaignAddress, CampaignInstance.address, 'campaignAddress should match created campaign address')
       done()
     })
   })

@@ -1,3 +1,36 @@
+/**
+ * TEST #3: Test Campaign Approval
+ *
+ * In this test we test Campaign Approval by admins
+ *
+ * We set up a fresh Campaign and some grant admin priviledges to some accounts.
+ * We check that the Campaign is created with the correct approval state to Commit then
+ * place votes from admins to approve the Campaign.
+ *
+ * We test that state variables are set correctly when votes and placed and ensure that only
+ * autorized accounts are able to place votes.
+ *
+ * We also check that votes can be changed as long as we are still in the Commit Phase.
+ *
+ * We also check the votes cannot be revealed before the Campaign is out of the Commit stage.
+ *
+ * Once all votes are in we check that the state transitions correctly to Reveal
+ *
+ * We ensure that no votes can be placed now that we are in the Reveal phase and that votes cannot
+ * be revealed by unauthorized accounts.
+ *
+ * We ensure that revealing a vote fails if the wrong vote option or salt is used. The Option and salt
+ * must be the same as those used when encrypting the vote secret.
+ *
+ * We enure that votes can only be once by each voter and votes are not double counted.
+ *
+ * We continue to reveal the remaining votes but also check that contributions cannot be placed before all
+ * the votes are revealed and the campaign state is transitioned.
+ *
+ * Once enough votes are revealed we ensure that the Approval state is transitioned to Approved and
+ * the Campaign State is transitioned to Active.
+ *
+ */
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo

@@ -1,3 +1,18 @@
+/**
+ * TEST #5: Test Campaign Contribution
+ *
+ * In this test we test making a contribution to an Active Campaign.
+ *
+ * We set up a fresh Campaign and some grant admin priviledges to some accounts
+ * Then approve the campaign and ensure that the Campaign State is set to active.
+ *
+ * We test our input validation by trying to make a contribution of zero and failing.
+ *
+ * We then make legitamte a contribution to the campaign and check that campaign state varibales
+ * are set correctly.
+ *
+ */
+
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
@@ -17,7 +32,7 @@ contract('#5 Campaign Contribution', (accounts) => {
   let voteSecret1 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption1, salt]).toString('hex')
   let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
 
-  before('setup and reject campaign', (done) => {
+  before('setup and approve campaign', (done) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
@@ -67,7 +82,7 @@ contract('#5 Campaign Contribution', (accounts) => {
     })
   })
 
-  it('should set campaign state correctly to Open', (done) => {
+  it('should set campaign state correctly to Active', (done) => {
     CampaignInstance.campaignState.call().then((campaignState) => {
       assert.equal(campaignState, 1, 'campaignState should be 1 (Active)')
       done()

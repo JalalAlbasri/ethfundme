@@ -1,3 +1,18 @@
+/**
+ * TEST #4: Campaign Rejection
+ *
+ * In this test we test Rejection of a Campaign by admins in the Approval Phase.
+ *
+ * We create and fresh campaign and grant admin priviledges to some accounts.
+ *
+ * We place and reveal some votes and ensure that no outcome has been reached because not
+ * enough votes have been revealed.
+ *
+ * We reveal the final vote and ensure that the vote was tallied correctly setting the
+ * Approval and Campaign States.
+ *
+ */
+
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo

@@ -1,3 +1,22 @@
+/**
+ * TEST #6: Test Campaign Cacellation
+ *
+ * In this test we test the Cancellation of a Campaign by the Campaign Manager
+ *
+ * We set up a fresh Campaign and some grant admin priviledges to some accounts
+ * then approve it and make a contribution.
+ *
+ * First we test that we cannot cancel the campaign from a non authorized account.
+ *
+ * Next we cancel the camapign and ensure the Approval and Campaign States are set correctly.
+ *
+ * Next we try and wothdraw funds as a Campaign Manager and ensure that the Campaign Manager
+ * Cannot withdraw funds from a cancelled campaign.
+ *
+ * Finally we ensure that contributors are able to withdraw funds from a cancelled campaign.
+ *
+ */
+
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
@@ -17,7 +36,7 @@ contract('#6 Campaign Cancellation', (accounts) => {
   let voteSecret1 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption1, salt]).toString('hex')
   let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
 
-  before('setup and reject campaign', (done) => {
+  before('setup campaign, approve it and make a contribution', (done) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
@@ -63,7 +82,7 @@ contract('#6 Campaign Cancellation', (accounts) => {
       })
   })
 
-  it('should attempt to cancel the campaign from a non admin and fail', (done) => {
+  it('should attempt to cancel the campaign from a non authorized account and fail', (done) => {
     assertRevert(CampaignInstance.cancelCampaign({ from: accounts[4] })).then(() => {
       done()
     })
@@ -76,7 +95,7 @@ contract('#6 Campaign Cancellation', (accounts) => {
     })
   })
 
-  it('should cancel the campaign and campaign state', (done) => {
+  it('should cancel the campaign', (done) => {
     CampaignInstance.cancelCampaign({ from: accounts[3] }).then(() => {
       done()
     })

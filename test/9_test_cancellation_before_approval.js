@@ -1,3 +1,16 @@
+/**
+ * TEST #9: Test Campaign Cacellation Beore Approval
+ *
+ * In this test we test the Cancellation of a Campaign by the Campaign Manager before Approval
+ *
+ * We set up a fresh Campaign and some grant admin priviledges to some accounts
+ *
+ * We cancel the camapign and ensure the Approval and Campaign States are set correctly.
+ *
+ * We ensure that votes cannot be placed on a Cancelled Campaign.
+ *
+ */
+
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo

@@ -1,5 +1,6 @@
 /**
  * TEST #1 : Campaign Factory Initialization
+ *
  * In This test we test Initialization of the CampaignFactory and
  * The functionality of the Administrated Contract.
  *

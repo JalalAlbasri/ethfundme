@@ -1,3 +1,31 @@
+/**
+ * TEST #*: Test Campaign End Unuccessfully.
+ *
+ * In this test we test a Campaign Ending in an Unsuccessful State.
+ * The Campaign will end unsuccessfully when it reaches the end date and
+ * the funds raised are less than the funding goal specified by the campaign manager.
+ *
+ * We use the 'increaseTime' test helper library from Open Zeppelin to increase EVM Time to simulate
+ * time passing past the Campaign End Date.
+ * (https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/increaseTime.js)
+ *
+ * We set up a fresh Campaign and some grant admin priviledges to some accounts
+ * then approve it and make some contributions.
+ *
+ * We then increase the EVM time by 2 days past the Campaign duration of 1 day. The Campaign should be 'endable' now
+ *
+ *
+ * We end the Campaign and check the Campaign State changed accordingly.
+ *
+ * We ensure that the Campaign Manager and that Non Contributors are not allowed to withdraw funds from the Campaign
+ *
+ * We ensure that Campaign contributors are allowed to withdraw funds and that state variables are updated correctly.
+ *
+ * Finally we ensure that contributors are not allowed to double withdraw from the campaign.
+ *
+ */
+
+
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
