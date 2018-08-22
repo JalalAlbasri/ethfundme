@@ -87,6 +87,8 @@ A setup script has been provided [setup.js](/setup.js) that will set up accounts
 From the project directory run
 
 ```
+truffle compile
+truffle migrate
 truffle exec setup.js
 ```
 
@@ -288,6 +290,31 @@ User Stories are a great way to cement the logic behind how an application is in
 - The Campaign concludes as normal allowing the Campaign Manager or Contributor to access funds once it is over
 
 
+## Design Patterns and Security Considerations
+
+I have chosed to include details on Common Smart Contract Design Patterns and Security Considerations in the same section since
+there is a lot of overlap between the two but have also split the discussion up into [design_pattern_descisions.md](/design_pattern_decisions.md)
+and [avoiding_common_attacks.md](/avoiding_common_attacks.md) as required by the project specification.
+
+### Factory Pattern
+
+[Campaign](/contracts/Campaign.sol) contracts are created and deployed by [CampaignFactory](/contracts/CampaignFactory.sol) via the Contract Factory Design Pattern.
+
+The [CampaignFactory](/contracts/CampaignFactory.sol) Contract is also used to store Campaign Contract Addresses so that they can be retrieved whenever necessary.
+
+### Withdrawl Pattern / Pull over Push Payments
+
+The *managerWithdraw* and *contributorWithdraw* funnctions in [Campaign](/contracts/Campaign.sol) utilize the Withdrawl Pattern to avoid errors during withdraw and 
+protect against *Reentrancy attacks*
+
+#### Prefer *transfer()* over *send()*
+
+The withdrawl functions also user tansfer() instead of send() because it automatically reverts.
+
+### No Reentrancy
+To protect against *Race Conditions* introduced by calling untrusted external functions the Withdrawl Functions are protected by the [Reentrancy Guard](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/ReentrancyGuard.sol) library from OpenZeppelin.
+
+It is used to protect against Reentrancy attacks initiated by receipients of a transfer calling the withdraw function again from their fallback function.
 
 
 
@@ -296,21 +323,7 @@ User Stories are a great way to cement the logic behind how an application is in
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+https://consensys.github.io/smart-contract-best-practices/recommendations/#30-second-rule
 
 
 
