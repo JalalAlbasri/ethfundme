@@ -24,6 +24,7 @@
 // TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
 // DONE: Approvable in its own file?
 // DONE: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
+// TASK: Have setup script leave from campaigns in reveal stage.
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
