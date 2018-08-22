@@ -1,5 +1,11 @@
 ![ethfundme](/public/logo.png)
 
+# EthFundMe
+
+EthFundMe is a smart contract powered crowd funding platform. It allows you to intelligently, securely and trustlessly manage crowd funding campaigns with smart contracts.
+
+EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please use care if you use any code from this repository in your own projects as it has not been thoroughly audited.
+
 - [EthFundMe](#ethfundme)
   * [About the project](#about-the-project)
     + [Why Crowdfunding?](#why-crowdfunding-)
@@ -46,12 +52,6 @@
   * [Built With](#built-with)
   * [Authors](#authors)
   * [License](#license)
-
-# EthFundMe
-
-EthFundMe is a smart contract powered crowd funding platform. It allows you to intelligently, securely and trustlessly manage crowd funding campaigns with smart contracts.
-
-EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please use care if you use any code from this repository in your own projects as it has not been thoroughly audited.
 
 ## About the project
 
