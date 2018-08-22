@@ -174,6 +174,8 @@ The cote passes if at least 50% of voters reach a consensus. The campaign does n
 
 Contracts extending [Approvable](/contracts/Approvable.sol) must implement the *isAuthorized* and *numVoters* functions that will be used to determine if an account is authorized to vote and how many voter there are.
 
+Contracts extending [Approvable](/contracts/Approvable.sol) must also implement the *onApproval* and *onRejection* funcstion that will be called once a voted is concluded and an outcome is reached.
+
 In EthFundMe these are implemented by the Campaign contract and only *admins* are authorized to vote.
 
 ### EmergencyStoppable
@@ -193,10 +195,98 @@ If the CampaignFactory is stopped it will not allow new Campaigns to be created.
 
 If a Campaign is stopped it will not accept new contributions however Contributors will be allowed to recover any existing Contributions through the *EmergencyWithdraw* function. The *EmergencyWithdraw* function can only be access when a Campaign is in a stopped state.
 
-
-
-
 ## User Stories
+
+User Stories are a great way to cement the logic behind how an application is intended to be used. Here are a few user stories for the major intended use cases of the EthFundMe DApp.
+
+### #1 Creating a Campaign.
+
+- A Non Admin User access the DApp.
+- The User Creates a Campaign specifying campaign details including a funding goal and duration.
+- The Campaign is creating in the Pending State, awaiting admin Approval.
+
+### #2 Rejecting and Campaign
+- An Admin user access the DApp.
+- The Admin users reviews Campaigns in the Commit Stage.
+- The Admin users places a Vote on the Campaign of false for rejectiong and supplying a Salt for vote encryption.
+- The vote option along with the salt is encrypted with and Comitted.
+- All admins have voted and the Campaign's Approval State transitions into the Reveal Stage.
+- The Admin *Reveals* their vote by supplying their original vote option (false) and the Salt used to encrypt the vote secret.
+- The VoteSecret is verified by the DApp and the vote is counted.
+- Enough Votes have been counted and the Approval State is transitioned to Rejected.
+- The Campaign has been Rejected and it never begins.
+
+### #3 Approving a Campaign
+
+- An Admin user access the DApp.
+- The Admin users reviews Campaigns in the Commit Stage.
+- The Admin users places a Vote on the Campaign of true for approval and supplying a Salt for vote encryption.
+- The vote option along with the salt is encrypted with and Comitted.
+- All admins have voted and the Campaign's Approval State transitions into the Reveal Stage.
+- The Admin *Reveals* their vote by supplying their original vote option (true) and the Salt used to encrypt the vote secret.
+- The VoteSecret is verified by the DApp and the vote is counted.
+- Enough Votes have been counted and the Approval State is transitioned to Approved.
+- The Campaign has been Approved and it's Campaign State is transitioned to Active.
+- The Campaign begins.
+
+### #4 Contributing to a Campaign
+
+- A user access the DApp.
+- The find an Active Campaign that they are interested in Contributing to.
+- The user places a contribution in ether to the Campaign.
+
+### #5 Sucessful Campaign
+
+- An Active Campaign has reached it's end date.
+- The contributed funds meet or exceed the campaign goal.
+- The Campaign State is transitioned to Successful.
+- The Campaign Manager accesses the DApp. 
+- The Campaign Manager is able to withdraw all Campaign funds from the Campaign Contract.
+
+### #6 Unsuccessful Campaign
+
+- An Active Campaign has reached it's end date.
+- The contributed funds do not meet the campaign goal.
+- The Campaign State if transitioned to Unsuccessful.
+- The Campaign Manager accesses the DApp.
+- The Campaign Manager is unable to withdraw Campaign funds from the Campaign Contract.
+- A User who has contributed to the Campaign (Contributor) accesses the DApp.
+- The Contributor is able to withdraw their contributed funds from the Campaign Contract.
+
+### #7 Campaign Manager Cancels Active Campaign
+
+- An Active Campaign has recevied contributions and reached it's goal but but not reached it's end date.
+- The Campaign Manager accesses the DApp
+- The Campaign Manager *Cancels* the campaign early frofeiting any funds in the Campaign.
+- The Campaign is put into a *Cancelled* State.
+- The Campaign Manager is unable to withdraw funds from the Campaign.
+- A Contributor to the Campaign accesses the DApp.
+- The Contributor is able to withdaw their contributed funds from the Cancelled Campaign Contract.
+
+### #8 Pending Campaign is Emergency Stopped
+
+- A New Campaign has been created and is in the *Commit* Approval State.
+- An Admin places a vote approving the campaign.
+- Another Admin suspects something is fishy with the Campaign.
+- The Admin puts the Campaign into an EmergencyStopped State.
+- A Third Admin tried to place a vote but cannot because the Campaign is in an EmergencyStopped State.
+- An Admin realizes the Campaign is legit and Resumes the Campaign so that it is no longer Emergency Stopped.
+- The voting process can now resume as normal. 
+
+### #9 Active Campaign is Emergency Stopped
+
+- An Active Campaign has received contributions but not reached it's end date.
+- An Admin has reason to believe there is something fishy about the Campaign.
+- The Admin puts the Campaign into an EmergencyStopped State.
+- The Campaign Manager accesses the DApp.
+- The Campaign Manager is unable to withdraw campaign funds from the DApp in an EmergencyStopped state.
+- A Contributor accesses the DApp.
+- The Contributor is able to withdraw all the funds they Contributed to the EmergencyStopped Campaign.
+- The Admin realizes the the Campaign is legit and Resumes the Campaign.
+- The Campaign is no longer in an Emergency Stopped state.
+- The Contributor who withdrew their funds sees this and makes a similar contribution to the Campaign again.
+- The Campaign concludes as normal allowing the Campaign Manager or Contributor to access funds once it is over
+
 
 
 
