@@ -94,14 +94,15 @@ For more details check out the setup script *setup.js*
 ### Starting Webpack Server
 
 The EthFundMe frontend is configured to run with a webpack development server
-Ensure webpack-dev-server is installed (see #prerequisites) then run
+
+Ensure webpack-dev-server is installed (see [Prerequisites](#Prerequisites)) then run the following command
+to start the webpack development server
 
 ```
 npm run start
 ```
 
-To start the webpack developement server. You can access the frontend from your browser on http://localhost:8080
-to interact with the project.
+You can access the frontend from your browser on http://localhost:8080 to interact with the project.
 
 
 
