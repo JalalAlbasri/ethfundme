@@ -342,7 +342,7 @@ The Commit Reveal voting pattern is used becauase it allows the safe commiting o
 
 All Events are named with the 'Log' Prefix that differentiates them from functions.
 
-##Avoiding Common Attacks
+## Avoiding Common Attacks
 
 [avoiding_common_attacks.md](/avoiding_common_attacks.md)
 
@@ -351,7 +351,7 @@ All Events are named with the 'Log' Prefix that differentiates them from functio
 The *managerWithdraw* and *contributorWithdraw* funnctions in [Campaign](/contracts/Campaign.sol) utilize the Withdrawl Pattern to avoid errors during withdraw and 
 protect against *Reentrancy attacks*
 
-#### Prefer *transfer()* over *send()*
+### Prefer *transfer()* over *send()*
 
 The withdrawl functions also user tansfer() instead of send() because it automatically reverts.
 
