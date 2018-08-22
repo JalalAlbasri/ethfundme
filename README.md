@@ -95,7 +95,7 @@ For more details check out the setup script *setup.js*
 
 The EthFundMe frontend is configured to run with a webpack development server
 
-Ensure webpack-dev-server is installed (see [Prerequisites](#Prerequisites)) then run the following command
+Ensure webpack-dev-server is installed (see [prerequisites](#prerequisites)) then run the following command
 to start the webpack development server
 
 ```
