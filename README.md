@@ -290,17 +290,59 @@ User Stories are a great way to cement the logic behind how an application is in
 - The Campaign concludes as normal allowing the Campaign Manager or Contributor to access funds once it is over
 
 
-## Design Patterns and Security Considerations
+## Design Patterns
 
-I have chosed to include details on Common Smart Contract Design Patterns and Security Considerations in the same section since
-there is a lot of overlap between the two but have also split the discussion up into [design_pattern_descisions.md](/design_pattern_decisions.md)
-and [avoiding_common_attacks.md](/avoiding_common_attacks.md) as required by the project specification.
+[design_pattern_descisions.md](/design_pattern_decisions.md)
 
 ### Factory Pattern
 
 [Campaign](/contracts/Campaign.sol) contracts are created and deployed by [CampaignFactory](/contracts/CampaignFactory.sol) via the Contract Factory Design Pattern.
 
 The [CampaignFactory](/contracts/CampaignFactory.sol) Contract is also used to store Campaign Contract Addresses so that they can be retrieved whenever necessary.
+
+The Facotry Pattern was chosed to create Campaign contracts because a Campaign very well modelled as a smart contract. Each Campaign can be easily created, managed and ended as it's own smart contract. 
+
+In order to allow users to create and deploy Campaign Contracts the Factory Design Pattern is a great choice.
+
+### Checks-Effects Pattern
+
+All functions that execute transaction or state variable changes adhere to the Checks-Effects Pattern, 
+
+In all these functions as a first step *checks* are performed on arguments and state.
+
+As a second step and only if all the checks pass *effects* to the state variables of the current contract are made.
+
+Furthermore no state changes are ever made after external function calls.
+
+The Checks Effects Pattern is a basic one and a good habit to get into when developing Smart Contracts and protects against coding errors and race condition associated with the early modification of state variables.
+
+### State Machine / Lifecycle Pattern
+Both [Approvable](/contracts/Approvable.sol) and [Campaign](/contracts/Campaign.sol) maintain states in whicht the contracts behave differently depending on what state they are in.
+
+Function modifiers are used to ensure the correct state before function execution and restrict functions accessibility based on state.
+
+I used the state machine pattern because both Campaigns behave differently depending on many factors, Whether they have been approved/rejected, are the past their end date? did they meet their funding goals?
+
+The State Machine pattern allowed me to easily manage the state and thus the behaviour of the contract.
+
+ Transitioning between states using modifiers in front of functions that need to know the state easily ensures the correct behaviour.
+
+ The state is also very useful in the UI to let users know what state the Campaign is in.
+
+ ### Commit/Reveal Voting Pattern
+[Approvable](/contracts/Approvable.sol) utilizes the commit/reveal voting pattern in which votes are placed as *keccak256* encrypted vote secrets that obscure them during the *Commit Phase*.
+
+Later, in the *Reveal Phase* vote secrets are verified with the vote option and salt used in the encryption, reveal and counted.
+
+The Commit Reveal voting pattern is used becauase it allows the safe commiting of votes without revealing what they are until the reveal phase so they dont influence the voting process.
+
+### Differentiating Function and Event Names
+
+All Events are named with the 'Log' Prefix that differentiates them from functions.
+
+##Avoiding Common Attacks
+
+[avoiding_common_attacks.md](/avoiding_common_attacks.md)
 
 ### Withdrawl Pattern / Pull over Push Payments
 
@@ -316,93 +358,49 @@ To protect against *Race Conditions* introduced by calling untrusted external fu
 
 It is used to protect against Reentrancy attacks initiated by receipients of a transfer calling the withdraw function again from their fallback function.
 
+### Checks-Effects Pattern
 
+All functions that execute transaction or state variable changes adhere to the Checks-Effects Pattern, 
 
+In all these functions as a first step *checks* are performed on arguments and state.
 
+As a second step and only if all the checks pass *effects* to the state variables of the current contract are made.
 
+Furthermore no state changes are ever made after external function calls.
 
+### Access Restriction
 
+All public interface functions are protexted by modifier that restrict access to only accounts that are authorize to make those transactions.
 
-https://consensys.github.io/smart-contract-best-practices/recommendations/#30-second-rule
+### Safemath (Integer Overflow/Underflow)
 
+All numerical user input is verfied using the OpenZeppelin [Safemath](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol) Library to protect against
+integer overflow/unferflow vulnerabilities.
 
+### Don't Assume Contract Created with Zero Balance
 
+Although they are created by the *createCampaign* function in CampaignFactory we do not assume that [Campaign](/contracts/Campaign.sol) Contracts are created with a zero balance and initialize
+the funds state variable to the contracts balance rather than zero.
 
+### block.timestamp (30 second rule)
 
-What things you need to install the software and how to install them
+Block miners are able to manipulate block timestamps ~30 seconds. block.timestamp is used in Campaigns to transition Campaign State.
+All usage of block.timestamp is able to tolerate a 30 second drift in time in accordance with [Consensys best practices](https://consensys.github.io/smart-contract-best-practices/recommendations/#30-second-rule).
 
-```
-Give examples
-```
-
-### Installing
-
-A step by step series of examples that tell you how to get a development env running
-
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+* [Truffle](https://github.com/trufflesuite/truffle) - Truffle is a development environment, testing framework and asset pipeline for Ethereum.
+* [Ganache](https://github.com/trufflesuite/ganache) - Ganache is your personal blockchain for Ethereum development.
+* [Drizzle](https://github.com/trufflesuite/drizzle) - Drizzle is a collection of front-end libraries that make writing dapp frontends easier and more predictable.
+* [Drizzle React](https://github.com/trufflesuite/drizzle-react) - drizzle-react is the official way to integrate Drizzle with your React dapp.
+* [Drizle React Components](https://github.com/trufflesuite/drizzle-react-components) - A set of useful components for common UI elements.
 
 ## Authors
 
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+* **Jalal Albasri** - *Initial work* - [JalalAlbasri](https://github.com/JalalAlbasri)
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc

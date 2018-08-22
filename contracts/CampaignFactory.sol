@@ -25,6 +25,8 @@
 // DONE: Approvable in its own file?
 // DONE: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
 // TASK: Have setup script leave from campaigns in reveal stage.
+// TASK: Put 'Log' on Event Names
+// TASK: Add a License
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
