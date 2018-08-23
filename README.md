@@ -23,7 +23,7 @@ EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please
     + [Administrated and Admin Management](#administrated-and-admin-management)
     + [Campaigns (Where the magic happens)](#campaigns--where-the-magic-happens-)
     + [Approvable](#approvable)
-    + [EmergencyStoppable](#emergencystoppable)
+    + [EmergencyStoppable](/contracts/EmergencyStoppable.sol)
   * [User Stories](#user-stories)
     + [#1 Creating a Campaign.](#-1-creating-a-campaign)
     + [#2 Rejecting and Campaign](#-2-rejecting-and-campaign)
@@ -56,7 +56,7 @@ EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please
 ## About the project
 
 EthFundMe is an adaptation of the "Online Marketplace" Final Project Idea. Instead of a marketplace with items for sale however we have crowd funding campaigns that users can create and contribute
-to to raise funds similar to popular crowdfunding platforms [kickstarter](http://kickstarter.com), [gofundme](http://gofundme.com) and [indiegogo](http://indigogo).
+to to raise funds similar to popular crowdfunding platforms [kickstarter](http://kickstarter.com), [gofundme](http://gofundme.com) and [indiegogo](http://indigogo.com).
 
 ### Why Crowdfunding?
 
@@ -236,7 +236,7 @@ In EthFundMe these are implemented by the Campaign contract and only *admins* ar
 
 ### EmergencyStoppable
 
-The [EmergencyStoppable](#emergencystoppable) Contract implements the *Emergency Stoppable* Pattern sometimes called the *Circuit Breaker* or *Pausible* pattern.
+The [EmergencyStoppable](/contracts/EmergencyStoppable.sol) Contract implements the *Emergency Stoppable* Pattern sometimes called the *Circuit Breaker* or *Pausible* pattern.
 
 Contracts that extend EmergencyStoppable have the ability to be put in a stopped state. EmergencyStoppable provides mmodifiers that can be used to restrict functions from running in the stopped state or only run in a stopped state.
 
@@ -257,12 +257,12 @@ User Stories are a great way to cement the logic behind how an application is in
 
 ### #1 Creating a Campaign.
 
-- A Non Admin User access the DApp.
+- A Non Admin User accesses the DApp.
 - The User Creates a Campaign specifying campaign details including a funding goal and duration.
 - The Campaign is creating in the Pending State, awaiting admin Approval.
 
 ### #2 Rejecting and Campaign
-- An Admin user access the DApp.
+- An Admin user accesses the DApp.
 - The Admin users reviews Campaigns in the Commit Stage.
 - The Admin users places a Vote on the Campaign of false for rejectiong and supplying a Salt for vote encryption.
 - The vote option along with the salt is encrypted with and Comitted.
@@ -274,7 +274,7 @@ User Stories are a great way to cement the logic behind how an application is in
 
 ### #3 Approving a Campaign
 
-- An Admin user access the DApp.
+- An Admin user accesses the DApp.
 - The Admin users reviews Campaigns in the Commit Stage.
 - The Admin users places a Vote on the Campaign of true for approval and supplying a Salt for vote encryption.
 - The vote option along with the salt is encrypted with and Comitted.
@@ -287,7 +287,7 @@ User Stories are a great way to cement the logic behind how an application is in
 
 ### #4 Contributing to a Campaign
 
-- A user access the DApp.
+- A user accesses the DApp.
 - The find an Active Campaign that they are interested in Contributing to.
 - The user places a contribution in ether to the Campaign.
 
@@ -354,13 +354,13 @@ is used in [Campaign](/contracts/Campaign.sol), [Administrated](/contracts/Admin
 - [OpenZeppelin AssertRevert](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/assertRevert.js) is used throught [tests](/test) to test for reverts.
 - [OpenZeppelin ExpectEvent](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/expectEvent.js) is used throughout [tests](/test) to test events.
 - [OpenZeppelin IncreaseTime](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/increaseTime.js) is used in [tests](/test) and [setup](setup.js) scripts to fast forward time on the blockchain and transition Campaign States.
-- [OpenZeppelin Pausible](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol) although not used in [EmergencyStoppable](#emergencystoppable) was the basis for the contract, although [EmergencyStoppable](#emergencystoppable) is upgraded to
+- [OpenZeppelin Pausible](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol) although not used in [EmergencyStoppable](/contracts/EmergencyStoppable.sol) was the basis for the contract, although [EmergencyStoppable](/contracts/EmergencyStoppable.sol) is upgraded to
 support multiple authorized users.
 
 
 ## Design Patterns
 
-[design_pattern_descisions.md](/design_pattern_decisions.md)
+[design_pattern_descisions.md](/DESIGN_PATTERN_DECISIONS.md)
 
 ### Factory Pattern
 
@@ -410,7 +410,7 @@ All Events are named with the 'Log' Prefix that differentiates them from functio
 
 ## Avoiding Common Attacks
 
-[avoiding_common_attacks.md](/avoiding_common_attacks.md)
+[avoiding_common_attacks.md](/AVOIDING_COMMON_ATTACKS.md)
 
 ### Withdrawl Pattern / Pull over Push Payments
 
@@ -471,5 +471,5 @@ All usage of block.timestamp is able to tolerate a 30 second drift in time in ac
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](/LICENSE.md) file for details
 
