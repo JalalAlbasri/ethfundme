@@ -9,9 +9,6 @@ function setFilterGroup(filterGroupName, isActive) {
   }
 }
 function setAdminFilter(filterGroupName, adminFilterName, isActive) {
-  console.log(
-    `setAdminFilter, filterGroupName: ${filterGroupName}, adminFilterName ${adminFilterName}, isActive: ${isActive}`
-  )
   return {
     type: SET_ADMIN_FILTER,
     filterGroupName,

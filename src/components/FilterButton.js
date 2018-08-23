@@ -13,7 +13,6 @@ class FilterButton extends Component {
   }
 
   handleClick(event) {
-    console.log(`handleClick, this.props.filter.adminOnly: ${this.props.filter.adminOnly}`)
     if (this.props.filter.adminOnly) {
       this.props.dispatchSetFilter(this.props.filter.groupName, this.props.filter.name)
     } else {

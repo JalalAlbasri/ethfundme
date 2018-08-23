@@ -175,7 +175,6 @@ function addCampaign(campaignAddress, isNew) {
 }
 
 export function updateCampaign(campaignAddress) {
-  console.log('updateCampaign()')
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
       dispatch(campaignUpdated(campaign))
@@ -431,7 +430,6 @@ export function emergencyStop(campaign) {
           return CampaignInstance.stopContract({ from: coinbase })
         })
         .then((result) => {
-          console.log('emergencyStop')
           setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
         })
         .catch((err) => {
