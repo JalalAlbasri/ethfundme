@@ -338,6 +338,20 @@ User Stories are a great way to cement the logic behind how an application is in
 - The Contributor who withdrew their funds sees this and makes a similar contribution to the Campaign again.
 - The Campaign concludes as normal allowing the Campaign Manager or Contributor to access funds once it is over
 
+## Libraries Used
+
+Throughout EthFundMe various libraries and contracts have been used from the [Open Zeppelin Framework](https://github.com/OpenZeppelin/openzeppelin-solidity).
+
+- [OpenZeppelin SafeMath](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol) 
+is used in Campaign, Administrated and Approvable to protect arithmetic operations from error and exploit.
+- [OpenZeppelin RBAC](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/access/rbac/RBAC.sol) is used in Administrated.sol to manage admin roles.
+- [OpenZeppelin ReentrancyGuard](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/ReentrancyGuard.sol) is used in Campaign to protect Withdrawl functions from Reentrancy Attacks.
+- [OpenZeppelin AssertRevert](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/assertRevert.js) is used throught tests to test for reverts.
+- [OpenZeppelin ExpectEvent](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/expectEvent.js) is used throughout tests to test events.
+- [OpenZeppelin IncreaseTime](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/increaseTime.js) is used in tests and setup scripts to fast forward time on the blockchain and transition Campaign States.
+- [OpenZeppelin Pausible](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol) although not used in EmergencyStoppable was the basis for the contract, although EmergencyStoppable is upgraded to
+support multiple authorized users.
+
 
 ## Design Patterns
 
@@ -444,6 +458,7 @@ All usage of block.timestamp is able to tolerate a 30 second drift in time in ac
 * [Drizzle](https://github.com/trufflesuite/drizzle) - Drizzle is a collection of front-end libraries that make writing dapp frontends easier and more predictable.
 * [Drizzle React](https://github.com/trufflesuite/drizzle-react) - drizzle-react is the official way to integrate Drizzle with your React dapp.
 * [Drizle React Components](https://github.com/trufflesuite/drizzle-react-components) - A set of useful components for common UI elements.
+* [Open Zeppelin](https://github.com/OpenZeppelin/openzeppelin-solidity) - OpenZeppelin is a battle-tested framework of reusable smart contracts for Ethereum and other EVM and eWASM blockchains.
 
 ## Authors
 

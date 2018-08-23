@@ -45,7 +45,7 @@
 // DONE: Review Security Best Practices - writeup
 // DONE: Review Design Patterns - writeup
 // TASK: Put UI Screenshots in Readme?
-// TASK: Make a Libraries used section.
+// DONE: Make a Libraries used section.
 // TASK: Project Structure Section where you say where everything is
 
 // UI
@@ -63,6 +63,7 @@
   // TASK: Mobile View Support.
   // TASK: Remove Logging
   // TASK: Put Background color on Jumbo
+  // TASK: Add a Footer
   
 // Submitable
 // TASK: Fix all line ending to LF
