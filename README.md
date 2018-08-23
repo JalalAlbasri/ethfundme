@@ -360,7 +360,7 @@ support multiple authorized users.
 
 ## Design Patterns
 
-[design_pattern_descisions.md](/DESIGN_PATTERN_DECISIONS.md)
+[DESIGN_PATTERN_DECISIONS.md](/DESIGN_PATTERN_DECISIONS.md)
 
 ### Factory Pattern
 
@@ -410,7 +410,7 @@ All Events are named with the 'Log' Prefix that differentiates them from functio
 
 ## Avoiding Common Attacks
 
-[avoiding_common_attacks.md](/AVOIDING_COMMON_ATTACKS.md)
+[AVOIDING_COMMON_ATTACKS.md](/AVOIDING_COMMON_ATTACKS.md)
 
 ### Withdrawl Pattern / Pull over Push Payments
 
@@ -471,5 +471,5 @@ All usage of block.timestamp is able to tolerate a 30 second drift in time in ac
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](/LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](/LICENSE) file for details
 
