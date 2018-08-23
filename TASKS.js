@@ -41,6 +41,8 @@
 // DONE: Rename VoteSecret/Option to Approve Reject for clarity
 // DONE: Check events in tests too
 // TASK: Listen for all events in Tests
+// DONE: Test changing admin priviledges during stopped CampaignFactory Contract
+// DONE: Test Cant grant an admin admin role again and cant revoke admin role from non admin
 
 // DOCUMENTATION
 // DONE: Review Security Best Practices - writeup
@@ -54,7 +56,7 @@
 // DONE: Frontend
 // DONE: Listening for Events
 // -- TASK: UI for stopping CampaignFactory
-// -- TASK: UI for adding admins
+// -- DONE: UI for adding admins
 // DONE: Progress Calculator, use funds when active, use totalRaised when Successful/Unsuccessful
 // DONE: Fix Withdrawn in ui, show when active
 // DONE: Rename getTotalContributed to getTotalRaisedFunds

@@ -280,6 +280,7 @@ export function contribute(campaign, contribution) {
         })
         .then((result) => {
           setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
+          dispatch(updateCampaign(campaign.address))
         })
         .catch((err) => {
           console.log(err)
@@ -302,6 +303,7 @@ export function placeVote(campaign, voteSecret) {
       const receipt = await instance.vote(voteSecret, { from: coinbase })
       await inLogs(receipt.logs, 'LogVoteComitted')
       setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
+      dispatch(updateCampaign(campaign.address))
     })
   }
 }
@@ -324,6 +326,7 @@ export function revealVote(campaign, voteOption, salt) {
         })
         .then((result) => {
           setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
+          dispatch(updateCampaign(campaign.address))
         })
         .catch((err) => {
           console.log(err)
@@ -350,6 +353,7 @@ export function cancel(campaign) {
         })
         .then((result) => {
           setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
+          dispatch(updateCampaign(campaign.address))
         })
         .catch((err) => {
           console.log(err)
@@ -377,6 +381,8 @@ export function withdraw(campaign) {
         .then((result) => {
           setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
           setTimeout(() => dispatch(getAccountDetails(coinbase)), 6000)
+          dispatch(updateCampaign(campaign.address))
+          dispatch(getAccountDetails(coinbase))
         })
         .catch((err) => {
           console.log(err)
@@ -404,6 +410,8 @@ export function emergencyWithdraw(campaign) {
         .then((result) => {
           setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
           setTimeout(() => dispatch(getAccountDetails(coinbase)), 6000)
+          dispatch(updateCampaign(campaign.address))
+          dispatch(getAccountDetails(coinbase))
         })
         .catch((err) => {
           console.log(err)
@@ -431,6 +439,7 @@ export function emergencyStop(campaign) {
         })
         .then((result) => {
           setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
+          dispatch(updateCampaign(campaign.address))
         })
         .catch((err) => {
           console.log(err)

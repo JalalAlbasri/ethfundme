@@ -11,6 +11,8 @@
  *
  * We ensure that new Campaigns cannot be created when the CampaignFactory is in a stopped state.
  *
+ * We also check that admin roles cannot be changed when the CampaignFactory is stopped.
+ *
  * We then resume the stopped Contract and ensure that Campaigns can be created as normal again.
  *
  */
@@ -104,6 +106,14 @@ contract('#10 CampaignFactory Emregency Stop', (accounts) => {
       assert.equal(numCampaigns, 1, 'numCampaigns should still be 1')
       done()
     })
+  })
+
+  it('should try to grant admin priviledges while stopped and fail', async () => {
+    await assertRevert(CampaignFactoryInstance.addAdminRole(accounts[3], { from: accounts[0] }))
+  })
+
+  it('should try to revoke admin priviledges while stopped and fail', async () => {
+    await assertRevert(CampaignFactoryInstance.removeAdminRole(accounts[2], { from: accounts[0] }))
   })
 
   it('should resume CampaignFactory contract successfully', (done) => {

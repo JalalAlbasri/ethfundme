@@ -87,6 +87,29 @@ contract CampaignFactory is Administrated, EmergencyStoppable {
     return address(newCampaign);
   }
 
+
+  /**
+    @dev We override the addAdminRole(_account); function from the Administrated parent Contract
+    in order to apply the stoppedInEmergency modifier
+    @param _account the account address to which admin priviledges should be granted
+   */
+  function addAdminRole(address _account) public
+    stoppedInEmergency
+  {
+    super.addAdminRole(_account);
+  }
+  
+  /**
+    @dev We override the removeAdminRole(_account); function from the Administrated parent Contract
+    in order to apply the stoppedInEmergency modifier
+    @param _account the account address to which admin priviledges should be revoked
+   */
+  function removeAdminRole(address _account) public
+    stoppedInEmergency
+  {
+    super.removeAdminRole(_account);
+  }
+
   /**
     GETTERS
    */

@@ -4,22 +4,22 @@ import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-class CreateCampaignButton extends Component {
+class AddAdminButton extends Component {
   constructor(props, context) {
     super(props)
   }
 
   render() {
-    if (!this.props.account.isAdmin) {
+    if (this.props.account.isAdmin) {
       return (
         <button
           type="button"
-          className="btn btn-outline-success"
+          className="btn btn-outline-info"
           data-toggle="modal"
-          data-target="#createCampaignModal"
+          data-target="#adminRoleModal"
         >
-          <FontAwesomeIcon className="button-icon" icon="plus" />
-          Create Campaign
+          <FontAwesomeIcon className="button-icon" icon="wrench" />
+          Admin Roles
         </button>
       )
     }
@@ -27,11 +27,11 @@ class CreateCampaignButton extends Component {
   }
 }
 
-CreateCampaignButton.contextTypes = {
+AddAdminButton.contextTypes = {
   drizzle: PropTypes.object
 }
 
-CreateCampaignButton.PropTypes = {
+AddAdminButton.PropTypes = {
 }
 
 const mapStateToProps = (state, ownProps) => {
@@ -40,8 +40,4 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
-  return {}
-}
-
-export default drizzleConnect(CreateCampaignButton, mapStateToProps)
+export default drizzleConnect(AddAdminButton, mapStateToProps)

@@ -72,6 +72,7 @@ contract Administrated is RBAC {
     public
     onlyAdmin
   {
+    require(!hasRole(_account, ROLE_ADMIN));
     addRole(_account, ROLE_ADMIN);
     numAdmins = SafeMath.add(numAdmins, 1);
     emit LogAdminAdded(_account);
@@ -85,6 +86,7 @@ contract Administrated is RBAC {
     public
     onlyAdmin
   {
+    require(hasRole(_account, ROLE_ADMIN));
     removeRole(_account, ROLE_ADMIN);
     numAdmins = SafeMath.sub(numAdmins, 1);
     emit LogAdminRemoved(_account);

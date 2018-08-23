@@ -16,6 +16,9 @@
  * We also test that non admin accounts are not able to grant admin
  * privilidges.
  *
+ * Finally we test that we cannot grant and admin the admin role and cannot
+ * revoke the admin role from a non admin.
+ *
  */
 
 
@@ -81,5 +84,13 @@ contract('#1 Initialization', (accounts) => {
   it('should have made accounts[2] not an admin', async () => {
     const isAdmin = await CampaignFactoryInstance.isAdmin(accounts[2], { from: accounts[2] })
     assert.equal(isAdmin, false, 'accounts 2 should be an admin')
+  })
+
+  it('should revoke admin role from accounts[2] again and fail', async () => {
+    await assertRevert(CampaignFactoryInstance.removeAdminRole(accounts[2], { from: accounts[0] }))
+  })
+
+  it('should grant admin role to accounts[1] and fail', async () => {
+    await assertRevert(CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }))
   })
 })
