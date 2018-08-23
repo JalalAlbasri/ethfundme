@@ -21,13 +21,14 @@
 // DONE: Review uint256s and restrict size if possible (at least make them uint256)
 // DONE: Use a library/Package to advance time in tests
 // DONE: Change CampaignFactory to CampaignFactory
-// TASK: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
+// DONE: Use OpenZeppelin Safemath - Use OpenZeppelin from EthPm
 // DONE: Approvable in its own file?
 // DONE: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
-// TASK: Have setup script leave from campaigns in reveal stage.
+// DONE: Have setup script leave from campaigns in reveal stage.
 // TASK: Put 'Log' on Event Names
 // DONE: Add a License
 // TASK: Try again to use increase time from mode_mudles in setup script. Try with inport!
+// TASK: Better image library
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
@@ -60,7 +61,9 @@
   // DONE: Don't show goalProgress on Pending Campaign
   // TASK: Use Events to Update UI.
   // TASK: Mobile View Support.
-
+  // TASK: Remove Logging
+  // TASK: Put Background color on Jumbo
+  
 // Submitable
 // TASK: Fix all line ending to LF
 // TASK: Packaging and Other Documentation

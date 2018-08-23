@@ -172,7 +172,7 @@ module.exports = function (callback) {
       // REVEAL REJECTIONS
       let revealPromises = []
 
-      for (let i = NUM_APPROVALS; i < NUM_APPROVALS + NUM_REJECTIONS; i++) {
+      for (let i = NUM_APPROVALS; i < NUM_APPROVALS + NUM_REJECTIONS - 2; i++) {
         for (let j = 0; j < NUM_ADMINS - 1; j++) {
           console.log(`admin ${j} revealing vote for campaign ${i}...`)
           let revealPromise = CampaignInstances[i].reveal(REJECT_VOTE_OPTION, SALT, {
