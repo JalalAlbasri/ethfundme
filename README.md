@@ -82,15 +82,30 @@ EthFundMe requires truffle and is configured to use ganache-cli as a test blockc
 
 The fontend is configured to run with webpack-dev-server
 
-If you do not have truffle or ganache-cli or the webpack dev server installed you can install them with
+If you do not have nodejs and npm installed you need to install them with
+
+On Ubuntu 16.04:
 
 ```
-npm install --global truffle@4.1.14 ganache-cli@6.1.8 webpack webpack-dev-server
+sudo apt-get install curl
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install -y nodejs
 ```
 
-EthFundMe was tested with truffle version 4.1.14 and ganache-cli version 6.1.8 (latest at the time of writing this).
+If you do not have truffle, ganache-cli, webpack or the webpack dev server installed you can install them with
 
-Please ensure you are using the correct version if you run into difficulties testing/deploying.
+```
+sudo npm install --global truffle@4.1.14 ganache-cli@6.1.8 webpack webpack-dev-server
+```
+
+EthFundMe was tested with 
+- truffle version 4.1.14 
+- ganache-cli version 6.1.8 
+- nodejs version 10.4.1
+- npm version 6.2.0
+(latest at the time of writing this).
+
+Please ensure you are using the correct versions if you run into difficulties testing/deploying.
 
 ### Testing
 

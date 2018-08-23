@@ -8,7 +8,8 @@ const coolImages = require('cool-images')
 const NUM_ADMINS = 3
 const NUM_CAMPAIGNS = 20
 const NUM_APPROVALS = 15
-const NUM_REJECTIONS = 3
+const NUM_REJECTIONS = 5
+const NUM_REVEALS = 2
 
 const SALT = ''
 const APPROVE_VOTE_OPTION = true
@@ -16,12 +17,12 @@ const REJECT_VOTE_OPTION = false
 const APPROVE_VOTE_SECRET = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [APPROVE_VOTE_OPTION, SALT]).toString('hex')
 const REJECT_VOTE_SECRET = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [REJECT_VOTE_OPTION, SALT]).toString('hex')
 
-const GOAL_MIN = 20
-const GOAL_MAX = 50
+const GOAL_MIN = 10
+const GOAL_MAX = 20
 const DURATION_MIN = 1
 const DURATION_MAX = 7
-const CONTRIBUTION_MIN = 1
-const CONTRIBUTION_MAX = 10
+const CONTRIBUTION_MIN = 2
+const CONTRIBUTION_MAX = 5
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
@@ -174,7 +175,7 @@ module.exports = function (callback) {
       // REVEAL REJECTIONS
       let revealPromises = []
 
-      for (let i = NUM_APPROVALS; i < NUM_APPROVALS + NUM_REJECTIONS - 2; i++) {
+      for (let i = NUM_APPROVALS; i < NUM_APPROVALS + NUM_REJECTIONS - NUM_REVEALS; i++) {
         for (let j = 0; j < NUM_ADMINS - 1; j++) {
           console.log(`admin ${j} revealing vote for campaign ${i}...`)
           let revealPromise = CampaignInstances[i].reveal(REJECT_VOTE_OPTION, SALT, {
