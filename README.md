@@ -71,7 +71,7 @@ If you are looking for Drizzle-React Client App Code and can be found in the [/s
 ### Installing
 
 ```
-git clone http://github.com/jalalalbasri/EthFundMe.git
+git clone http://github.com/jalalalbasri/ethfundme.git
 cd EthFundMe
 npm install
 ```
