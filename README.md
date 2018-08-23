@@ -85,7 +85,7 @@ The fontend is configured to run with webpack-dev-server
 If you do not have truffle or ganache-cli or the webpack dev server installed you can install them with
 
 ```
-npm install --global truffle@4.1.14 ganache-cli@6.1.8 webpack-dev-server
+npm install --global truffle@4.1.14 ganache-cli@6.1.8 webpack webpack-dev-server
 ```
 
 EthFundMe was tested with truffle version 4.1.14 and ganache-cli version 6.1.8 (latest at the time of writing this).
