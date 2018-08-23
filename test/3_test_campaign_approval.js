@@ -60,13 +60,13 @@ contract('#3 Campaign Approval', (accounts) => {
 
     await expectEvent.inTransaction(
       CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
-      'AdminAdded',
+      'LogAdminAdded',
       { account: accounts[1] }
     )
 
     await expectEvent.inTransaction(
       CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] }),
-      'AdminAdded',
+      'LogAdminAdded',
       { account: accounts[2] }
     )
 
@@ -79,7 +79,7 @@ contract('#3 Campaign Approval', (accounts) => {
         'test image url',
         { from: accounts[3] }
       ),
-      'CampaignCreated'
+      'LogCampaignCreated'
     )
 
     const campaignAddress = event.args.campaignAddress
@@ -95,7 +95,7 @@ contract('#3 Campaign Approval', (accounts) => {
   it('should place a vote from accounts[0]', async () => {
     await expectEvent.inTransaction(
       CampaignInstance.vote(originalVoteSecret0, { from: accounts[0] }),
-      'VoteCommitted',
+      'LogVoteComitted',
       {
         comittedBy: accounts[0]
       }
@@ -125,7 +125,7 @@ contract('#3 Campaign Approval', (accounts) => {
   it('should change a vote from accounts[0]', async () => {
     await expectEvent.inTransaction(
       CampaignInstance.vote(newVoteSecret0, { from: accounts[0] }),
-      'VoteCommitted',
+      'LogVoteComitted',
       {
         comittedBy: accounts[0]
       }
@@ -160,7 +160,7 @@ contract('#3 Campaign Approval', (accounts) => {
   it('should place a vote from accounts[1]', async () => {
     await expectEvent.inTransaction(
       CampaignInstance.vote(voteSecret1, { from: accounts[1] }),
-      'VoteCommitted',
+      'LogVoteComitted',
       {
         comittedBy: accounts[1]
       }
@@ -175,7 +175,7 @@ contract('#3 Campaign Approval', (accounts) => {
   it('should place a vote from accounts[2]', async () => {
     await expectEvent.inTransaction(
       CampaignInstance.vote(voteSecret2, { from: accounts[2] }),
-      'VoteCommitted',
+      'LogVoteComitted',
       {
         comittedBy: accounts[2]
       }
@@ -226,7 +226,7 @@ contract('#3 Campaign Approval', (accounts) => {
   it('should reveal vote for accounts[0]', async () => {
     await expectEvent.inTransaction(
       CampaignInstance.reveal(newVoteOption0, salt, { from: accounts[0] }),
-      'VoteRevealed',
+      'LogVoteRevealed',
       {
         revealedBy: accounts[0]
       }
@@ -260,7 +260,7 @@ contract('#3 Campaign Approval', (accounts) => {
   it('should reveal vote for accounts[1]', async () => {
     await expectEvent.inTransaction(
       CampaignInstance.reveal(voteOption1, salt, { from: accounts[1] }),
-      'VoteRevealed',
+      'LogVoteRevealed',
       {
         revealedBy: accounts[1]
       }
@@ -284,7 +284,7 @@ contract('#3 Campaign Approval', (accounts) => {
   it('should reveal vote for accounts[2]', async () => {
     await expectEvent.inTransaction(
       CampaignInstance.reveal(voteOption2, salt, { from: accounts[2] }),
-      'VoteRevealed',
+      'LogVoteRevealed',
       {
         revealedBy: accounts[2]
       }

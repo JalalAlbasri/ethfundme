@@ -13,7 +13,7 @@ const drizzleOptions = {
   ],
   events: {
     CampaignFactory: [
-      'CampaignCreated'
+      'LogCampaignCreated'
     ]
 
   },

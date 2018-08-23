@@ -42,7 +42,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     Approved and goes Campaign State changes to Active
     payload is the startDate of the campaign
    */   
-  event campaignStarted (
+  event LogCampaignStarted (
     uint256 startDate
   );
 
@@ -52,7 +52,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     payload is the end date of the campaign and a boolean
     denoting the campaign's success or failure
    */     
-  event campaignEnded (
+  event LogCampaignEnded (
     uint256 endDate,
     bool isSuccessful
   );
@@ -62,7 +62,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     Campaign manager
     payload is the date the campaign was cancelled
    */     
-  event campaignCancelled (
+  event LogCampaignCancelled (
     uint256 cancelledDate
   );
 
@@ -71,7 +71,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     payload is the address of the contributor and the amount in eth
     contributed
    */     
-  event contributionMade (
+  event LogContributionMade (
     address contributor,
     uint256 amount
   );
@@ -81,7 +81,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     payload is the address of the beneficiary and the amount withdrawn 
     in eth
    */     
-  event withdrawlMade (
+  event LogWithdrawlMade (
     address beneficiary,
     uint256 amount 
   );
@@ -333,7 +333,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   {
     endDate = SafeMath.add(block.timestamp, duration);
     campaignState = CampaignStates.Active;
-    emit campaignStarted(block.timestamp);
+    emit LogCampaignStarted(block.timestamp);
   }
 
   /**
@@ -355,7 +355,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   {
     hasWithdrawn[msg.sender] = true;
     funds = 0;
-    emit withdrawlMade(msg.sender, address(this).balance);
+    emit LogWithdrawlMade(msg.sender, address(this).balance);
     msg.sender.transfer(address(this).balance);
   }
 
@@ -387,7 +387,7 @@ contract Campaign is Approvable, ReentrancyGuard {
       // totalRaised -= totalContributed;
       totalRaised = SafeMath.sub(totalRaised, totalContributed);
     }
-    emit withdrawlMade(msg.sender, totalContributed);
+    emit LogWithdrawlMade(msg.sender, totalContributed);
     msg.sender.transfer(totalContributed);
   }
 
@@ -415,7 +415,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     funds = SafeMath.add(funds, msg.value);
     // totalRaised += msg.value;
     totalRaised = SafeMath.add(totalRaised, msg.value);
-    emit contributionMade(msg.sender, msg.value);
+    emit LogContributionMade(msg.sender, msg.value);
   }
 
   /**
@@ -432,7 +432,7 @@ contract Campaign is Approvable, ReentrancyGuard {
   {
     approvalState = ApprovalStates.Cancelled;
     campaignState = CampaignStates.Cancelled;
-    emit campaignCancelled(block.timestamp);
+    emit LogCampaignCancelled(block.timestamp);
   }
 
   /**
@@ -446,7 +446,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     transitionState
     onlyAfterCampaignEnd
   {
-    emit campaignEnded(block.timestamp, (campaignState == CampaignStates.Successful));
+    emit LogCampaignEnded(block.timestamp, (campaignState == CampaignStates.Successful));
   }
 
   // Wrapper to private function doing the actual work as described in ReentrancyGuard.sol

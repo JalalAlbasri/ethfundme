@@ -25,7 +25,7 @@
 // DONE: Approvable in its own file?
 // DONE: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
 // DONE: Have setup script leave from campaigns in reveal stage.
-// TASK: Put 'Log' on Event Names
+// DONE: Put 'Log' on Event Names
 // DONE: Add a License
 // DONE: Try again to use increase time from node_mudles in setup script. Try with inport!
 // TASK: Better image library
@@ -40,6 +40,7 @@
 // DONE: Reenable solidity test
 // DONE: Rename VoteSecret/Option to Approve Reject for clarity
 // DONE: Check events in tests too
+// TASK: Listen for all events in Tests
 
 // DOCUMENTATION
 // DONE: Review Security Best Practices - writeup
@@ -59,13 +60,13 @@
 // DONE: Rename getTotalContributed to getTotalRaisedFunds
 // DONE: Don't show goalProgress on Pending Campaign
 // TASK: Mobile View Support.
-// TASK: Remove Logging
+// DONE: Remove Logging
 // TASK: Put Background color on Jumbo
 // TASK: Add a Footer
 
 // Submitable
 // TASK: Fix all line ending to LF
-// TASK: Packaging and Other Documentation
+// DONE: Packaging and Other Documentation
 // TASK: Make sure it works on Ubuntu
-// TASK: Review Grading Rubric
+// DONE: Review Grading Rubric
 // TASK: Release on testnet

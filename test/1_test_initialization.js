@@ -47,7 +47,7 @@ contract('#1 Initialization', (accounts) => {
   it('should add an admin from an admin account', async () => {
     await expectEvent.inTransaction(
       CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
-      'AdminAdded',
+      'LogAdminAdded',
       { account: accounts[1] }
     )
   })
@@ -60,7 +60,7 @@ contract('#1 Initialization', (accounts) => {
   it('should add a third admin from the second admin account', async () => {
     await expectEvent.inTransaction(
       CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] }),
-      'AdminAdded',
+      'LogAdminAdded',
       { account: accounts[2] }
     )
   })
@@ -73,7 +73,7 @@ contract('#1 Initialization', (accounts) => {
   it('should revoke admin priviledges from an admin', async () => {
     await expectEvent.inTransaction(
       CampaignFactoryInstance.removeAdminRole(accounts[2], { from: accounts[0] }),
-      'AdminRemoved',
+      'LogAdminRemoved',
       { account: accounts[2] }
     )
   })

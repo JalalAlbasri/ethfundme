@@ -36,25 +36,25 @@ contract Approvable is EmergencyStoppable {
     @dev Event emitted when a Vote is Committed
     The payload is address of the vote committer
    */
-  event VoteCommitted (address comittedBy);
+  event LogVoteComitted (address comittedBy);
   
   /**
     @dev Event emitted when a Vote is Reveal
     The payload is address of the vote revealer
    */
-  event VoteRevealed (address revealedBy);
+  event LogVoteRevealed (address revealedBy);
   
   /**
     @dev Event emitted when all votes have been Comitted
    */  
-  event allVotesComitted();
+  event LogAllVotesComitted();
   
   /**
     @dev Event emitted when enough votes have been revealed to
     conclude arrive at a decision on the vote.
     payload is the outcome of the vote.
    */
-  event votePassed (bool isApproved);
+  event LogVotePassed (bool isApproved);
   
   /**
     STATE VARIABLES
@@ -148,7 +148,7 @@ contract Approvable is EmergencyStoppable {
     _;
     if (numVoteSecrets == getNumVoters()) { //requires that all admins have voted
       approvalState = ApprovalStates.Reveal;
-      emit allVotesComitted();
+      emit LogAllVotesComitted();
     }
   }
 
@@ -165,12 +165,12 @@ contract Approvable is EmergencyStoppable {
     if (numApprovals >= required) {
       approvalState = ApprovalStates.Approved;
       onApproval();
-      emit votePassed(true);
+      emit LogVotePassed(true);
     }
     if (numRejections >= required) {
       approvalState = ApprovalStates.Rejected;
       onRejection();
-      emit votePassed(false);
+      emit LogVotePassed(false);
     }
   }
 
@@ -218,7 +218,7 @@ contract Approvable is EmergencyStoppable {
         numVoteSecrets++;
         hasVoted[msg.sender] = true;
     }
-    emit VoteCommitted(msg.sender);
+    emit LogVoteComitted(msg.sender);
   }
 
   /**
@@ -243,7 +243,7 @@ contract Approvable is EmergencyStoppable {
 
       numVoteReveals++;
       hasRevealed[msg.sender] = true;
-      emit VoteRevealed(msg.sender);
+      emit LogVoteRevealed(msg.sender);
   }
 
 }

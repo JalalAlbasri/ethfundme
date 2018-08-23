@@ -50,7 +50,7 @@ contract CampaignFactory is Administrated, EmergencyStoppable {
     @dev Event emitted when a Campaign is created from the Campaign Factory
     The payload is the newly created Campaign's address
    */
-  event CampaignCreated (
+  event LogCampaignCreated (
     address indexed campaignAddress
   );
 
@@ -83,7 +83,7 @@ contract CampaignFactory is Administrated, EmergencyStoppable {
   {
     Campaign newCampaign = new Campaign(campaigns.length, title, goal, duration, description, image, msg.sender, address(this));
     campaigns.push(address(newCampaign));
-    emit CampaignCreated(address(newCampaign));
+    emit LogCampaignCreated(address(newCampaign));
     return address(newCampaign);
   }
 

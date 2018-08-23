@@ -13,14 +13,14 @@ contract Administrated is RBAC {
   /**
     @dev Event emitted when Admin Role is granted
    */
-  event AdminAdded (
+  event LogAdminAdded (
     address indexed account
   );
 
   /**
     @dev Event emitted when Admin Role is revoked
    */
-  event AdminRemoved (
+  event LogAdminRemoved (
     address indexed account
   );
 
@@ -74,7 +74,7 @@ contract Administrated is RBAC {
   {
     addRole(_account, ROLE_ADMIN);
     numAdmins = SafeMath.add(numAdmins, 1);
-    emit AdminAdded(_account);
+    emit LogAdminAdded(_account);
   }
 
   /**
@@ -87,7 +87,7 @@ contract Administrated is RBAC {
   {
     removeRole(_account, ROLE_ADMIN);
     numAdmins = SafeMath.sub(numAdmins, 1);
-    emit AdminRemoved(_account);
+    emit LogAdminRemoved(_account);
   }
 
   /**

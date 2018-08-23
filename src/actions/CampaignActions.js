@@ -300,7 +300,7 @@ export function placeVote(campaign, voteSecret) {
 
       const instance = await web3Campaign.at(campaign.address)
       const receipt = await instance.vote(voteSecret, { from: coinbase })
-      await inLogs(receipt.logs, 'VoteCommitted')
+      await inLogs(receipt.logs, 'LogVoteComitted')
       setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
     })
   }

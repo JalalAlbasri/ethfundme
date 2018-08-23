@@ -23,7 +23,15 @@ pragma solidity ^0.4.24;
 
 contract EmergencyStoppable {
   
-  // TODO: Events
+  /**
+    @dev Event emitted when contract is stopped
+   */
+  event LogContractStopped ();
+
+  /**
+    @dev Event emitted when contract is resumed
+   */
+  event LogContractResumed ();
 
   // STATE VARIABLES
   bool public isStopped = false;
@@ -66,6 +74,7 @@ contract EmergencyStoppable {
     onlyAuthorized
   {
       isStopped = true;
+      emit LogContractStopped();
   }
 
   /**
@@ -75,5 +84,6 @@ contract EmergencyStoppable {
     onlyAuthorized
   {
       isStopped = false;
+      emit LogContractResumed();
   }
 }
