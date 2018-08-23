@@ -447,3 +447,26 @@ export function emergencyStop(campaign) {
     })
   }
 }
+
+export function emergencyStopCampaignFactory(isStopped) {
+  return function (dispatch) {
+    const web3CampaignFactory = contract(CampaignFactoryContract)
+    web3CampaignFactory.setProvider(web3.currentProvider)
+
+    web3.eth.getCoinbase(async (err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+
+      let instance = await web3CampaignFactory.deployed()
+
+      if (isStopped) {
+        let receipt = await instance.resumeContract({ from: coinbase })
+        await inLogs(receipt.logs, 'LogContractResumed')
+      } else {
+        let receipt = await instance.stopContract({ from: coinbase })
+        await inLogs(receipt.logs, 'LogContractStopped')
+      }
+    })
+  }
+}

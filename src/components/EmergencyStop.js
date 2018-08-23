@@ -25,7 +25,7 @@ class EmergencyStop extends Component {
             className={'btn btn-outline-' + (this.props.campaign.isStopped ? 'primary' : 'danger')}
             onClick={this.handleClick}
           >
-            <FontAwesomeIcon className="button-icon" icon={this.props.campaign.isStopped ? 'play' : 'stop'} />
+            <FontAwesomeIcon className="button-icon" icon={this.props.campaign.isStopped ? 'play-circle' : 'stop-circle'} />
             {this.props.campaign.isStopped ? 'Resume Contract' : 'Emergency Stop Contract'}
           </button>
         </div>

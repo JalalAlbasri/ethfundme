@@ -27,7 +27,9 @@ import {
   faExclamationTriangle,
   faWrench,
   faCheck,
-  faBan
+  faBan,
+  faStopCircle,
+  faPlayCircle
 } from '@fortawesome/free-solid-svg-icons'
 
 import store from './store'
@@ -48,6 +50,8 @@ library.add(faExclamationTriangle)
 library.add(faWrench)
 library.add(faCheck)
 library.add(faBan)
+library.add(faStopCircle)
+library.add(faPlayCircle)
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
