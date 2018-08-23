@@ -1,6 +1,6 @@
 import ADD_CAMPAIGN from '../actions/CampaignActions'
 
-// TODO: Consider using object w/ key address to hold campaigns instead of array,
+// TODO: Why are Campaign Actions String not Working?
 const initialState = []
 
 function campaigns(state = initialState, action) {

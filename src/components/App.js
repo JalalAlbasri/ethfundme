@@ -10,9 +10,6 @@ import Campaigns from './Campaigns'
 import Filters from './Filters'
 import CreateCampaignModal from './CreateCampaignModal'
 
-// TASK: End Campaign Button
-// TASK: Create campaign form
-
 class App extends Component {
   constructor(props, context) {
     super(props)

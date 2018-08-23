@@ -1,6 +1,7 @@
 pragma solidity ^0.4.24;
 
 import "../node_modules/zeppelin-solidity/contracts/access/rbac/RBAC.sol";
+import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
   @title Administrated
@@ -72,7 +73,7 @@ contract Administrated is RBAC {
     onlyAdmin
   {
     addRole(_account, ROLE_ADMIN);
-    numAdmins++;
+    numAdmins = SafeMath.add(numAdmins, 1);
     emit AdminAdded(_account);
   }
 
@@ -85,7 +86,7 @@ contract Administrated is RBAC {
     onlyAdmin
   {
     removeRole(_account, ROLE_ADMIN);
-    numAdmins--;
+    numAdmins = SafeMath.sub(numAdmins, 1);
     emit AdminRemoved(_account);
   }
 

@@ -12,7 +12,6 @@ class CreateCampaignButton extends Component {
     this.handleCreateCampaignClick = this.handleCreateCampaignClick.bind(this)
   }
 
-  // TODO: Move to Campaign Actions
   handleCreateCampaignClick(event) {
     event.preventDefault()
     this.props.dispatchCreateCampaign('123', 10, 1)

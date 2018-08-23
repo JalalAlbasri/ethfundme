@@ -27,6 +27,7 @@
 // TASK: Have setup script leave from campaigns in reveal stage.
 // TASK: Put 'Log' on Event Names
 // DONE: Add a License
+// TASK: Try again to use increase time from mode_mudles in setup script. Try with inport!
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
@@ -39,11 +40,14 @@
 // TASK: Rename VoteSecret/Option to Approve Reject for clarity
 // DONE: Check events in tests too
 
+// DOCUMENTATION
 // DONE: Review Security Best Practices - writeup
 // DONE: Review Design Patterns - writeup
 // TASK: Put UI Screenshots in Readme?
+// TASK: Make a Libraries used section.
+// TASK: Project Structure Section where you say where everything is
 
-// Frontend
+// UI
 // DONE: Fix Contribute
 // DONE: Set up React Project and React Crash Course
 // DONE: Frontend
@@ -55,8 +59,10 @@
   // DONE: Rename getTotalContributed to getTotalRaisedFunds
   // DONE: Don't show goalProgress on Pending Campaign
   // TASK: Use Events to Update UI.
+  // TASK: Mobile View Support.
 
 // Submitable
+// TASK: Fix all line ending to LF
 // TASK: Packaging and Other Documentation
 // TASK: Make sure it works on Ubuntu
 // TASK: Review Grading Rubric

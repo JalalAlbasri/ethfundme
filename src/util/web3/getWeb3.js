@@ -42,8 +42,6 @@ let getWeb3 = new Promise(function (resolve, reject) {
 
       resolve(store.dispatch(web3Initialized(results)))
     }
-
-    // TODO: Error checking.
   })
 })
 

@@ -4,6 +4,7 @@ import "./Administrated.sol";
 import "./Approvable.sol";
 import "./EmergencyStoppable.sol";
 import "../node_modules/zeppelin-solidity/contracts/ReentrancyGuard.sol";
+import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
 
 /**
   @dev The Campaign Contract
@@ -30,6 +31,7 @@ import "../node_modules/zeppelin-solidity/contracts/ReentrancyGuard.sol";
   The Campaign is EmergencyStoppable and provides an EmergencyWithdraw function that will allow
   Contributors to retrieve their contributed funds in the event of Emergency.
  */
+
 contract Campaign is Approvable, ReentrancyGuard {
   
   /**
@@ -186,7 +188,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     id = _id;
     title = _title;
     goal = _goal;
-    duration = _duration * 1 days;
+    duration = SafeMath.mul(_duration, 1 days);
     description = _description;
     image = _image;
     manager = _manager;
@@ -290,7 +292,8 @@ contract Campaign is Approvable, ReentrancyGuard {
     //No Zero Contributions
     require(msg.value > 0, "No zero contributions"); 
      //Integer Overflow Protection
-    require(funds + msg.value > funds, "Integer overflow check failed");
+    require(SafeMath.add(funds, msg.value) > funds, "Integer overflow check failed");
+    // require(funds + msg.value > funds, "Integer overflow check failed");
     _;
   }
 
@@ -313,7 +316,7 @@ contract Campaign is Approvable, ReentrancyGuard {
     @dev returns the number of admins
     This function is required by the Approvable interface to determine the number of voters
    */
-  function numVoters()
+  function getNumVoters()
     internal
     returns(uint256)
   {
@@ -328,7 +331,7 @@ contract Campaign is Approvable, ReentrancyGuard {
    */
   function onApproval() internal 
   {
-    endDate = block.timestamp + duration;
+    endDate = SafeMath.add(block.timestamp, duration);
     campaignState = CampaignStates.Active;
     emit campaignStarted(block.timestamp);
   }
@@ -369,16 +372,20 @@ contract Campaign is Approvable, ReentrancyGuard {
 
     for (uint i = 0; i < contributions.length; i++) {
       if (contributions[i].addr == msg.sender && contributions[i].withdrawn == false) {
-        totalContributed += contributions[i].amount;
+        // totalContributed += contributions[i].amount;
+        totalContributed = SafeMath.add(totalContributed, contributions[i].amount);
         contributions[i].withdrawn = true;
       }
     }
 
-    funds -= totalContributed;
+    // funds -= totalContributed;
+    funds = SafeMath.sub(funds, totalContributed);
+
     // If the campaign is still active withdrawl is an emergency withdrawl
     // In that case decrement the withdrawl amount from totalRaised
     if (campaignState == CampaignStates.Active) {
-      totalRaised -= totalContributed;
+      // totalRaised -= totalContributed;
+      totalRaised = SafeMath.sub(totalRaised, totalContributed);
     }
     emit withdrawlMade(msg.sender, totalContributed);
     msg.sender.transfer(totalContributed);
@@ -404,8 +411,10 @@ contract Campaign is Approvable, ReentrancyGuard {
     hasContributed[msg.sender] = true;
     hasWithdrawn[msg.sender] = false;
     contributions.push(Contribution(msg.sender, msg.value, block.timestamp, false));
-    funds += msg.value;
-    totalRaised += msg.value;
+    // funds += msg.value;
+    funds = SafeMath.add(funds, msg.value);
+    // totalRaised += msg.value;
+    totalRaised = SafeMath.add(totalRaised, msg.value);
     emit contributionMade(msg.sender, msg.value);
   }
 
@@ -535,7 +544,8 @@ contract Campaign is Approvable, ReentrancyGuard {
     uint256 totalContributed = 0;
     for (uint256 i = 0; i < contributions.length; i++) {
       if (contributions[i].addr == msg.sender) {
-        totalContributed += contributions[i].amount;
+        // totalContributed += contributions[i].amount;
+        totalContributed = SafeMath.add(totalContributed, contributions[i].amount);
       }
     }
     return totalContributed;

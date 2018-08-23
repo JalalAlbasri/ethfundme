@@ -1,6 +1,8 @@
 pragma solidity ^0.4.24;
 
 import "./EmergencyStoppable.sol";
+import "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol";
+
 
 /**
   @title Approvable
@@ -144,7 +146,7 @@ contract Approvable is EmergencyStoppable {
    */
   modifier endCommit() {
     _;
-    if (numVoteSecrets == numVoters()) { //requires that all admins have voted
+    if (numVoteSecrets == getNumVoters()) { //requires that all admins have voted
       approvalState = ApprovalStates.Reveal;
       emit allVotesComitted();
     }
@@ -154,8 +156,11 @@ contract Approvable is EmergencyStoppable {
   modifier endReveal() {
     _;
     // number of reveals required to pass the vote
-    uint256 numAdmins = numVoters();
-    uint256 required = numAdmins / 2 + numAdmins % 2;
+    uint256 numVoters = getNumVoters();
+    
+    // once SafeMath.mod is released in official Zeppelin Library we can use it, until then just use %
+    // uint256 required = SafeMath.add(SafeMath.div(numVoters, 2), SafeMath.mod(numVoters, 2));
+    uint256 required = SafeMath.add(SafeMath.div(numVoters, 2), numVoters % 2);
 
     if (numApprovals >= required) {
       approvalState = ApprovalStates.Approved;
@@ -194,7 +199,7 @@ contract Approvable is EmergencyStoppable {
     @dev Must be implemented by Contracts that extend this as a way to determine 
     the total number of voters
    */
-   function numVoters() internal returns(uint256);
+   function getNumVoters() internal returns(uint256);
 
   // INTERFACE
   /**
