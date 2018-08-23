@@ -123,6 +123,9 @@ Run the development blockchain with -b 3 to increase the block minig delay.
 ```
 ganache-cli -b 3
 ```
+*Note: The UI will update properly if run without the increasing the blocktime in ganache-cli (-b 3) because I update the UI after every transaction but
+drizzle's automatic updating works best if the blockchain is started with increased blocktime*
+
 ### Configuring metamask
 
 Copy the 12 word mnemonic (seed phrase) given by ganache-cli in the previous command.
