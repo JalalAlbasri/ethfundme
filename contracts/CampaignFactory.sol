@@ -26,33 +26,35 @@
 // DONE: Put all setup scripts into one, make more campaigns and time travel so that ~half are complete
 // TASK: Have setup script leave from campaigns in reveal stage.
 // TASK: Put 'Log' on Event Names
-// TASK: Add a License
+// DONE: Add a License
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
 // DONE: use increaseTime from openzeppelin! Test 
 // DONE: Put All Transactions into their own it statement
-// TASK: Comment Tests
+// DONE: Comment Tests
 // DONE: Homogenize import statements
 // DONE: Number in test name
 // DONE: Reenable solidity test
 // TASK: Rename VoteSecret/Option to Approve Reject for clarity
+// DONE: Check events in tests too
 
-// TASK: Review Security Best Practices - writeup
-// TASK: Review Design Patterns - writeup
+// DONE: Review Security Best Practices - writeup
+// DONE: Review Design Patterns - writeup
+// TASK: Put UI Screenshots in Readme?
 
 // Frontend
 // DONE: Fix Contribute
 // DONE: Set up React Project and React Crash Course
 // DONE: Frontend
 // DONE: Listening for Events
-  // -- TASK: UI for stopping efm + tests (stop camapaign creation then resume)
+  // -- TASK: UI for stopping CampaignFactory
   // -- TASK: UI for adding admins
-  // -- TASK: Check events in tests too
   // DONE: Progress Calculator, use funds when active, use totalRaised when Successful/Unsuccessful
   // DONE: Fix Withdrawn in ui, show when active
   // DONE: Rename getTotalContributed to getTotalRaisedFunds
   // DONE: Don't show goalProgress on Pending Campaign
+  // TASK: Use Events to Update UI.
 
 // Submitable
 // TASK: Packaging and Other Documentation
