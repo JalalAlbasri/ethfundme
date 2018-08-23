@@ -1,3 +1,27 @@
+/**
+ * TEST #11: Test Campaign Emergency Stop During Voting
+ *
+ * In this test we test the Emergency Stop functionality of the Campaign Contract during the
+ * Voting (CampaignState = Pending)
+ *
+ * We set up some admin accounts, create a campaign, then place 2 votes.
+ *
+ * We ensure that the Campaign cannot be stopped from a non Authorized account.
+ *
+ * We stop the Campaign and ensure that the state is changed accordingly.
+ *
+ * We ensure that votes cannot be placed on a Stopped Campaign.
+ *
+ * We resume the Campaign and ensure votes can be placed correctly again.
+ *
+ * We place the final vite and the Campaign moves into the Reveal Phase.
+ *
+ * We stop the Campaign and ensure that votes cannot be revealed during the Stopped State.
+ *
+ * Finally we resume the Campaign again and ensure that votes can be reveal once more.
+ *
+ */
+
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo

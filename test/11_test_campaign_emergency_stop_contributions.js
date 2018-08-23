@@ -3,7 +3,7 @@
  *
  * In this test we test the Emergency Stop functionality of the Campaign Contract.
  *
- * We set up some admin accounts create a campaign, approve it and make some contributions.
+ * We set up some admin accounts, create a campaign, approve it and make some contributions.
  *
  * We ensure that the Campaign cannot be stopped from a non Authorized account.
  *
@@ -13,9 +13,14 @@
  *
  * We ensure that the Campaign Manager cannot withdraw funds from a Stopped Campaign
  *
- * We ensure that new Campaigns cannot be created when the CampaignFactory is in a stopped state.
+ * We ensure that Contributors can withdraw funds from the Stopped Camapign.
  *
- * We then resume the stopped Contract and ensure that Campaigns can be created as normal again.
+ * We ensure that non admin accounts cannot resume the Campaign before resuming the Campaign
+ * from an admin account.
+ *
+ * Next we check that the resumed Campaign accepts contributions and that the Contributor
+ * who withdrew funds during the stopped Campaign can withdraw the correct amount of funds
+ * once the Campaign has ended.
  *
  */
 
