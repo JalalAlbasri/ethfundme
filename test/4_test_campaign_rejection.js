@@ -23,17 +23,10 @@ contract('#4 Campaign Rejection', (accounts) => {
 
   let salt = 123456789
 
-  let voteOption0 = false
-  let voteOption1 = false
-  let voteOption2 = true
-  let voteOption3 = false
-  let voteOption4 = false
-
-  let voteSecret0 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption0, salt]).toString('hex')
-  let voteSecret1 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption1, salt]).toString('hex')
-  let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
-  let voteSecret3 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption3, salt]).toString('hex')
-  let voteSecret4 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption4, salt]).toString('hex')
+  let voteOptionFalse = false
+  let voteOptionTrue = true
+  let voteSecretFalse = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOptionFalse, salt]).toString('hex')
+  let voteSecretTrue = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOptionTrue, salt]).toString('hex')
 
   before('setup and reject campaign', (done) => {
     CampaignFactory.deployed()
@@ -68,28 +61,28 @@ contract('#4 Campaign Rejection', (accounts) => {
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
-        return CampaignInstance.vote(voteSecret0, { from: accounts[0] })
+        return CampaignInstance.vote(voteSecretFalse, { from: accounts[0] })
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecret1, { from: accounts[1] })
+        return CampaignInstance.vote(voteSecretFalse, { from: accounts[1] })
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecret2, { from: accounts[2] })
+        return CampaignInstance.vote(voteSecretTrue, { from: accounts[2] })
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecret3, { from: accounts[3] })
+        return CampaignInstance.vote(voteSecretFalse, { from: accounts[3] })
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecret4, { from: accounts[4] })
+        return CampaignInstance.vote(voteSecretFalse, { from: accounts[4] })
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOption0, salt, { from: accounts[0] })
+        return CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[0] })
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOption1, salt, { from: accounts[1] })
+        return CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[1] })
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOption2, salt, { from: accounts[2] })
+        return CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[2] })
       })
       .then(() => {
         done()
@@ -104,7 +97,7 @@ contract('#4 Campaign Rejection', (accounts) => {
   })
 
   it('should reveal another vote', (done) => {
-    CampaignInstance.reveal(voteOption3, salt, { from: accounts[3] }).then(() => {
+    CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[3] }).then(() => {
       done()
     })
   })

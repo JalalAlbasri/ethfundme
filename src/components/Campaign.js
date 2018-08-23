@@ -20,7 +20,6 @@ import EmergencyWithdraw from './EmergencyWithdraw'
 class Campaign extends Component {
   constructor(props) {
     super(props)
-    console.log(`campaign: ${JSON.stringify(this.props.campaign)}`)
   }
 
   componentDidMount() {

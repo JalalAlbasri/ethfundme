@@ -1,7 +1,7 @@
 export const ADD_CAMPAIGN = 'ADD_CAMPAIGN'
 export const UPDATE_CAMPAIGN = 'UPDATE_CAMPAIGN'
-
 const contract = require('truffle-contract')
+
 import CampaignContract from '../../build/contracts/Campaign.json'
 import CampaignFactoryContract from '../../build/contracts/CampaignFactory.json'
 
@@ -9,6 +9,8 @@ import { getAccountDetails } from './AccountActions'
 
 export const CAMPAIGN_STATES = ['Pending', 'Active', 'Successful', 'Unsuccessful', 'Cancelled']
 export const APPROVAL_STATES = ['Commit', 'Reveal', 'Approved', 'Rejected', 'Cancelled']
+
+import { inLogs } from 'zeppelin-solidity/test/helpers/expectEvent'
 
 function campaignAdded(campaign) {
   // console.log(`campaignAdded() campaign.address: ${campaign.address}`)
@@ -54,7 +56,6 @@ function getCampaignDetails(address) {
           return CampaignInstance.isStopped.call({ from: coinbase })
         })
         .then((isStopped) => {
-          console.log(`isStopped: ${isStopped}`)
           campaign.isStopped = isStopped
           return CampaignInstance.title.call({ from: coinbase })
         })
@@ -174,6 +175,7 @@ function addCampaign(campaignAddress, isNew) {
 }
 
 export function updateCampaign(campaignAddress) {
+  console.log('updateCampaign()')
   return function (dispatch) {
     getCampaignDetails(campaignAddress).then((campaign) => {
       dispatch(campaignUpdated(campaign))
@@ -252,7 +254,7 @@ export function createCampaign(title, goal, duration, description, image) {
         })
         .then((result) => {
           campaignAddress = result.logs[0].args.campaignAddress
-          dispatch(addCampaign(campaignAddress, true))
+          setTimeout(() => dispatch(addCampaign(campaignAddress, true)), 6000)
         })
     })
   }
@@ -278,7 +280,7 @@ export function contribute(campaign, contribution) {
           })
         })
         .then((result) => {
-          dispatch(updateCampaign(campaign.address))
+          setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
         })
         .catch((err) => {
           console.log(err)
@@ -291,24 +293,16 @@ export function placeVote(campaign, voteSecret) {
   return function (dispatch) {
     const web3Campaign = contract(CampaignContract)
     web3Campaign.setProvider(web3.currentProvider)
-    let CampaignInstance
 
-    web3.eth.getCoinbase((err, coinbase) => {
+    web3.eth.getCoinbase(async (err, coinbase) => {
       if (err) {
         console.log(err)
       }
-      web3Campaign
-        .at(campaign.address)
-        .then((instance) => {
-          CampaignInstance = instance
-          return CampaignInstance.vote(voteSecret, { from: coinbase })
-        })
-        .then((result) => {
-          dispatch(updateCampaign(campaign.address))
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+
+      const instance = await web3Campaign.at(campaign.address)
+      const receipt = await instance.vote(voteSecret, { from: coinbase })
+      await inLogs(receipt.logs, 'VoteCommitted')
+      setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
     })
   }
 }
@@ -330,7 +324,7 @@ export function revealVote(campaign, voteOption, salt) {
           return CampaignInstance.reveal(voteOption, salt, { from: coinbase })
         })
         .then((result) => {
-          dispatch(updateCampaign(campaign.address))
+          setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
         })
         .catch((err) => {
           console.log(err)
@@ -356,7 +350,7 @@ export function cancel(campaign) {
           return CampaignInstance.cancelCampaign({ from: coinbase })
         })
         .then((result) => {
-          dispatch(updateCampaign(campaign.address))
+          setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
         })
         .catch((err) => {
           console.log(err)
@@ -382,8 +376,8 @@ export function withdraw(campaign) {
           return CampaignInstance.withdraw({ from: coinbase })
         })
         .then((result) => {
-          dispatch(updateCampaign(campaign.address))
-          dispatch(getAccountDetails(coinbase))
+          setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
+          setTimeout(() => dispatch(getAccountDetails(coinbase)), 6000)
         })
         .catch((err) => {
           console.log(err)
@@ -409,8 +403,8 @@ export function emergencyWithdraw(campaign) {
           return CampaignInstance.emergencyWithdraw({ from: coinbase })
         })
         .then((result) => {
-          dispatch(updateCampaign(campaign.address))
-          dispatch(getAccountDetails(coinbase))
+          setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
+          setTimeout(() => dispatch(getAccountDetails(coinbase)), 6000)
         })
         .catch((err) => {
           console.log(err)
@@ -425,8 +419,6 @@ export function emergencyStop(campaign) {
     web3Campaign.setProvider(web3.currentProvider)
     let CampaignInstance
 
-    console.log(`campaign: ${JSON.stringify(campaign)}`)
-
     web3.eth.getCoinbase((err, coinbase) => {
       if (err) {
         console.log(err)
@@ -435,12 +427,12 @@ export function emergencyStop(campaign) {
         .at(campaign.address)
         .then((instance) => {
           CampaignInstance = instance
-          console.log(`campaign.isStopped: ${campaign.isStopped}`)
           if (campaign.isStopped) return CampaignInstance.resumeContract({ from: coinbase })
           return CampaignInstance.stopContract({ from: coinbase })
         })
         .then((result) => {
-          dispatch(updateCampaign(campaign.address))
+          console.log('emergencyStop')
+          setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
         })
         .catch((err) => {
           console.log(err)

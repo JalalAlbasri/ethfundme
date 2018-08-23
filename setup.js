@@ -1,17 +1,16 @@
 let CampaignFactory = artifacts.require('CampaignFactory')
 let Campaign = artifacts.require('Campaign')
 
-let ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
-let loremIpsum = require('lorem-ipsum')
-let coolImages = require('cool-images')
-// let increaseTime = require('zeppelin-solidity/test/helpers/increaseTime')
+const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
+const loremIpsum = require('lorem-ipsum')
+const coolImages = require('cool-images')
 
 const NUM_ADMINS = 3
 const NUM_CAMPAIGNS = 20
 const NUM_APPROVALS = 15
 const NUM_REJECTIONS = 3
 
-const SALT = 12345
+const SALT = ''
 const APPROVE_VOTE_OPTION = true
 const REJECT_VOTE_OPTION = false
 const APPROVE_VOTE_SECRET = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [APPROVE_VOTE_OPTION, SALT]).toString('hex')
@@ -26,6 +25,9 @@ const CONTRIBUTION_MAX = 10
 
 const FIVE_DAYS = 5 * 24 * 60 * 60
 
+// HACK
+// Truffle exec has issues using OpenZeppelin Libraries from npm
+// So I copied the increaseTime function here to make this script work.
 function increaseTime(duration) {
   const id = Date.now()
 

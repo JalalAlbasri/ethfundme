@@ -22,13 +22,8 @@ contract('#9 Campaign Cancellation Before Approval', (accounts) => {
 
   let salt = 123456789
 
-  let voteOption0 = true
-  let voteOption1 = true
-  let voteOption2 = true
-
-  let voteSecret0 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption0, salt]).toString('hex')
-  let voteSecret1 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption1, salt]).toString('hex')
-  let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
+  let voteOptionTrue = true
+  let voteSecretTrue = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOptionTrue, salt]).toString('hex')
 
   before('setup and reject campaign', (done) => {
     CampaignFactory.deployed()
@@ -54,7 +49,7 @@ contract('#9 Campaign Cancellation Before Approval', (accounts) => {
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
-        return CampaignInstance.vote(voteSecret0, { from: accounts[0] })
+        return CampaignInstance.vote(voteSecretTrue, { from: accounts[0] })
       })
       .then(() => {
         done()
@@ -82,7 +77,7 @@ contract('#9 Campaign Cancellation Before Approval', (accounts) => {
   })
 
   it('should not allow Admin to vote on cancelled campaign', (done) => {
-    assertRevert(CampaignInstance.vote(voteSecret1, { from: accounts[1] })).then(() => {
+    assertRevert(CampaignInstance.vote(voteSecretTrue, { from: accounts[1] })).then(() => {
       done()
     })
   })

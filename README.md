@@ -66,6 +66,8 @@ Crowdfunding is a problem that can benefit greatly from a trustless smart contra
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
+If you are looking for Drizzle-React Client App Code and can be found in the [/src](/src) directory.
+
 ### Installing
 
 ```
@@ -343,13 +345,13 @@ User Stories are a great way to cement the logic behind how an application is in
 Throughout EthFundMe various libraries and contracts have been used from the [Open Zeppelin Framework](https://github.com/OpenZeppelin/openzeppelin-solidity).
 
 - [OpenZeppelin SafeMath](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/math/SafeMath.sol) 
-is used in Campaign, Administrated and Approvable to protect arithmetic operations from error and exploit.
-- [OpenZeppelin RBAC](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/access/rbac/RBAC.sol) is used in Administrated.sol to manage admin roles.
-- [OpenZeppelin ReentrancyGuard](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/ReentrancyGuard.sol) is used in Campaign to protect Withdrawl functions from Reentrancy Attacks.
-- [OpenZeppelin AssertRevert](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/assertRevert.js) is used throught tests to test for reverts.
-- [OpenZeppelin ExpectEvent](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/expectEvent.js) is used throughout tests to test events.
-- [OpenZeppelin IncreaseTime](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/increaseTime.js) is used in tests and setup scripts to fast forward time on the blockchain and transition Campaign States.
-- [OpenZeppelin Pausible](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol) although not used in EmergencyStoppable was the basis for the contract, although EmergencyStoppable is upgraded to
+is used in [Campaign](/contracts/Campaign.sol), [Administrated](/contracts/Administrated.sol) and [Approvable](/contracts/Approvable.sol) to protect arithmetic operations from error and exploit.
+- [OpenZeppelin RBAC](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/access/rbac/RBAC.sol) is used in[Administrated](/contracts/Administrated.sol) to manage admin roles.
+- [OpenZeppelin ReentrancyGuard](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/ReentrancyGuard.sol) is used in [Campaign](/contracts/Campaign.sol) to protect Withdrawl functions from Reentrancy Attacks.
+- [OpenZeppelin AssertRevert](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/assertRevert.js) is used throught [tests](/test) to test for reverts.
+- [OpenZeppelin ExpectEvent](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/expectEvent.js) is used throughout [tests](/test) to test events.
+- [OpenZeppelin IncreaseTime](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/test/helpers/increaseTime.js) is used in [tests](/test) and [setup](setup.js) scripts to fast forward time on the blockchain and transition Campaign States.
+- [OpenZeppelin Pausible](https://github.com/OpenZeppelin/openzeppelin-solidity/blob/master/contracts/lifecycle/Pausable.sol) although not used in [EmergencyStoppable](#emergencystoppable) was the basis for the contract, although [EmergencyStoppable](#emergencystoppable) is upgraded to
 support multiple authorized users.
 
 
