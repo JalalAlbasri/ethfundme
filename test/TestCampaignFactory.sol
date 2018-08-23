@@ -1,3 +1,19 @@
+/**
+ * TEST #0 : Test Campaign Factort
+ *
+ * In This test we test Initialization of the CampaignFactory and
+ * The functionality of the Administrated Contract.
+ *
+ * The Administrated Contract manages Admins and granting/revoking
+ * admin priviledges.
+ *
+ * We test that the contract CampaignFactory is initialized with a
+ * single admin.
+ *
+ * We test Campaign Creation and Campaign Cancellation by the Campaign Manager
+ *
+ */
+
 pragma solidity ^0.4.24;
 
 import "truffle/Assert.sol";
@@ -23,7 +39,7 @@ contract TestCampaignFactory {
   }
 
   function testCampaignCreation() public {
-    campaignAddress = campaignFactory.createCampaign('test', 10, 1, 'test description', 'test image');
+    campaignAddress = campaignFactory.createCampaign("test", 10, 1, "test description", "test image");
     Assert.equal(campaignFactory.getNumCampaigns(), 1, "There should be one campaign created by the test contract");
   }
 
