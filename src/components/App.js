@@ -17,6 +17,7 @@ import { getIsStopped } from '../actions/IsStoppedActions'
 import IsStoppedAlert from './IsStoppedAlert'
 
 import trianglesTop from '../../public/triangles-top.svg'
+import trianglesBottom from '../../public/triangles-bottom.svg'
 
 class App extends Component {
   constructor(props, context) {
@@ -50,7 +51,7 @@ class App extends Component {
             <div className="jumbotron">
               {/* <div className="jumbotron mb-0"> */}
               <img className="triangles triangles-top" src={trianglesTop} />
-              <img className="triangles triangles-bottom" src="../../public/triangles-bottom.svg" />
+              <img className="triangles triangles-bottom" src={trianglesBottom} />
               <img src="../../public/logo.svg" />
               <p className="display-4">
                 <span className="eth">eth</span>
