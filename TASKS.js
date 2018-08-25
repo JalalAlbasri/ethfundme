@@ -69,7 +69,7 @@
 // DONE: Make default filters All
 
 // Submitable
-// TASK: Fix all line ending to LF - (Make Final push from linux)
+// DONE: Fix all line ending to LF - (Make Final push from linux)
 // DONE: Packaging and Other Documentation
 // DONE: Make sure it works on Ubuntu
 // DONE: Review Grading Rubric
