@@ -11,7 +11,7 @@ function UserBadge(props) {
     return (
       <div className="mb-1">
         <span className="badge badge-success admin-badge">
-          <img src="../../public/metamask-fox.svg" />
+          <img src={metamaskFox} />
           User
         </span>
       </div>
