@@ -62,6 +62,10 @@
 // DONE: Rename getTotalContributed to getTotalRaisedFunds
 // DONE: Don't show goalProgress on Pending Campaign
 // DONE: Remove Logging
+// TASK: Show funding goal in Pending Campaigns
+// TASK: FAVICON
+// TASK: progress bug
+// TASK: remove logging
 
 // Submitable
 // TASK: Fix all line ending to LF - (Make Final push from linux)
