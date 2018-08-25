@@ -65,8 +65,8 @@
     "webpack-merge": "^4.1.4"
   },
   "scripts": {
-    "dev": "webpack-dev-server --open --config webpack.dev.js",
-    "start": "webpack --config webpack.prod.js",
+    "start": "webpack-dev-server --open --config webpack.dev.js",
+    "production": "webpack --config webpack.prod.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
