@@ -4,14 +4,14 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  mode: 'development',
+  // mode: 'development',
   entry: './src/index.js',
   output: {
     path: path.resolve('dist'),
     filename: 'bundle.js',
     sourceMapFilename: 'bundle.map'
   },
-  devtool: '#source-map',
+  // devtool: '#source-map',
   // optimization: {
   //   minimize: true
   // },
