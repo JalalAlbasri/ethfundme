@@ -17,8 +17,6 @@ class EmergencyStopCampaignFactory extends Component {
   }
 
   render() {
-    console.log(`isStopped: ${JSON.stringify(this.props.isStopped)}`)
-
     if (this.props.account.isAdmin) {
       return (
         <div className="EmergencyStopCampaignFactory mt-3">

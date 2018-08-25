@@ -56,7 +56,7 @@ class Campaign extends Component {
             )}
           </div>
           <div className="card-body lead">
-            <EmergencyStopWarning isStopped={this.props.campaign.isStopped}/>
+            <EmergencyStopWarning isStopped={this.props.campaign.isStopped} />
             <div className="row mb-3">
               <div className="col-md-4">
                 <img
@@ -79,6 +79,11 @@ class Campaign extends Component {
                     ) : (
                       ''
                     )}
+
+                    {this.props.campaign.campaignState === 'Pending' ? (
+                      <div>goal: {this.props.campaign.goal} </div>
+                    ) : null}
+
                     <CampaignEndDate endDate={this.props.campaign.endDate} />
                   </div>
                 </div>
@@ -86,11 +91,7 @@ class Campaign extends Component {
               </div>
             </div>
 
-            {this.props.campaign.funds >= 0 ? (
-              <Progress campaign={this.props.campaign} />
-            ) : (
-              ''
-            )}
+            {this.props.campaign.funds >= 0 ? <Progress campaign={this.props.campaign} /> : ''}
 
             {(this.props.campaign.contributions || {}).length > 0 && (
               <Contributions campaign={this.props.campaign} />

@@ -12,7 +12,6 @@ function isStoppedToggled() {
 }
 
 export function getIsStopped() {
-  console.log('getIsStopped()')
   return function (dispatch, getState) {
     const web3CampaignFactory = contract(CampaignFactoryContract)
     web3CampaignFactory.setProvider(web3.currentProvider)
@@ -24,8 +23,6 @@ export function getIsStopped() {
 
       let instance = await web3CampaignFactory.deployed()
       let isStopped = await instance.isStopped.call({ from: coinbase })
-
-      console.log(`isStopped: ${isStopped}`)
 
       if (isStopped !== getState().isStopped) {
         dispatch(isStoppedToggled())

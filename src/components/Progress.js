@@ -14,8 +14,8 @@ class Progress extends Component {
       return null
     }
 
-    let funds = this.props.campaign.totalRaised
-    let goal = this.props.campaign.goal
+    let funds = Number(this.props.campaign.totalRaised)
+    let goal = Number(this.props.campaign.goal)
 
     if (funds <= goal) {
       const progress = (funds / goal) * 100

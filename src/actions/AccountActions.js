@@ -27,7 +27,6 @@ export function getAccountDetails(address) {
         console.log(err)
       }
       web3CampaignFactory.deployed().then((instance) => {
-        console.log(`instance.address: ${instance.address}`)
         CampaignFactoryInstance = instance
         return new Promise((resolve, reject) => {
           web3.eth.getBalance(coinbase, (err, balance) => {
@@ -68,11 +67,9 @@ export function changeAdminRole(address, action) {
       const instance = await web3CampaignFactory.deployed()
 
       if (action === 'GRANT') {
-        console.log('adding admin')
         const receipt = await instance.addAdminRole(address, { from: coinbase })
         await inLogs(receipt.logs, 'LogAdminAdded')
       } else {
-        console.log('removing admin')
         const receipt = await instance.removeAdminRole(address, { from: coinbase })
         await inLogs(receipt.logs, 'LogAdminRemoved')
       }

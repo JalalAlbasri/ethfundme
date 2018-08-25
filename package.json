@@ -44,6 +44,7 @@
     "random-puppy": "^1.1.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
+    "react-favicon": "0.0.14",
     "react-moment": "^0.7.9",
     "react-redux": "^5.0.7",
     "react-router": "^4.3.1",
@@ -64,7 +65,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "postinstall": "npm run build",
+    "heroku-postbuild": "npm run build",
     "build": "webpack -p --config ./webpack.prod.js",
     "start": "node server.js",
     "start-dev": "webpack-dev-server --config ./webpack.dev.js",

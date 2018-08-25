@@ -2,7 +2,7 @@ import { SET_FILTER_GROUP, SET_ADMIN_FILTER } from '../actions/FilterActions'
 
 const initialState = {
   All: {
-    isActive: false
+    isActive: true
   },
   Pending: {
     isActive: true,
@@ -22,18 +22,18 @@ const initialState = {
     isActive: true
   },
   Unsuccessful: {
-    isActive: false,
+    isActive: true,
     adminFilters: {
       Approved: {
-        isActive: false
+        isActive: true
       },
       Rejected: {
-        isActive: false
+        isActive: true
       }
     }
   },
   Cancelled: {
-    isActive: false
+    isActive: true
   }
 }
 

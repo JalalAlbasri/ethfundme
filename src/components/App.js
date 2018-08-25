@@ -3,6 +3,8 @@ import { AccountData, ContractData } from 'drizzle-react-components'
 import { drizzleConnect } from 'drizzle-react'
 import PropTypes from 'prop-types'
 
+import Favicon from 'react-favicon'
+
 import Navbar from './Navbar'
 import Account from './Account'
 import CreateCampaignButton from './CreateCampaignButton'
@@ -19,6 +21,7 @@ import IsStoppedAlert from './IsStoppedAlert'
 import trianglesTop from '../../public/triangles-top.svg'
 import trianglesBottom from '../../public/triangles-bottom.svg'
 import logo from '../../public/logo.svg'
+import favicon from '../../public/favicon.ico'
 
 class App extends Component {
   constructor(props, context) {
@@ -44,6 +47,9 @@ class App extends Component {
 
     return (
       <div className="App">
+        <div>
+          <Favicon url={favicon} />
+        </div>
         {/* <Account /> */}
         <CreateCampaignModal />
         <AdminRoleModal />
