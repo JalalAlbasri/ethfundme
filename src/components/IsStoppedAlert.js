@@ -4,34 +4,28 @@ import PropTypes from 'prop-types'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-class AddAdminButton extends Component {
+class IsStoppedAlert extends Component {
   constructor(props, context) {
     super(props)
   }
 
   render() {
-    if (this.props.account.isAdmin && !this.props.isStopped) {
+    if (this.props.isStopped) {
       return (
-        <button
-          type="button"
-          className="btn btn-outline-info"
-          data-toggle="modal"
-          data-target="#adminRoleModal"
-        >
-          <FontAwesomeIcon className="button-icon" icon="wrench" />
-          Admin Roles
-        </button>
+        <div className="alert alert-danger">
+          This App has been stopped by an Administrator. You will not be able to {this.props.account.isAdmin ? 'manage admin roles' : 'create campaigns' } until it is resumed.
+        </div>
       )
     }
     return null
   }
 }
 
-AddAdminButton.contextTypes = {
+IsStoppedAlert.contextTypes = {
   drizzle: PropTypes.object
 }
 
-AddAdminButton.PropTypes = {
+IsStoppedAlert.PropTypes = {
   account: PropTypes.object.isRequired,
   isStopped: PropTypes.bool.isRequired
 }
@@ -43,4 +37,4 @@ const mapStateToProps = (state, ownProps) => {
   }
 }
 
-export default drizzleConnect(AddAdminButton, mapStateToProps)
+export default drizzleConnect(IsStoppedAlert, mapStateToProps)

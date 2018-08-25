@@ -10,7 +10,7 @@ class CreateCampaignButton extends Component {
   }
 
   render() {
-    if (!this.props.account.isAdmin) {
+    if (!this.props.account.isAdmin && !this.props.isStopped) {
       return (
         <button
           type="button"
@@ -32,11 +32,14 @@ CreateCampaignButton.contextTypes = {
 }
 
 CreateCampaignButton.PropTypes = {
+  account: PropTypes.object.isRequired,
+  isStopped: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    account: state.account
+    account: state.account,
+    isStopped: state.isStopped
   }
 }
 

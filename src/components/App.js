@@ -11,12 +11,20 @@ import Filters from './Filters'
 import CreateCampaignModal from './CreateCampaignModal'
 import AdminRoleModal from './AdminRoleModal'
 import AdminRoleButton from './AdminRoleButton'
+import EmergencyStopCampaignFactory from './EmergencyStopCampaignFactory'
+
+import { getIsStopped } from '../actions/IsStoppedActions'
+import IsStoppedAlert from './IsStoppedAlert'
 
 class App extends Component {
   constructor(props, context) {
     super(props)
     this.contracts = context.drizzle.contracts
     this.dataKey = this.contracts.CampaignFactory.methods.getNumCampaigns.cacheCall()
+  }
+
+  componentDidMount() {
+    this.props.dispatchGetIsStopped()
   }
 
   render() {
@@ -70,6 +78,9 @@ class App extends Component {
                   <Account />
                 </div>
                 <div className="mb-3">
+                  <EmergencyStopCampaignFactory />
+                </div>
+                <div className="mb-3">
                   <AdminRoleButton />
                 </div>
                 <div className="mb-3">
@@ -82,6 +93,7 @@ class App extends Component {
             </div>
             <div className="col-md-8">
               <div className="container">
+                <IsStoppedAlert />
                 <Campaigns />
               </div>
             </div>
@@ -110,4 +122,12 @@ const mapStateToProps = (state) => {
   }
 }
 
-export default drizzleConnect(App, mapStateToProps)
+const mapDispatchToProps = (dispatch) => {
+  return {
+    dispatchGetIsStopped: () => {
+      dispatch(getIsStopped())
+    }
+  }
+}
+
+export default drizzleConnect(App, mapStateToProps, mapDispatchToProps)
