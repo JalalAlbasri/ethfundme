@@ -258,9 +258,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.4.24;\n\nimport \"./EmergencyStoppable.sol\";\nimport \"../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol\";\n\n\n/**\n  @title Approvable\n  @dev Abstract Contract\n  \n  Provides the ability for a Contracts Approval State to be managed by a group of Administrators\n  via a Commit/Reveal Voting Pattern.\n\n  keccak256 encrypted vote options + salts are comitted during the commit phase as vote secrets.\n  vote secrets are revealed during the reveal phase and the votes are tallied.\n\n  Tally will stop early if enough votes to come to a decision are found.\n  A strict majority is not require (if there are an even number of voters 50% is enough)\n  (See modifier endReveal() for details)\n\n  Requires a contract that implements the Administrated Interface to be supplied in the contructor\n  to restrict access to only authorized voters.\n  \n  Contracts that extend this contract must implement the onApproval(); and onRejection(); abstract functions.\n\n  Extends the EmergencyStoppable Contract allowing it to suspend voting during Stopped State.\n  \n */\n\ncontract Approvable is EmergencyStoppable {\n  /**\n    Events\n  */\n\n  /**\n    @dev Event emitted when a Vote is Committed\n    The payload is address of the vote committer\n   */\n  event LogVoteComitted (address comittedBy);\n  \n  /**\n    @dev Event emitted when a Vote is Reveal\n    The payload is address of the vote revealer\n   */\n  event LogVoteRevealed (address revealedBy);\n  \n  /**\n    @dev Event emitted when all votes have been Comitted\n   */  \n  event LogAllVotesComitted();\n  \n  /**\n    @dev Event emitted when enough votes have been revealed to\n    conclude arrive at a decision on the vote.\n    payload is the outcome of the vote.\n   */\n  event LogVotePassed (bool isApproved);\n  \n  /**\n    STATE VARIABLES\n   */\n\n  // DATA STRUCTURES\n\n  /**\n    @dev State Management Pattern\n    The states of the Commit/Reveal Voting process\n   */\n  enum ApprovalStates {\n    Commit,\n    Reveal,\n    Approved,\n    Rejected,\n    Cancelled\n  }\n  \n  \n  // Stores the committed voteSecrets\n  // stored in a mappign to make retrieval by account easy\n  mapping(address => bytes32) public voteSecrets;\n  \n  // Keeps track of what accnounts have voted\n  mapping(address => bool) public hasVoted;\n  // keeps track of what accounts have revealed\n  mapping(address => bool) public hasRevealed;\n\n  // Tracks the number of Votes committed and revealed.\n  // Required becuase secrets are stored in a mapping\n  uint256 public numVoteSecrets;\n  uint256 public numVoteReveals;\n\n  // Initial Approval State\n  ApprovalStates public approvalState = ApprovalStates.Commit;\n  \n  // Tallies the number of approvals and rejections\n  uint256 public numApprovals;\n  uint256 public numRejections;\n\n  /**\n    @dev constructor\n  */\n  constructor () public\n  {\n  }\n\n  /**\n    MODIFIERS\n   */\n\n  // ACCESS RESTRICTION\n  /**\n    @dev modifier to restrict access to only admins\n   */\n  modifier onlyAuthorized() {\n    require(isAuthorized(), \"Only authorized\");\n    _;\n  }\n\n  /**\n    @dev modifier to restrict access to only accounts that have voted\n   */\n  modifier onlyVoted() {\n    require(hasVoted[msg.sender] == true, \"Account has not voted\");\n    _;\n  }\n\n  /**\n    @dev modifier to restrict access to only accounts that have not revealed yet\n   */\n  modifier onlyNotRevealed() {\n    require(hasRevealed[msg.sender] == false, \"Account has already revealed\");\n    _;\n  }\n\n  // STATE MANAGEMENT\n  /**\n    @dev modifier to restrict function execution based on approval state\n   */\n  modifier onlyDuringApprovalState(ApprovalStates _approvalState) {\n    require(approvalState == _approvalState, \"Invalid approval state\");\n    _;\n  }\n\n  /**\n    @dev transition state from commit to reveal\n   */\n  modifier endCommit() {\n    _;\n    if (numVoteSecrets == getNumVoters()) { //requires that all admins have voted\n      approvalState = ApprovalStates.Reveal;\n      emit LogAllVotesComitted();\n    }\n  }\n\n  // Doesn't require all votes to be revealed only enough.\n  modifier endReveal() {\n    _;\n    // number of reveals required to pass the vote\n    uint256 numVoters = getNumVoters();\n    \n    // once SafeMath.mod is released in official Zeppelin Library we can use it, until then just use %\n    // uint256 required = SafeMath.add(SafeMath.div(numVoters, 2), SafeMath.mod(numVoters, 2));\n    uint256 required = SafeMath.add(SafeMath.div(numVoters, 2), numVoters % 2);\n\n    if (numApprovals >= required) {\n      approvalState = ApprovalStates.Approved;\n      onApproval();\n      emit LogVotePassed(true);\n    }\n    if (numRejections >= required) {\n      approvalState = ApprovalStates.Rejected;\n      onRejection();\n      emit LogVotePassed(false);\n    }\n  }\n\n  /**\n    INTERFACE\n   */\n\n  // ABSTRACT FUNCTIONS\n  /**\n    @dev called on approval. Must be implemented by Contracts that extend this\n   */\n  function onApproval() internal;\n  /**\n    @dev called on rejecting. Must be implemented by Contracts that extend this\n   */\n  function onRejection() internal;\n\n  /**\n    @dev Must be implemented by Contracts that extend this as a way to determine \n    if an account is authorized to place a vote\n    Also implements EmergencyStoppable Interface\n   */\n   function isAuthorized() internal returns(bool);\n\n  /**\n    @dev Must be implemented by Contracts that extend this as a way to determine \n    the total number of voters\n   */\n   function getNumVoters() internal returns(uint256);\n\n  // INTERFACE\n  /**\n    @dev Allows authroized accounts to place a vote\n    @param secretVote keccak256 encrypted voteOption and Salt\n    The encrypted voteSecrets are collected during the commit phase\n   */\n function vote(bytes32 secretVote) public \n    stoppedInEmergency\n    onlyAuthorized\n    onlyDuringApprovalState(ApprovalStates.Commit) \n    endCommit \n  {\n      voteSecrets[msg.sender] = secretVote;\n      if (hasVoted[msg.sender] == false) {\n        numVoteSecrets++;\n        hasVoted[msg.sender] = true;\n    }\n    emit LogVoteComitted(msg.sender);\n  }\n\n  /**\n    @dev Allows authorized accounts to reveal votes\n    @param voteOption a boolean vote option true to approve and false to reject\n    @param salt salt used in encryption of vote secret\n    // reverts if keccak256 encryption of params does not match previsouly comitted voteSecret\n   */\n  function reveal(bool voteOption, uint256 salt) public \n    stoppedInEmergency\n    onlyVoted\n    onlyNotRevealed\n    onlyDuringApprovalState(ApprovalStates.Reveal) \n    endReveal {\n      require(keccak256(abi.encodePacked(voteOption, salt)) == voteSecrets[msg.sender], \"Vote secrets do not match\");\n\n      if (voteOption) {\n        numApprovals++;\n      } else {\n        numRejections++;\n      }\n\n      numVoteReveals++;\n      hasRevealed[msg.sender] = true;\n      emit LogVoteRevealed(msg.sender);\n  }\n\n}",
-  "sourcePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/Approvable.sol",
+  "sourcePath": "/home/jalal/github/ethfundme/contracts/Approvable.sol",
   "ast": {
-    "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/Approvable.sol",
+    "absolutePath": "/home/jalal/github/ethfundme/contracts/Approvable.sol",
     "exportedSymbols": {
       "Approvable": [
         438
@@ -281,7 +281,7 @@
         "src": "0:24:1"
       },
       {
-        "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/EmergencyStoppable.sol",
+        "absolutePath": "/home/jalal/github/ethfundme/contracts/EmergencyStoppable.sol",
         "file": "./EmergencyStoppable.sol",
         "id": 137,
         "nodeType": "ImportDirective",
@@ -292,7 +292,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/node_modules/zeppelin-solidity/contracts/math/SafeMath.sol",
+        "absolutePath": "/home/jalal/github/ethfundme/node_modules/zeppelin-solidity/contracts/math/SafeMath.sol",
         "file": "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol",
         "id": 138,
         "nodeType": "ImportDirective",
@@ -3963,7 +3963,7 @@
     "src": "0:6775:1"
   },
   "legacyAST": {
-    "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/Approvable.sol",
+    "absolutePath": "/home/jalal/github/ethfundme/contracts/Approvable.sol",
     "exportedSymbols": {
       "Approvable": [
         438
@@ -3984,7 +3984,7 @@
         "src": "0:24:1"
       },
       {
-        "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/EmergencyStoppable.sol",
+        "absolutePath": "/home/jalal/github/ethfundme/contracts/EmergencyStoppable.sol",
         "file": "./EmergencyStoppable.sol",
         "id": 137,
         "nodeType": "ImportDirective",
@@ -3995,7 +3995,7 @@
         "unitAlias": ""
       },
       {
-        "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/node_modules/zeppelin-solidity/contracts/math/SafeMath.sol",
+        "absolutePath": "/home/jalal/github/ethfundme/node_modules/zeppelin-solidity/contracts/math/SafeMath.sol",
         "file": "../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol",
         "id": 138,
         "nodeType": "ImportDirective",
@@ -7671,5 +7671,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-25T09:13:48.124Z"
+  "updatedAt": "2018-08-25T09:37:16.808Z"
 }

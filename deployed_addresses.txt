@@ -6,15 +6,25 @@ In metamask click on import, select JSON file. Select the account you wish to im
 
 the password is "password"
 
-CampaignFactory Contract: 0x6409a21c52ca7566aee21963acbef63080d1ba1732cad07bf75e1654e829835b
+--------------------------------------------------------------------------
 
-truffle migrate --network rinkeby
+CampaignFactory Contract: 0x0b5c0dab562da139b503bf72c235cbc714121b23
+
+--------------------------------------------------------------------------
+jalal@jalal:~/github/ethfundme$ truffle migrate --network rinkeby --reset
 Using network 'rinkeby'.
 
-Running migration: 2_eth_fund_me_migration.js
-  Deploying CampaignFactory...
-  ... 0x02156e60e0784da1a98dc1b02d4f633ae525be0a25448cb563608f1c9058adbc
-  CampaignFactory: 0x64e9e90a6a731d3f6f30e6dad46634335735db41
+Running migration: 1_initial_migration.js
+  Replacing Migrations...
+  ... 0x4766a973eeeccb2d8ba330fd0cca7f1a831ef516f32c5213de18324973b5ab40
+  Migrations: 0x423d7cfcdd35e9257c0cbae6fd7a09f3617f8c72
 Saving successful migration to network...
-  ... 0x6409a21c52ca7566aee21963acbef63080d1ba1732cad07bf75e1654e829835b
+  ... 0x5e6e23707f5835bfd4bda7170baf1dd5232cbda85f8aa6be35104c4bf1e3c0f9
+Saving artifacts...
+Running migration: 2_eth_fund_me_migration.js
+  Replacing CampaignFactory...
+  ... 0x74603982ac214ae914ce8b6006f9b14354fe61e9902eeda6c2bb173c709ff679
+  CampaignFactory: 0x0b5c0dab562da139b503bf72c235cbc714121b23
+Saving successful migration to network...
+  ... 0xad0ff22fdf94ed0dc308d156a0eeb04dd71b0f94743761642704378b2ab2ef2d
 Saving artifacts...
