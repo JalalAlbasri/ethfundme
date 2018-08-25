@@ -6,28 +6,6 @@ import { getAccountDetails } from '../actions/AccountActions'
 
 import metamaskFox from '../../public/metamask-fox.svg'
 
-function UserBadge(props) {
-  if (!props.showUserBadge) {
-    return (
-      <div className="mb-1">
-        <span className="badge badge-success admin-badge">
-          <img src={metamaskFox} />
-          User
-        </span>
-      </div>
-    )
-  }
-
-  return (
-    <div className="mb-1">
-      <span className="badge badge-danger admin-badge">
-        <img src={metamaskFox} />
-        Admin
-      </span>
-    </div>
-  )
-}
-
 class Account extends Component {
   constructor(props, context) {
     super(props)
@@ -43,18 +21,13 @@ class Account extends Component {
         <div className="">
           <span className={'badge account-badge ' + (this.props.account.isAdmin ? 'admin' : '')}>
             {this.props.account.isAdmin ? 'Admin' : 'User'}
-            <img src="../../public/metamask-fox.svg" />
+            <img src={metamaskFox} />
             <span>{Number.prototype.toPrecision.call(balance, 5)} eth</span>
-            {/* <span>{(balance > 0) ? Number.prototype.toPrecision.call(balance, 5) : 0} eth</span> */}
           </span>
         </div>
         <div>
           <span className="badge address-badge">{this.props.account.address}</span>
         </div>
-        {/* <UserBadge showUserBadge={this.props.account.isAdmin} />
-        <div>
-          <span className="badge badge-info address-badge">{this.props.account.address}</span>
-        </div> */}
       </div>
     )
   }
