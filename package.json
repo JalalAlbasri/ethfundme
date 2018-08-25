@@ -59,15 +59,13 @@
     "stylelint-config-recommended": "^2.1.0",
     "webpack": "^4.16.2",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.5",
-    "webpack-merge": "^4.1.4"
+    "webpack-dev-server": "^3.1.5"
   },
   "devDependencies": {
-    "express": "^4.16.3"
+
   },
   "scripts": {
-    "start": "webpack-dev-server --open --config webpack.dev.js",
-    "prod": "webpack --config webpack.prod.js && node server.js",
+    "start": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
