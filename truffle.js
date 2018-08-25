@@ -20,13 +20,15 @@ module.exports = {
       host: '127.0.0.1',
       port: 8545,
       network_id: '*' // Match any network id
+    },
+    rinkeby: {
+      host: '127.0.0.1',
+      port: 8545,
+      from: '0xc82dc6c35b7d29dc9b3ec543f4818fff6d9a7799',
+      network_id: 4,
+      // gas: 7527393
+      gas: 6500000,
+      gasPrice: 100000000000
     }
-    // rinkeby: {
-    //   host: '127.0.0.1',
-    //   port: 8545,
-    //   from: '0x36739f37199c612fd9254c4e9de8e9b0c1873c66',
-    //   network_id: 4,
-    //   gas: 4612388
-    // }
   }
 }
