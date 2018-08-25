@@ -38,9 +38,7 @@
     "truffle": "^4.1.14",
     "truffle-contract": "^3.0.6",
     "web3": "^1.0.0-beta.35",
-    "zeppelin-solidity": "1.12.0"
-  },
-  "devDependencies": {
+    "zeppelin-solidity": "1.12.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -63,6 +61,9 @@
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5",
     "webpack-merge": "^4.1.4"
+  },
+  "devDependencies": {
+
   },
   "scripts": {
     "start": "webpack-dev-server --open --config webpack.dev.js",
