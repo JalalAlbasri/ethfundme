@@ -51,9 +51,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity ^0.4.24;\n\n/**\n  @title EmergencyStoppable\n  @dev Abstract Contract\n  @dev implementation of the Circuit Breaker/ Emergency Stop design pattern\n  \n  Allows authorized accounts to put the contract in a 'stopped' state and\n  provides modifiers to control function execution according to stopped state\n\n  Decided against using the Pausable Libvrary from the Open-Zeppelin\n  because it relies on the Ownable library, which require a single 'Owner' who will be \n  authorized to Stop/Resume the Contract, however we require multiple admins to have the \n  authority to manage the Stopped state (admins)\n\n  This is an adaptation of the Pausable Library with and additoinal abstract function isAuthorized() \n  that child contracts must implement to be able to define who is authorized to manage stopped state \n  making it much more versatile.\n\n  (https://github.com/OpenZeppelin/openzeppelin-solidity/blob/v1.10.0/contracts/lifecycle/Pausable.sol)\n  (https://github.com/OpenZeppelin/openzeppelin-solidity/blob/v1.10.0/contracts/ownership/Ownable.sol)\n */\n\ncontract EmergencyStoppable {\n  \n  /**\n    @dev Event emitted when contract is stopped\n   */\n  event LogContractStopped ();\n\n  /**\n    @dev Event emitted when contract is resumed\n   */\n  event LogContractResumed ();\n\n  // STATE VARIABLES\n  bool public isStopped = false;\n\n  /**\n    @dev modifier to restrict access to only authorized accounts\n   */\n  modifier onlyAuthorized() {\n    require(isAuthorized(), \"only authorized to stop allowed\");\n    _;\n  }\n\n  /**\n    @dev modifier to disallow function execution during stopped state \n   */\n  modifier stoppedInEmergency {\n      require(!isStopped, \"function is stopped in emergency\");\n      _;\n  }\n\n  /**\n    @dev modifier to allow function execution only during stopped state\n   */\n  modifier onlyInEmergency {\n      require(isStopped, \"function only available in emergency\");\n      _;\n  }\n\n  /**\n    Abstract function.\n    @dev Must be implemented by subclasses to provide a way to determine if accounts\n    Are authorized to start/stop the Contract\n   */\n  function isAuthorized() internal returns (bool);\n\n  /**\n    @dev Puts the Contract in Stopped state\n  */\n  function stopContract() public \n    onlyAuthorized\n  {\n      isStopped = true;\n      emit LogContractStopped();\n  }\n\n  /**\n    @dev Puts the contract not Stopped State\n   */\n  function resumeContract() public \n    onlyAuthorized\n  {\n      isStopped = false;\n      emit LogContractResumed();\n  }\n}\n",
-  "sourcePath": "/home/jalal/github/ethfundme/contracts/EmergencyStoppable.sol",
+  "sourcePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/EmergencyStoppable.sol",
   "ast": {
-    "absolutePath": "/home/jalal/github/ethfundme/contracts/EmergencyStoppable.sol",
+    "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/EmergencyStoppable.sol",
     "exportedSymbols": {
       "EmergencyStoppable": [
         1404
@@ -851,7 +851,7 @@
     "src": "0:2474:4"
   },
   "legacyAST": {
-    "absolutePath": "/home/jalal/github/ethfundme/contracts/EmergencyStoppable.sol",
+    "absolutePath": "/mnt/c/Users/jalal/Github/EthFundMe/contracts/EmergencyStoppable.sol",
     "exportedSymbols": {
       "EmergencyStoppable": [
         1404
@@ -1654,5 +1654,5 @@
   },
   "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-24T22:12:55.373Z"
+  "updatedAt": "2018-08-25T09:13:48.092Z"
 }
