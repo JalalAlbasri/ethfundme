@@ -28,7 +28,6 @@
 // DONE: Put 'Log' on Event Names
 // DONE: Add a License
 // DONE: Try again to use increase time from node_mudles in setup script. Try with inport!
-// TASK: Better image library
 
 // TESTS:
 // DONE: Make sure tests work on -b 3
@@ -49,26 +48,24 @@
 // DONE: Review Design Patterns - writeup
 // DONE: Make a Libraries used section.
 // DONE: Project Structure Section where you say where everything is
+// TASK: Improvements
 
 // UI
 // DONE: Fix Contribute
 // DONE: Set up React Project and React Crash Course
 // DONE: Frontend
 // DONE: Listening for Events
-// -- TASK: UI for stopping CampaignFactory
+// -- DONE: UI for stopping CampaignFactory
 // -- DONE: UI for adding admins
 // DONE: Progress Calculator, use funds when active, use totalRaised when Successful/Unsuccessful
 // DONE: Fix Withdrawn in ui, show when active
 // DONE: Rename getTotalContributed to getTotalRaisedFunds
 // DONE: Don't show goalProgress on Pending Campaign
-// TASK: Mobile View Support.
 // DONE: Remove Logging
-// TASK: Put Background color on Jumbo
-// TASK: Add a Footer
 
 // Submitable
-// TASK: Fix all line ending to LF
+// TASK: Fix all line ending to LF - (Make Final push from linux)
 // DONE: Packaging and Other Documentation
-// TASK: Make sure it works on Ubuntu
+// DONE: Make sure it works on Ubuntu
 // DONE: Review Grading Rubric
 // TASK: Release on testnet
