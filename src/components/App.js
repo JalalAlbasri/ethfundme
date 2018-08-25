@@ -16,6 +16,8 @@ import EmergencyStopCampaignFactory from './EmergencyStopCampaignFactory'
 import { getIsStopped } from '../actions/IsStoppedActions'
 import IsStoppedAlert from './IsStoppedAlert'
 
+import trianglesTop from '../../public/triangles-top.svg'
+
 class App extends Component {
   constructor(props, context) {
     super(props)
@@ -47,7 +49,7 @@ class App extends Component {
           <div className="row">
             <div className="jumbotron">
               {/* <div className="jumbotron mb-0"> */}
-              <img className="triangles triangles-top" src="../../public/triangles-top.svg" />
+              <img className="triangles triangles-top" src={trianglesTop} />
               <img className="triangles triangles-bottom" src="../../public/triangles-bottom.svg" />
               <img src="../../public/logo.svg" />
               <p className="display-4">

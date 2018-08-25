@@ -65,9 +65,9 @@
   "devDependencies": {},
   "scripts": {
     "postinstall": "npm run build",
-    "build": "webpack -p --config ./webpack.prod.js --progress",
+    "build": "webpack -p --config ./webpack.prod.js",
     "start": "node server.js",
-    "start-dev": "webpack-dev-server",
+    "start-dev": "webpack-dev-server --config ./webpack.dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
