@@ -2,7 +2,7 @@
   "name": "ethfundme",
   "version": "1.0.0",
   "description": "",
-  "main": "truffle-config.js",
+  "main": "truffle.js",
   "directories": {
     "test": "test"
   },
@@ -66,7 +66,7 @@
   },
   "scripts": {
     "postinstall": "npm run build",
-    "build": "webpack",
+    "build": "webpack -p --config ./webpack.prod.config.js --progress",
     "start": "node server.js",
     "start-dev": "webpack-dev-server",
     "test": "echo \"Error: no test specified\" && exit 1"
