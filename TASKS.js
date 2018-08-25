@@ -48,7 +48,7 @@
 // DONE: Review Design Patterns - writeup
 // DONE: Make a Libraries used section.
 // DONE: Project Structure Section where you say where everything is
-// TASK: Improvements
+// DONE: Improvements
 
 // UI
 // DONE: Fix Contribute
@@ -73,4 +73,4 @@
 // DONE: Packaging and Other Documentation
 // DONE: Make sure it works on Ubuntu
 // DONE: Review Grading Rubric
-// TASK: Release on testnet
+// DONE: Release on testnet

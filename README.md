@@ -13,17 +13,20 @@ EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please
     + [Installing](#installing)
     + [Prerequisites](#prerequisites)
     + [Testing](#testing)
-  * [Running the Frontend](#running-the-frontend)
+  * [Rinkeby Deployment](#rinkeby-deployment)
+    + [Rinkeby and Metamask](#rinkeby-and-metamask)
+      - [Importing rinkeby accounts into metamask](#importing-rinkeby-accounts-into-metamask)
+  * [Running the Frontend Locally](#running-the-frontend-locally)
     + [Running the development blockchain for Drizzle](#running-the-development-blockchain-for-drizzle)
     + [Configuring metamask](#configuring-metamask)
     + [Running setup script](#running-setup-script)
     + [Starting Webpack Server](#starting-webpack-server)
   * [EthFundMe Contracts in Detail](#ethfundme-contracts-in-detail)
     + [The CampaignFactory](#the-campaignfactory)
-    + [Administrated and Admin Management](#administrated-and-admin-management)
+    + [Administrated (Admin Management)](#administrated--admin-management-)
     + [Campaigns (Where the magic happens)](#campaigns--where-the-magic-happens-)
     + [Approvable](#approvable)
-    + [EmergencyStoppable](/contracts/EmergencyStoppable.sol)
+    + [EmergencyStoppable](#emergencystoppable)
   * [User Stories](#user-stories)
     + [#1 Creating a Campaign.](#-1-creating-a-campaign)
     + [#2 Rejecting and Campaign](#-2-rejecting-and-campaign)
@@ -34,6 +37,7 @@ EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please
     + [#7 Campaign Manager Cancels Active Campaign](#-7-campaign-manager-cancels-active-campaign)
     + [#8 Pending Campaign is Emergency Stopped](#-8-pending-campaign-is-emergency-stopped)
     + [#9 Active Campaign is Emergency Stopped](#-9-active-campaign-is-emergency-stopped)
+  * [Libraries Used](#libraries-used)
   * [Design Patterns](#design-patterns)
     + [Factory Pattern](#factory-pattern)
     + [Checks-Effects Pattern](#checks-effects-pattern)
@@ -49,9 +53,13 @@ EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please
     + [Safemath (Integer Overflow/Underflow)](#safemath--integer-overflow-underflow-)
     + [Don't Assume Contract Created with Zero Balance](#don-t-assume-contract-created-with-zero-balance)
     + [block.timestamp (30 second rule)](#blocktimestamp--30-second-rule-)
+  * [Improvements](#improvements)
   * [Built With](#built-with)
   * [Authors](#authors)
   * [License](#license)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
 
 ## About the project
 
@@ -125,7 +133,28 @@ truffle test
 
 The truffle tests will now run
 
-## Running the Frontend
+## Rinkeby Deployment
+
+ethfundme is deployed online at: http://www.ethfund.me and configured to connect to the contracts on the rinkeby test network.
+
+The CampaignFactory's deployed address on rinkeby is: *0x9bfc7f48f3919a3d97d1cbe041acd9582739f4ab*
+
+Check it out and interact with some Campaigns.
+
+### Rinkeby and Metamask
+
+I've provided some accounts you can use to play around with the DApp on rinkeby from Metamask.
+They are located in the [/rinkeby_accounts](/rinkeby_accounts) folder
+
+There are 5 accounts provided, 3 are already set as Admins, 1 is the Campaign Manager for all the Campaigns I've created and 2 are regular Contributor accounts.
+
+#### Importing rinkeby accounts into metamask
+1. In metamask click on import account
+2. Set Type to JSON File and select the account you want to import
+3. The password is 'password' for all accounts
+4. Import!
+
+## Running the Frontend Locally
 
 ### Running the development blockchain for Drizzle
 
@@ -181,7 +210,7 @@ Ensure webpack-dev-server is installed (see [prerequisites](#prerequisites)) the
 to start the webpack development server
 
 ```
-npm run start
+npm run start-dev
 ```
 
 You can access the frontend from your browser on http://localhost:8080 to interact with the project.
@@ -470,6 +499,10 @@ the funds state variable to the contracts balance rather than zero.
 Block miners are able to manipulate block timestamps ~30 seconds. block.timestamp is used in Campaigns to transition Campaign State.
 All usage of block.timestamp is able to tolerate a 30 second drift in time in accordance with [Consensys best practices](https://consensys.github.io/smart-contract-best-practices/recommendations/#30-second-rule).
 
+## Improvements
+
+It would be awesome if the Campaign was modelled as a crowdsale with a new token issued to Campaign Contributors. If the Campaign was successful token holders could use the token to redeem contributor perks like in kickstarter campaigns.
+If the Campaign was Unsuccessful their tokens could be redeemed for refunds instead.
 
 ## Built With
 
