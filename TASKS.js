@@ -39,7 +39,7 @@
 // DONE: Reenable solidity test
 // DONE: Rename VoteSecret/Option to Approve Reject for clarity
 // DONE: Check events in tests too
-// TASK: Listen for all events in Tests
+// DONE: Listen for all events in Tests
 // DONE: Test changing admin priviledges during stopped CampaignFactory Contract
 // DONE: Test Cant grant an admin admin role again and cant revoke admin role from non admin
 
