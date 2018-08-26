@@ -2,7 +2,7 @@
 
 # EthFundMe
 
-[http://ethfund.me](http://www.ethfund.me)
+[http://www.ethfund.me](http://www.ethfund.me)
 
 EthFundMe is a smart contract powered crowd funding platform. It allows you to intelligently, securely and trustlessly manage crowd funding campaigns with smart contracts.
 
