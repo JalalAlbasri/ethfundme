@@ -187,9 +187,8 @@ A setup script has been provided [setup.js](/setup.js) that will set up accounts
 From the project directory run
 
 ```
-truffle compile
-truffle migrate
-truffle exec setup.js
+truffle migrate --network development
+truffle exec setup.js --network development
 ```
 
 The setup script will set the metamask accounts 0, 1, and 2 as admins. 
@@ -216,6 +215,8 @@ npm run start-dev
 ```
 
 You can access the frontend from your browser on http://localhost:8080 to interact with the project.
+
+Make sure metamask is set to connect to *localhost:8545* and that you import the ganache-cli wallet using the seed phrase given when you started ganache-cli.
 
 ## EthFundMe Contracts in Detail
 
