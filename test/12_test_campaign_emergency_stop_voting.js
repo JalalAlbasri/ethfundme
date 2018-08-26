@@ -26,6 +26,7 @@ const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
+const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
 
 contract('#12 Campaign Emergency Stop Voting', (accounts) => {
   let CampaignFactoryInstance
@@ -33,31 +34,37 @@ contract('#12 Campaign Emergency Stop Voting', (accounts) => {
 
   let salt = 123456789
 
-  let voteOption0 = true
-  let voteOption1 = true
-  let voteOption2 = true
-
-  let voteSecret0 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption0, salt]).toString('hex')
-  let voteSecret1 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption1, salt]).toString('hex')
-  let voteSecret2 = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOption2, salt]).toString('hex')
+  let voteOptionTrue = true
+  let voteSecretTrue = '0x' + ethjsAbi.soliditySHA3(['bool', 'uint'], [voteOptionTrue, salt]).toString('hex')
 
   before('setup and reject campaign', (done) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
-        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[1] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[2] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.createCampaign(
-          'test campaign',
-          10,
-          1,
-          'test campaign description',
-          'test image url',
-          { from: accounts[3] }
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.createCampaign(
+            'test campaign',
+            10,
+            1,
+            'test campaign description',
+            'test image url',
+            { from: accounts[3] }
+          ),
+          'LogCampaignCreated'
         )
       })
       .then(() => {
@@ -65,10 +72,22 @@ contract('#12 Campaign Emergency Stop Voting', (accounts) => {
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
-        return CampaignInstance.vote(voteSecret0, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[0] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecret1, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[1] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
         done()
@@ -88,10 +107,11 @@ contract('#12 Campaign Emergency Stop Voting', (accounts) => {
     })
   })
 
-  it('should stop the campaign', (done) => {
-    CampaignInstance.stopContract({ from: accounts[1] }).then(() => {
-      done()
-    })
+  it('should stop the campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.stopContract({ from: accounts[1] }),
+      'LogContractStopped'
+    )
   })
 
   it('should be in a stopped state', (done) => {
@@ -102,7 +122,7 @@ contract('#12 Campaign Emergency Stop Voting', (accounts) => {
   })
 
   it('should attempt to vote on stopped campaign and fail', (done) => {
-    assertRevert(CampaignInstance.vote(voteSecret2, { from: accounts[2] })).then(() => {
+    assertRevert(CampaignInstance.vote(voteSecretTrue, { from: accounts[2] })).then(() => {
       done()
     })
   })
@@ -114,10 +134,11 @@ contract('#12 Campaign Emergency Stop Voting', (accounts) => {
     })
   })
 
-  it('should resume the campaign', (done) => {
-    CampaignInstance.resumeContract({ from: accounts[1] }).then(() => {
-      done()
-    })
+  it('should resume the campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.resumeContract({ from: accounts[1] }),
+      'LogContractResumed'
+    )
   })
 
   it('should no longer be in stopped state', (done) => {
@@ -127,23 +148,28 @@ contract('#12 Campaign Emergency Stop Voting', (accounts) => {
     })
   })
 
-  it('should place a vote from accounts[1]', (done) => {
-    CampaignInstance.vote(voteSecret2, { from: accounts[2] }).then(() => {
-      done()
-    })
+  it('should place a vote from accounts[1]', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.vote(voteSecretTrue, { from: accounts[2] }),
+      'LogVoteComitted',
+      {
+        comittedBy: accounts[2]
+      }
+    )
   })
 
   it('should have set the voteSecret correctly', (done) => {
     CampaignInstance.voteSecrets.call(accounts[2]).then((voteSecret) => {
-      assert.equal(voteSecret, voteSecret2, 'voteSecret should match voteSecret2')
+      assert.equal(voteSecret, voteSecretTrue, 'voteSecret should match voteSecretTrue')
       done()
     })
   })
 
-  it('should stop the campaign', (done) => {
-    CampaignInstance.stopContract({ from: accounts[1] }).then(() => {
-      done()
-    })
+  it('should stop the campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.stopContract({ from: accounts[1] }),
+      'LogContractStopped'
+    )
   })
 
   it('should be in a stopped state', (done) => {
@@ -154,7 +180,7 @@ contract('#12 Campaign Emergency Stop Voting', (accounts) => {
   })
 
   it('should attempt to reveal a vote while stopped and fail', (done) => {
-    assertRevert(CampaignInstance.reveal(voteOption0, salt, { from: accounts[0] })).then(() => {
+    assertRevert(CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[0] })).then(() => {
       done()
     })
   })
@@ -166,22 +192,23 @@ contract('#12 Campaign Emergency Stop Voting', (accounts) => {
     })
   })
 
-  it('should resume the campaign', (done) => {
-    CampaignInstance.resumeContract({ from: accounts[1] })
-      .then(() => {
-        return CampaignInstance.isStopped.call()
-      })
-      .then((isStopped) => {
-        assert.equal(isStopped, false, 'campaign should be resumed')
-        done()
-      })
+  it('should resume the campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.resumeContract({ from: accounts[1] }),
+      'LogContractResumed'
+    )
   })
 
-  it('it should be able to reveal vote on resumed campaign', (done) => {
-    CampaignInstance.reveal(voteOption0, salt, { from: accounts[0] })
-      .then(() => {
-        done()
-      })
+  it('should be in resumed state', async () => {
+    const isStopped = await CampaignInstance.isStopped.call()
+    assert.equal(isStopped, false, 'campaign should be resumed')
+  })
+
+  it('it should be able to reveal vote on resumed campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[0] }),
+      'LogVoteRevealed'
+    )
   })
 
   it('should have revealed the vote', (done) => {

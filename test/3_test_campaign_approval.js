@@ -114,7 +114,6 @@ contract('#3 Campaign Approval', (accounts) => {
 
   it('should attempt to place vote from non admin account and fail', async () => {
     await assertRevert(CampaignInstance.vote(originalVoteSecret0, { from: accounts[4] }))
-    // await expectThrow(CampaignInstance.vote(originalVoteSecret0, { from: accounts[4] }), EVMRevert)
   })
 
   it('should not have placed a vote', async () => {

@@ -17,6 +17,7 @@
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
+const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
 
 contract('#2 Campaign Creation', (accounts) => {
   let CampaignFactoryInstance
@@ -26,19 +27,30 @@ contract('#2 Campaign Creation', (accounts) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
-        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[1] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] }),
+          'LogAdminAdded',
+          { account: accounts[2] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.createCampaign(
-          'test campaign',
-          10,
-          1,
-          'test campaign description',
-          'test image url',
-          { from: accounts[3] }
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.createCampaign(
+            'test campaign',
+            10,
+            1,
+            'test campaign description',
+            'test image url',
+            { from: accounts[3] }
+          ),
+          'LogCampaignCreated'
         )
       })
       .then(() => {
@@ -112,7 +124,11 @@ contract('#2 Campaign Creation', (accounts) => {
 
   it('should have stored campaign address correctly in CampaignFactroy', (done) => {
     CampaignFactoryInstance.campaigns.call(0).then((campaignAddress) => {
-      assert.equal(campaignAddress, CampaignInstance.address, 'campaignAddress should match created campaign address')
+      assert.equal(
+        campaignAddress,
+        CampaignInstance.address,
+        'campaignAddress should match created campaign address'
+      )
       done()
     })
   })

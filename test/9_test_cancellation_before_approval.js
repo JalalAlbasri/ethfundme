@@ -15,6 +15,7 @@ const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
+const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
 
 contract('#9 Campaign Cancellation Before Approval', (accounts) => {
   let CampaignFactoryInstance
@@ -29,19 +30,30 @@ contract('#9 Campaign Cancellation Before Approval', (accounts) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
-        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[1] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[2] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.createCampaign(
-          'test campaign',
-          10,
-          1,
-          'test campaign description',
-          'test image url',
-          { from: accounts[3] }
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.createCampaign(
+            'test campaign',
+            10,
+            1,
+            'test campaign description',
+            'test image url',
+            { from: accounts[3] }
+          ),
+          'LogCampaignCreated'
         )
       })
       .then(() => {
@@ -49,17 +61,24 @@ contract('#9 Campaign Cancellation Before Approval', (accounts) => {
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[0] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
         done()
       })
   })
 
-  it('should cancel the campaign and state should be set to Cancelled', (done) => {
-    CampaignInstance.cancelCampaign({ from: accounts[3] }).then(() => {
-      done()
-    })
+  it('should cancel the campaign and state should be set to Cancelled', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.cancelCampaign({ from: accounts[3] }),
+      'LogCampaignCancelled',
+    )
   })
 
   it('should set campaign state to Cancelled', (done) => {

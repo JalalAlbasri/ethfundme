@@ -17,6 +17,7 @@ const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
+const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
 
 contract('#5 Campaign Contribution', (accounts) => {
   let CampaignFactoryInstance
@@ -31,19 +32,30 @@ contract('#5 Campaign Contribution', (accounts) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
-        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[1] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[2] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.createCampaign(
-          'test campaign',
-          10,
-          1,
-          'test campaign description',
-          'test image url',
-          { from: accounts[3] }
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.createCampaign(
+            'test campaign',
+            10,
+            1,
+            'test campaign description',
+            'test image url',
+            { from: accounts[3] }
+          ),
+          'LogCampaignCreated'
         )
       })
       .then(() => {
@@ -51,19 +63,49 @@ contract('#5 Campaign Contribution', (accounts) => {
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[0] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[1] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[2] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[2] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[2]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[0] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[1] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
         done()
@@ -97,12 +139,20 @@ contract('#5 Campaign Contribution', (accounts) => {
     })
   })
 
-  it('should make a single contribution of 1 ether from accounts[4]', (done) => {
-    CampaignInstance.contribute({ from: accounts[4], value: 1 }).then(() => {
-      return CampaignInstance.hasContributed.call(accounts[4]).then((hasContributed) => {
-        assert.equal(hasContributed, true, 'accounts[4] should have contributed')
-        done()
-      })
+  it('should make a single contribution of 1 ether from accounts[4]', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.contribute({ from: accounts[4], value: 1 }),
+      'LogContributionMade',
+      {
+        contributor: accounts[4]
+      }
+    )
+  })
+
+  it('should set hasContributed correctly', (done) => {
+    CampaignInstance.hasContributed.call(accounts[4]).then((hasContributed) => {
+      assert.equal(hasContributed, true, 'accounts[4] should have contributed')
+      done()
     })
   })
 
@@ -136,10 +186,14 @@ contract('#5 Campaign Contribution', (accounts) => {
     })
   })
 
-  it('should make a single contribution of 2 ether from accounts[5]', (done) => {
-    CampaignInstance.contribute({ from: accounts[5], value: 2 }).then(() => {
-      done()
-    })
+  it('should make a single contribution of 2 ether from accounts[5]', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.contribute({ from: accounts[5], value: 2 }),
+      'LogContributionMade',
+      {
+        contributor: accounts[5]
+      }
+    )
   })
 
   it('should have set hasContributed correctly', (done) => {
@@ -172,10 +226,14 @@ contract('#5 Campaign Contribution', (accounts) => {
     })
   })
 
-  it('should make a second contribution of 3 ether from accounts[4]', (done) => {
-    CampaignInstance.contribute({ from: accounts[4], value: 3 }).then(() => {
-      done()
-    })
+  it('should make a second contribution of 3 ether from accounts[4]', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.contribute({ from: accounts[4], value: 3 }),
+      'LogContributionMade',
+      {
+        contributor: accounts[4]
+      }
+    )
   })
 
   it('should have set numContributions correctly', (done) => {

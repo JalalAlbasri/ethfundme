@@ -33,6 +33,8 @@ const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
+const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
+
 const { increaseTime } = require('zeppelin-solidity/test/helpers/increaseTime')
 
 const TWO_DAYS = 2 * 24 * 60 * 60
@@ -50,19 +52,30 @@ contract('#7 Campaign End Successfully', (accounts) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
-        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[1] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[2] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.createCampaign(
-          'test campaign',
-          10,
-          1,
-          'test campaign description',
-          'test image url',
-          { from: accounts[3] }
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.createCampaign(
+            'test campaign',
+            10,
+            1,
+            'test campaign description',
+            'test image url',
+            { from: accounts[3] }
+          ),
+          'LogCampaignCreated'
         )
       })
       .then(() => {
@@ -70,31 +83,85 @@ contract('#7 Campaign End Successfully', (accounts) => {
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[0] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[1] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[2] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[2] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[2]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[0] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[1] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[4], value: 5 })
+        return expectEvent.inTransaction(
+          CampaignInstance.contribute({ from: accounts[4], value: 5 }),
+          'LogContributionMade',
+          {
+            contributor: accounts[4]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[5], value: 2 })
+        return expectEvent.inTransaction(
+          CampaignInstance.contribute({ from: accounts[5], value: 2 }),
+          'LogContributionMade',
+          {
+            contributor: accounts[5]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[5], value: 3 })
+        return expectEvent.inTransaction(
+          CampaignInstance.contribute({ from: accounts[5], value: 3 }),
+          'LogContributionMade',
+          {
+            contributor: accounts[5]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[6], value: 3 })
+        return expectEvent.inTransaction(
+          CampaignInstance.contribute({ from: accounts[6], value: 3 }),
+          'LogContributionMade',
+          {
+            contributor: accounts[6]
+          }
+        )
       })
       .then(() => {
         done()
@@ -115,10 +182,8 @@ contract('#7 Campaign End Successfully', (accounts) => {
   })
 
   // time travel
-  it('should increase evm time past end date', (done) => {
-    increaseTime(TWO_DAYS).then(() => {
-      done()
-    })
+  it('should increase evm time past end date', async () => {
+    await increaseTime(TWO_DAYS)
   })
 
   it('should attempt to end campaign from invalid account and fail', (done) => {
@@ -134,10 +199,14 @@ contract('#7 Campaign End Successfully', (accounts) => {
     })
   })
 
-  it('should end campaign', (done) => {
-    CampaignInstance.endCampaign({ from: accounts[3] }).then(() => {
-      done()
-    })
+  it('should end campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.endCampaign({ from: accounts[3] }),
+      'LogCampaignEnded',
+      {
+        isSuccessful: true
+      }
+    )
   })
 
   it('Camapaign state should be set to Successful', (done) => {
@@ -160,10 +229,14 @@ contract('#7 Campaign End Successfully', (accounts) => {
     })
   })
 
-  it('should allow Cmapaign manager to withdraw funds', (done) => {
-    CampaignInstance.withdraw({ from: accounts[3] }).then(() => {
-      done()
-    })
+  it('should allow Cmapaign manager to withdraw funds', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.withdraw({ from: accounts[3] }),
+      'LogWithdrawlMade',
+      {
+        beneficiary: accounts[3]
+      }
+    )
   })
 
   it('should have debited funds correctly', (done) => {

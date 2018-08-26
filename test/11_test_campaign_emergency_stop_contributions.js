@@ -29,6 +29,7 @@ const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
 const { increaseTime } = require('zeppelin-solidity/test/helpers/increaseTime')
+const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
 
 const TWO_DAYS = 2 * 24 * 60 * 60
 
@@ -45,21 +46,30 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[1] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[2] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
-      })
-      .then(() => {
-        return CampaignFactoryInstance.createCampaign(
-          'test campaign',
-          10,
-          1,
-          'test campaign description',
-          'test image url',
-          { from: accounts[3] }
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.createCampaign(
+            'test campaign',
+            10,
+            1,
+            'test campaign description',
+            'test image url',
+            { from: accounts[3] }
+          ),
+          'LogCampaignCreated'
         )
       })
       .then(() => {
@@ -67,31 +77,85 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[0] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[1] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[2] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[2] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[2]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[0] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[1] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[4], value: 1 })
+        return expectEvent.inTransaction(
+          CampaignInstance.contribute({ from: accounts[4], value: 1 }),
+          'LogContributionMade',
+          {
+            contributor: accounts[4]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[5], value: 1 })
+        return expectEvent.inTransaction(
+          CampaignInstance.contribute({ from: accounts[5], value: 1 }),
+          'LogContributionMade',
+          {
+            contributor: accounts[5]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[5], value: 1 })
+        return expectEvent.inTransaction(
+          CampaignInstance.contribute({ from: accounts[5], value: 1 }),
+          'LogContributionMade',
+          {
+            contributor: accounts[5]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.contribute({ from: accounts[8], value: 1 })
+        return expectEvent.inTransaction(
+          CampaignInstance.contribute({ from: accounts[8], value: 1 }),
+          'LogContributionMade',
+          {
+            contributor: accounts[8]
+          }
+        )
       })
       .then(() => {
         done()
@@ -111,10 +175,11 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
     })
   })
 
-  it('should stop the campaign', (done) => {
-    CampaignInstance.stopContract({ from: accounts[0] }).then(() => {
-      done()
-    })
+  it('should stop the campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.stopContract({ from: accounts[0] }),
+      'LogContractStopped'
+    )
   })
 
   it('should be in a stopped state', (done) => {
@@ -143,10 +208,14 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
     })
   })
 
-  it('should allow contributors to withdraw contributed funds from stopped campaign', (done) => {
-    CampaignInstance.emergencyWithdraw({ from: accounts[4] }).then(() => {
-      done()
-    })
+  it('should allow contributors to withdraw contributed funds from stopped campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.emergencyWithdraw({ from: accounts[4] }),
+      'LogWithdrawlMade',
+      {
+        beneficiary: accounts[4]
+      }
+    )
   })
 
   it('should have debited funds correctly', (done) => {
@@ -169,10 +238,11 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
     })
   })
 
-  it('should resume the campaign', (done) => {
-    CampaignInstance.resumeContract({ from: accounts[1] }).then(() => {
-      done()
-    })
+  it('should resume the campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.resumeContract({ from: accounts[1] }),
+      'LogContractResumed'
+    )
   })
 
   it('should no longer be in stopped state', (done) => {
@@ -182,10 +252,14 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
     })
   })
 
-  it('should accept new contributions once resumed', (done) => {
-    CampaignInstance.contribute({ from: accounts[4], value: 1 }).then(() => {
-      done()
-    })
+  it('should accept new contributions once resumed', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.contribute({ from: accounts[4], value: 1 }),
+      'LogContributionMade',
+      {
+        contributor: accounts[4]
+      }
+    )
   })
 
   it('should have created a contribution', (done) => {
@@ -196,16 +270,18 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
   })
 
   // time travel
-  it('should increase evm time past end date', (done) => {
-    increaseTime(TWO_DAYS).then(() => {
-      done()
-    })
+  it('should increase evm time past end date', async () => {
+    await increaseTime(TWO_DAYS)
   })
 
-  it('should end campaign', (done) => {
-    CampaignInstance.endCampaign({ from: accounts[3] }).then(() => {
-      done()
-    })
+  it('should end campaign', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.endCampaign({ from: accounts[3] }),
+      'LogCampaignEnded',
+      {
+        isSuccessful: false
+      }
+    )
   })
 
   it('Camapaign state should be set to Unsuccessful', (done) => {
@@ -215,10 +291,14 @@ contract('#11 Campaign Emergency Stop Contributions', (accounts) => {
     })
   })
 
-  it('should allow contributor to withdraw funds contributed after emergency withdrawl', (done) => {
-    CampaignInstance.withdraw({ from: accounts[4] }).then(() => {
-      done()
-    })
+  it('should allow contributor to withdraw funds contributed after emergency withdrawl', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.withdraw({ from: accounts[4] }),
+      'LogWithdrawlMade',
+      {
+        beneficiary: accounts[4]
+      }
+    )
   })
 
   it('should have debited funds correctly', (done) => {

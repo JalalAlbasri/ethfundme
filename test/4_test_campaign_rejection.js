@@ -17,6 +17,9 @@ const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const ethjsAbi = require('ethereumjs-abi') // for soliditySha3 algo
 
+const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
+const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
+
 contract('#4 Campaign Rejection', (accounts) => {
   let CampaignFactoryInstance
   let CampaignInstance
@@ -32,57 +35,121 @@ contract('#4 Campaign Rejection', (accounts) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
-        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
-      })
-      .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] })
-      })
-      .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[3], { from: accounts[0] })
-      })
-      .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[4], { from: accounts[0] })
-      })
-      .then(() => {
-        return CampaignFactoryInstance.createCampaign(
-          'test campaign',
-          10,
-          1,
-          'test campaign description',
-          'test image url',
-          { from: accounts[5] }
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[1] }
         )
       })
       .then(() => {
-        return CampaignFactoryInstance.numAdmins.call()
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[2] }
+        )
       })
-      .then((numAdmins) => {
+      .then(() => {
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[3], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[3] }
+        )
+      })
+      .then(() => {
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[4], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[4] }
+        )
+      })
+      .then(() => {
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.createCampaign(
+            'test campaign',
+            10,
+            1,
+            'test campaign description',
+            'test image url',
+            { from: accounts[5] }
+          ),
+          'LogCampaignCreated'
+        )
+      })
+      .then(() => {
         return CampaignFactoryInstance.campaigns.call(0)
       })
       .then((campaignAddress) => {
         CampaignInstance = Campaign.at(campaignAddress)
-        return CampaignInstance.vote(voteSecretFalse, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretFalse, { from: accounts[0] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretFalse, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretFalse, { from: accounts[1] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretTrue, { from: accounts[2] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretTrue, { from: accounts[2] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[2]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretFalse, { from: accounts[3] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretFalse, { from: accounts[3] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[3]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.vote(voteSecretFalse, { from: accounts[4] })
+        return expectEvent.inTransaction(
+          CampaignInstance.vote(voteSecretFalse, { from: accounts[4] }),
+          'LogVoteComitted',
+          {
+            comittedBy: accounts[4]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[0] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[0]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[1] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[1]
+          }
+        )
       })
       .then(() => {
-        return CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[2] })
+        return expectEvent.inTransaction(
+          CampaignInstance.reveal(voteOptionTrue, salt, { from: accounts[2] }),
+          'LogVoteRevealed',
+          {
+            revealedBy: accounts[2]
+          }
+        )
       })
       .then(() => {
         done()
@@ -96,10 +163,14 @@ contract('#4 Campaign Rejection', (accounts) => {
     })
   })
 
-  it('should reveal another vote', (done) => {
-    CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[3] }).then(() => {
-      done()
-    })
+  it('should reveal another vote', async () => {
+    await expectEvent.inTransaction(
+      CampaignInstance.reveal(voteOptionFalse, salt, { from: accounts[3] }),
+      'LogVoteRevealed',
+      {
+        revealedBy: accounts[3]
+      }
+    )
   })
 
   it('should set approval state correctly to Rejected', (done) => {

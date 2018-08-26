@@ -20,6 +20,7 @@
 const CampaignFactory = artifacts.require('CampaignFactory')
 const Campaign = artifacts.require('Campaign')
 const { assertRevert } = require('zeppelin-solidity/test/helpers/assertRevert')
+const expectEvent = require('zeppelin-solidity/test/helpers/expectEvent')
 
 contract('#10 CampaignFactory Emregency Stop', (accounts) => {
   let CampaignFactoryInstance
@@ -29,19 +30,30 @@ contract('#10 CampaignFactory Emregency Stop', (accounts) => {
     CampaignFactory.deployed()
       .then((instance) => {
         CampaignFactoryInstance = instance
-        return CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[1], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[1] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[1] })
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.addAdminRole(accounts[2], { from: accounts[0] }),
+          'LogAdminAdded',
+          { account: accounts[2] }
+        )
       })
       .then(() => {
-        return CampaignFactoryInstance.createCampaign(
-          'test campaign',
-          10,
-          1,
-          'test campaign description',
-          'test image url',
-          { from: accounts[3] }
+        return expectEvent.inTransaction(
+          CampaignFactoryInstance.createCampaign(
+            'test campaign',
+            10,
+            1,
+            'test campaign description',
+            'test image url',
+            { from: accounts[3] }
+          ),
+          'LogCampaignCreated'
         )
       })
       .then(() => {
@@ -73,10 +85,11 @@ contract('#10 CampaignFactory Emregency Stop', (accounts) => {
     })
   })
 
-  it('should stop the CampaignFactory contract', (done) => {
-    CampaignFactoryInstance.stopContract({ from: accounts[0] }).then(() => {
-      done()
-    })
+  it('should stop the CampaignFactory contract', async () => {
+    await expectEvent.inTransaction(
+      CampaignFactoryInstance.stopContract({ from: accounts[0] }),
+      'LogContractStopped'
+    )
   })
 
   it('should have stopped the contract', (done) => {
@@ -116,10 +129,11 @@ contract('#10 CampaignFactory Emregency Stop', (accounts) => {
     await assertRevert(CampaignFactoryInstance.removeAdminRole(accounts[2], { from: accounts[0] }))
   })
 
-  it('should resume CampaignFactory contract successfully', (done) => {
-    CampaignFactoryInstance.resumeContract({ from: accounts[1] }).then(() => {
-      done()
-    })
+  it('should resume CampaignFactory contract successfully', async () => {
+    await expectEvent.inTransaction(
+      CampaignFactoryInstance.resumeContract({ from: accounts[1] }),
+      'LogContractResumed'
+    )
   })
 
   it('should have resumed the contract', (done) => {
@@ -129,17 +143,18 @@ contract('#10 CampaignFactory Emregency Stop', (accounts) => {
     })
   })
 
-  it('should should create a campaign on resumed contract successfully', (done) => {
-    CampaignFactoryInstance.createCampaign(
-      'test campaign 2',
-      10,
-      1,
-      'test campaign description 2',
-      'test image url 2',
-      { from: accounts[3] }
-    ).then(() => {
-      done()
-    })
+  it('should should create a campaign on resumed contract successfully', async () => {
+    await expectEvent.inTransaction(
+      CampaignFactoryInstance.createCampaign(
+        'test campaign 2',
+        10,
+        1,
+        'test campaign description 2',
+        'test image url 2',
+        { from: accounts[3] }
+      ),
+      'LogCampaignCreated',
+    )
   })
 
   it('should set numCampaigns correctly', (done) => {
