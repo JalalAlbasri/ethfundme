@@ -89,6 +89,10 @@ function getCampaignDetails(address) {
         })
         .then((campaignState) => {
           campaign.campaignState = CAMPAIGN_STATES[Number(campaignState)]
+          return CampaignInstance.isActive.call({ from: coinbase })
+        })
+        .then((isActive) => {
+          campaign.isActive = isActive
           return CampaignInstance.manager.call({ from: coinbase })
         })
         .then((manager) => {
@@ -358,6 +362,25 @@ export function cancel(campaign) {
         .catch((err) => {
           console.log(err)
         })
+    })
+  }
+}
+
+export function end(campaign) {
+  return function (dispatch) {
+    const web3Campaign = contract(CampaignContract)
+    web3Campaign.setProvider(web3.currentProvider)
+
+    web3.eth.getCoinbase(async (err, coinbase) => {
+      if (err) {
+        console.log(err)
+      }
+
+      const instance = await web3Campaign.at(campaign.address)
+      const receipt = await instance.endCampaign({ from: coinbase })
+      await inLogs(receipt.logs, 'LogCampaignEnded')
+      setTimeout(() => dispatch(updateCampaign(campaign.address)), 6000)
+      dispatch(updateCampaign(campaign.address))
     })
   }
 }

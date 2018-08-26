@@ -29,7 +29,8 @@ import {
   faCheck,
   faBan,
   faStopCircle,
-  faPlayCircle
+  faPlayCircle,
+  faCalendarTimes
 } from '@fortawesome/free-solid-svg-icons'
 
 import store from './store'
@@ -52,6 +53,7 @@ library.add(faCheck)
 library.add(faBan)
 library.add(faStopCircle)
 library.add(faPlayCircle)
+library.add(faCalendarTimes)
 
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()

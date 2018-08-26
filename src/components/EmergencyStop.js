@@ -19,16 +19,14 @@ class EmergencyStop extends Component {
   render() {
     if (this.props.account.isAdmin) {
       return (
-        <div className="EmergencyStop mt-3">
-          <button
-            type="button"
-            className={'btn btn-outline-' + (this.props.campaign.isStopped ? 'primary' : 'danger')}
-            onClick={this.handleClick}
-          >
-            <FontAwesomeIcon className="button-icon" icon={this.props.campaign.isStopped ? 'play-circle' : 'stop-circle'} />
-            {this.props.campaign.isStopped ? 'Resume Contract' : 'Emergency Stop Contract'}
-          </button>
-        </div>
+        <button
+          type="button"
+          className={'EmergencyStop ml-2 btn btn-outline-' + (this.props.campaign.isStopped ? 'primary' : 'danger')}
+          onClick={this.handleClick}
+        >
+          <FontAwesomeIcon className="button-icon" icon={this.props.campaign.isStopped ? 'play-circle' : 'stop-circle'} />
+          {this.props.campaign.isStopped ? 'Resume Contract' : 'Emergency Stop Contract'}
+        </button>
       )
     }
 

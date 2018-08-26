@@ -16,6 +16,7 @@ import Cancel from './Cancel'
 import EmergencyStop from './EmergencyStop'
 import EmergencyStopWarning from './EmergencyStopWarning'
 import EmergencyWithdraw from './EmergencyWithdraw'
+import End from './End'
 
 class Campaign extends Component {
   constructor(props) {
@@ -100,9 +101,12 @@ class Campaign extends Component {
             <Contribute campaign={this.props.campaign} />
             <Withdraw campaign={this.props.campaign} />
             <EmergencyWithdraw campaign={this.props.campaign} />
-            <Cancel campaign={this.props.campaign} />
             <Vote campaign={this.props.campaign} />
-            <EmergencyStop campaign={this.props.campaign} />
+            <div className="Actions mt-3 justify-content-">
+              <EmergencyStop campaign={this.props.campaign} />
+              <Cancel campaign={this.props.campaign} />
+              <End campaign={this.props.campaign} />
+            </div>
           </div>
           {/* </div>
           </div> */}

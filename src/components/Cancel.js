@@ -27,17 +27,15 @@ class Cancel extends Component {
         || this.props.campaign.campaignState === 'Active')
     ) {
       return (
-        <div className="Cancel mt-3 d-flex justify-content-end">
           <button
             type="button"
-            className="btn btn-outline-danger"
+            className="Cancel btn btn-outline-danger ml-2"
             onClick={this.handleClick}
             disabled={this.props.campaign.isStopped}
           >
             <FontAwesomeIcon className="button-icon" icon="times-circle" />
             Cancel Campaign
           </button>
-        </div>
       )
     }
 
