@@ -2,6 +2,8 @@
 
 # EthFundMe
 
+[http://ethfund.me](https://www.ethfund.me)
+
 EthFundMe is a smart contract powered crowd funding platform. It allows you to intelligently, securely and trustlessly manage crowd funding campaigns with smart contracts.
 
 EthFundMe was developed for the 2018 Consensys Academy Developer Program. Please use care if you use any code from this repository in your own projects as it has not been thoroughly audited.
